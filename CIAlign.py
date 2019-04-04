@@ -68,8 +68,27 @@ def alignToArray(fasta_dict):
     return (arr)
 
 
-def removeIndels(arr, log, sliding_window_size=10, mincov=10):
-    log.info("Removing indels\n")
+def writeOutfile(outfile, arr, fasta_dict, orig_nams):
+    out = open(outfile, "w")
+    F = dict()
+    for i, nam in enumerate(sorted(fasta_dict.keys())):
+        F[nam] = "".join(list(arr[i]))
+        
+    # ensures the output file is in the same order as the input file
+    for nam in orig_nams:
+        if nam in F:
+            out.write(">%s\n%s\n" % (nam, F[nam]))
+    out.close()
+
+
+def removeInsertions(arr, log, min_size, max_size, min_flank):
+    '''
+    Removes insertions of size between min_size and
+    max_size which have lower coverage than their flanking regions, if at least
+    twice as many other sequences have the flanking regions
+    but not the insertions.
+    '''
+    log.info("Removing insertions\n")
     # record which sites are not "-"
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column 
@@ -79,7 +98,7 @@ def removeIndels(arr, log, sliding_window_size=10, mincov=10):
     # which have higher coverage at the ends of the window than in the
     # middle - store these in put_indels
     put_indels = set()
-    for size in range(9, sliding_window_size):
+    for size in range(min_size+2, max_size+1):
         for i in range(0, len(sums)+1 - size):
             these_sums = sums[i:i+size]
             # take the number of non gap positions
@@ -90,8 +109,7 @@ def removeIndels(arr, log, sliding_window_size=10, mincov=10):
             # record sites with lower coverage than their flanking seqs
             # and less than mincov total coverage
             x = set(ns[(these_sums < left) &
-                       (these_sums < right) &
-                       (these_sums < mincov)])
+                       (these_sums < right)])
             put_indels = put_indels | x
     put_indels = np.array(sorted(list(put_indels)))
     # for the putative indels, check if any sequence without the indel
@@ -104,26 +122,31 @@ def removeIndels(arr, log, sliding_window_size=10, mincov=10):
             if thispos == "-":
                 leftsum = sum(a[:p] != "-")
                 rightsum = sum(a[p:] != "-")
-                if leftsum > mincov and rightsum > mincov:
+                if leftsum > min_flank and rightsum > min_flank:
                     has_flanks += 1
-        if has_flanks != 0:
+        if has_flanks > sums[p]:
             rmpos.append(p)
     # make a list of positions to keep
     keeppos = np.arange(0, len(sums))
     keeppos = np.invert(np.in1d(keeppos, rmpos))
+    log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
     arr = arr[:, keeppos]
+    return (arr)
 
 
-def writeOutfile(outfile, arr, fasta_dict, orig_nams):
-    out = open(outfile, "w")
-    F = dict()
-    for i, nam in enumerate(sorted(fasta_dict.keys())):
-        F[nam] = "".join(list(arr[i]))
-        
-    # ensures the output file is in the same order as the input file
-    for nam in orig_nams:
-        out.write(">%s\n%s\n" % (nam, F[nam]))
-    out.close()
+def removeTooShort(arr, min_length, fasta_dict):
+    '''
+    Removes sequences with fewer than min_length non-gap positions from
+    the alignment.
+    '''
+    arrT = arr.transpose()
+    sums = sum(arrT != "-")
+    arr = arr[sums > min_length]
+    keepnames = list(np.array(sorted(fasta_dict.keys()))[sums > min_length])
+    fasta_dict2 = dict()
+    for k in keepnames:
+        fasta_dict2[k] = fasta_dict[k]
+    return (arr, fasta_dict2)
 
 
 def main():
@@ -134,13 +157,20 @@ def main():
                         help='path to input alignment')
     parser.add_argument("--outfile", dest='outfile', type=str, default="",
                         help="path to output alignment")
-    parser.add_argument("--sliding_window_size_indels", dest="slidingwindowsize",
-                        type=int, default=200,
-                        help="sliding window size to remove indels")
-    parser.add_argument("--max_coverage_indels", dest="maxcov",
-                        type=int, default=20,
-                        help="maximum coverage of removed indels")
-    parser.add_argument("--remove_indels", dest="rmi",
+    parser.add_argument("--insertion_min_size", dest="insertion_min_size",
+                        type=int, default=3,
+                        help="miniumum size insertion to remove")
+    parser.add_argument("--insertion_max_size", dest="insertion_max_size",
+                        type=int, default=300,
+                        help="miniumum size insertion to remove")
+    parser.add_argument("--insertion_min_flank", dest="insertion_min_flank",
+                        type=int, default=5,
+                        help="minimum number of bases on either side of deleted insertions")
+    parser.add_argument("--remove_min_length", dest="remove_min_length",
+                        type=int, default=50)
+    parser.add_argument("--remove_insertions", dest="remove_insertions",
+                        action="store_true")
+    parser.add_argument("--remove_short", dest="remove_short",
                         action="store_true")
 
     args = parser.parse_args()
@@ -161,9 +191,16 @@ def main():
     fasta_dict, orig_nams = FastaToDict(args.infile)
     arr = alignToArray(fasta_dict)
 
-    if args.rmi:
-        removeIndels(arr, log, args.slidingwindowsize, args.maxcov)
-    
+    if args.remove_insertions:
+        arr = removeInsertions(arr,
+                               log,
+                               args.insertion_min_size,
+                               args.insertion_max_size,
+                               args.insertion_min_flank)
+    if args.remove_short:
+        arr, fasta_dict = removeTooShort(arr, args.remove_min_length,
+                                         fasta_dict)
+
     writeOutfile(args.outfile, arr, fasta_dict, orig_nams)
 
 
