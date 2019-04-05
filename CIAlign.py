@@ -10,15 +10,15 @@ import copy
 def FastaToDict(infile):
     '''
     Converts a fasta file to a dictionary
-    
+
     Keys are the sequence names (without ">") and values are the
     sequences.
-    
+
     Parameters
     ----------
     infile: str
         path to fasta file
-        
+
     Returns
     -------
     dict
@@ -56,7 +56,7 @@ def DictToArray(fasta_dict):
     fasta_dict: dict
         dictionary based on a fasta file with sequence names as keys and
         sequences as values
-        
+
     Returns
     -------
     arr: np.array
@@ -157,7 +157,7 @@ def removeInsertions(arr, log, min_size, max_size, min_flank):
     log.info("Removing insertions\n")
     # record which sites are not "-"
     boolarr = arr != "-"
-    # array of the number of non-gap sites in each column 
+    # array of the number of non-gap sites in each column
     sums = sum(boolarr)
 
     # run a sliding window along the alignment and check for regions
@@ -259,7 +259,7 @@ def drawMiniAlignment(arr, log, fasta_dict, outfile, typ, dpi, title, width, hei
             a.vlines(list(markupdict['remove_insertions']), 0, ali_height, color=colour, lw=0.75, zorder=1)
     f.savefig(outfile, dpi=dpi)
 
-   
+
 def main():
     parser = argparse.ArgumentParser(
             description='''Improve a multiple sequence alignment''')
@@ -306,32 +306,32 @@ def main():
 
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
-    
+
     handler = logging.FileHandler("log.log")
     handler.setLevel(logging.INFO)
-    
+
     # create a logging format
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
-    
+
     # add the handlers to the logger
     log.addHandler(handler)
-    
+
     log.info("Initial parameters: %s" % str(args))
-    
+
     # convert the input fasta file into a dictionary and make a list of
     # sequence names so the order can be maintained
     fasta_dict, orig_nams = FastaToDict(args.infile)
-    
+
     # convert the fasta file dictionary into a numpy array
     arr = DictToArray(fasta_dict)
-    
+
     # store a copy of the original array
     orig_arr = copy.copy(arr)
-    
+
     # make a dictionary to store the changes made
     markupdict = dict()
-    
+
     removed_seqs = set()
     removed_cols = set()
 
@@ -372,7 +372,7 @@ def main():
         drawMiniAlignment(orig_arr, log, fasta_dict, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
-    
+
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     writeOutfile(outfile, arr, fasta_dict, orig_nams, removed_seqs)
 
