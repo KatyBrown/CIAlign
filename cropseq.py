@@ -105,6 +105,9 @@ def countGaps(sequence):
 
     return gapNumbers
 
+# replace all before start and after end with gaps and output that change into
+# return an array and a list of (start,end)
+
 def main():
     print('blaaa')
     parser = argparse.ArgumentParser(

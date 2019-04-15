@@ -9,6 +9,8 @@ import operator
 from scipy.interpolate import spline #for interpolating coverage function
 import matplotlib.patheffects
 
+import rna
+
 from CIAlign import FastaToDict, DictToArray
 
 # python3 consensusSeq.py --infile /Users/lotti/Documents/Test_Case/gap_test/SevenJEV.afa
@@ -75,8 +77,6 @@ def makePlot(consensus, coverage):
     txt = plt.text(0.2, 0, "B", fontsize=64,color='blue')
     txt.set_path_effects([Scale(1,7)])
     plt.show()
-
-
 
 def main():
     print('blaaa')
