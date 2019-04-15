@@ -7,7 +7,7 @@ import numpy as np
 import copy
 
 
-def determineStartEnd(sequence):
+def determineStartEnd(sequence, mingap):
     '''
     Determines the start and the end of a sequence
 
@@ -24,7 +24,7 @@ def determineStartEnd(sequence):
     start = 0
     end = 0
 
-    start = findValue(sequence)
+    start = findValue(sequence, mingap)
     end = len(sequence) - findValue(sequence[::-1])
 
     return(start, end)
@@ -32,7 +32,7 @@ def determineStartEnd(sequence):
 
 
 
-def findValue(sequence):
+def findValue(sequence, mingap=10):
     '''
     Determines the start of the given sequence
 
@@ -65,7 +65,7 @@ def findValue(sequence):
 
     # for more fluctuation within the sequence, meaning we observe a few nt within many gaps -> indicates incomplete sequence
     for n in range(0, boundary2):
-        if gaps[n+1] - gaps[n] > 10:
+        if gaps[n+1] - gaps[n] > mingap:
             position = n + 1 + gaps[n+1]
     if position > 0:
         return position
