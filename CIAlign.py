@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+import cropseq
 
 
 def FastaToDict(infile):
@@ -213,6 +214,34 @@ def removeTooShort(arr, log, min_length, fasta_dict):
     return (arr, rmnames)
 
 
+def cropEnds(arr, log, fasta_dict):
+    newarr = []
+    names = sorted(fasta_dict.keys())
+    r = dict()
+    for i, row in enumerate(arr):
+        start, end = cropseq.determineStartEnd(row)
+        start = max(start - 1, 0)
+        end = end + 1
+        newseq = "-" * start + "".join(row[start:end]) + "-" * (len(row) - end)
+        newseq = np.array(list(newseq))
+        s = sum(newseq != row)
+        if s != 0:
+            nam = names[i]
+            non_gap_start = sum(row[0:start] != "-")
+            non_gap_end = sum(row[end:] != "-")
+            if non_gap_start != 0:
+                log.info("Removed %i bases from start of %s" % (non_gap_start, nam))
+            if non_gap_end != 0:
+                log.info("Removed %i bases from end of %s" % (non_gap_end, nam))
+            startpos = np.where(row[0:start] != "-")[0]
+            endpos = np.where(row[end:] != "-")[0] + end
+            r[nam] = ((startpos, endpos))
+        newarr.append(list(newseq))
+    
+    return (np.array(newarr), r)
+    
+        
+
 def drawMiniAlignment(arr, log, fasta_dict, outfile, typ, dpi, title, width, height,
                       markup=False, markupdict=None):
     ali_height, ali_width = np.shape(arr)
@@ -295,6 +324,8 @@ def main():
                         action="store_true")
     parser.add_argument("--remove_short", dest="remove_short",
                         action="store_true")
+    parser.add_argument("--crop_ends", dest="crop_ends",
+                        action="store_true")
     parser.add_argument("--plot_input", dest="plot_input",
                         action="store_true")
     parser.add_argument("--plot_output", dest="plot_output",
@@ -357,6 +388,10 @@ def main():
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
 
+    if args.crop_ends:
+        arr, r = cropEnds(arr, log, fasta_dict)
+        markupdict['crop_ends'] = r
+
     if args.plot_input:
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
         drawMiniAlignment(orig_arr, log, fasta_dict, outf, typ, args.plot_dpi,
@@ -373,6 +408,8 @@ def main():
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
 
+
+            
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     writeOutfile(outfile, arr, fasta_dict, orig_nams, removed_seqs)
 
