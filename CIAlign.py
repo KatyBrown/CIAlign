@@ -165,8 +165,8 @@ def removeInsertions(arr, log, min_size, max_size, min_flank):
     # which have higher coverage at the ends of the window than in the
     # middle - store these in put_indels
     put_indels = set()
-    for size in range(min_size+2, max_size+1):
-        for i in range(0, len(sums)+1 - size):
+    for size in range(min_size+2, max_size+1, 2):
+        for i in range(0, len(sums)+1 - size, 1):
             these_sums = sums[i:i+size]
             # take the number of non gap positions
             # for each column in this window
@@ -181,19 +181,23 @@ def removeInsertions(arr, log, min_size, max_size, min_flank):
     put_indels = np.array(sorted(list(put_indels)))
     # for the putative indels, check if any sequence without the indel
     # flanks the indel site - if it does it confirms it is an indel
-    rmpos = []
+    rmpos = set()
+    print (len(put_indels))
     for p in put_indels:
         has_flanks = 0
         for a in arr:
-            thispos = a[p]
-            if thispos == "-":
-                leftsum = sum(a[:p] != "-")
-                rightsum = sum(a[p:] != "-")
+            nongaps = a == "-"
+            thispos = nongaps[p]
+            if thispos:
+                leftsum = sum(nongaps[:p])
+                rightsum = sum(nongaps[p:])
                 if leftsum > min_flank and rightsum > min_flank:
                     has_flanks += 1
-        if has_flanks > sums[p]:
-            rmpos.append(p)
+            if has_flanks == sums[p]:
+                rmpos.add(p)
+                break
     # make a list of positions to keep
+    rmpos = np.array(list(rmpos))
     keeppos = np.arange(0, len(sums))
     keeppos = np.invert(np.in1d(keeppos, rmpos))
     log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
@@ -216,8 +220,8 @@ def removeTooShort(arr, log, min_length, fasta_dict):
 
 def removeGapOnly(arr, log):
     sums = sum(arr == "-")
-    arr = arr[:, sums != len(arr[0])]
-    rmpos = set(np.where(sums != len(arr[0]))[0])
+    rmpos = set(np.where(sums == len(arr[:,0]))[0])
+    arr = arr[:, sums != len(arr[:,0])]
     log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
     return (arr, rmpos)
 
