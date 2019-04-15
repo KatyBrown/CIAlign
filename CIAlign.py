@@ -214,12 +214,20 @@ def removeTooShort(arr, log, min_length, fasta_dict):
     return (arr, rmnames)
 
 
-def cropEnds(arr, log, fasta_dict):
+def removeGapOnly(arr, log):
+    sums = sum(arr == "-")
+    arr = arr[:, sums != len(arr[0])]
+    rmpos = set(np.where(sums != len(arr[0]))[0])
+    log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
+    return (arr, rmpos)
+
+
+def cropEnds(arr, log, fasta_dict, mingap):
     newarr = []
     names = sorted(fasta_dict.keys())
     r = dict()
     for i, row in enumerate(arr):
-        start, end = cropseq.determineStartEnd(row)
+        start, end = cropseq.determineStartEnd(row, mingap)
         start = max(start - 1, 0)
         end = end + 1
         newseq = "-" * start + "".join(row[start:end]) + "-" * (len(row) - end)
@@ -308,6 +316,9 @@ def main():
                         help="minimum number of bases on either side of deleted insertions")
     parser.add_argument("--remove_min_length", dest="remove_min_length",
                         type=int, default=50)
+    parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
+                        type=int, default=10,
+                        help="minimum gap size to crop from ends")
     parser.add_argument("--dpi", dest="plot_dpi",
                         type=int, default=300,
                         help="dpi for plots")
@@ -324,6 +335,8 @@ def main():
                         action="store_true")
     parser.add_argument("--remove_short", dest="remove_short",
                         action="store_true")
+    parser.add_argument("--remove_gaponly", dest="remove_gaponly",
+                        action="store_false")
     parser.add_argument("--crop_ends", dest="crop_ends",
                         action="store_true")
     parser.add_argument("--plot_input", dest="plot_input",
@@ -389,8 +402,12 @@ def main():
         removed_seqs = removed_seqs | r
 
     if args.crop_ends:
-        arr, r = cropEnds(arr, log, fasta_dict)
+        arr, r = cropEnds(arr, log, fasta_dict, args.crop_ends_mingap)
         markupdict['crop_ends'] = r
+    
+    if args.remove_gaponly:
+        arr, r = removeGapOnly(arr, log)
+        markupdict['remove_gaponly'] = r
 
     if args.plot_input:
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
