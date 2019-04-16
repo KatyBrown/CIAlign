@@ -3,10 +3,11 @@
 import logging
 import argparse
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import copy
 import cropseq
-
 
 def FastaToDict(infile):
     '''
@@ -210,19 +211,25 @@ def removeTooShort(arr, log, min_length, fasta_dict):
     Removes sequences with fewer than min_length non-gap positions from
     the alignment.
     '''
-    arrT = arr.transpose()
-    sums = sum(arrT != "-")
-    arr = arr[sums > min_length]
-    rmnames = set(list(np.array(sorted(fasta_dict.keys()))[sums <= min_length]))
-    log.info("Removing sequences %s" % (", ".join(list(rmnames))))
+    if len(arr) != 0:
+        arrT = arr.transpose()
+        sums = sum(arrT != "-")
+        arr = arr[sums > min_length]
+        rmnames = set(list(np.array(sorted(fasta_dict.keys()))[sums <= min_length]))
+        log.info("Removing sequences %s" % (", ".join(list(rmnames))))
+    else:
+        rmnames = set()
     return (arr, rmnames)
 
 
 def removeGapOnly(arr, log):
-    sums = sum(arr == "-")
-    rmpos = set(np.where(sums == len(arr[:,0]))[0])
-    arr = arr[:, sums != len(arr[:,0])]
-    log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
+    if len(arr) != 0:
+        sums = sum(arr == "-")
+        rmpos = set(np.where(sums == len(arr[:,0]))[0])
+        arr = arr[:, sums != len(arr[:,0])]
+        log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
+    else:
+        rmpos = set()
     return (arr, rmpos)
 
 
