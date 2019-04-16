@@ -3,9 +3,11 @@
 import logging
 import argparse
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import copy
-
+import cropseq
 
 def FastaToDict(infile):
     '''
@@ -164,8 +166,8 @@ def removeInsertions(arr, log, min_size, max_size, min_flank):
     # which have higher coverage at the ends of the window than in the
     # middle - store these in put_indels
     put_indels = set()
-    for size in range(min_size+2, max_size+1):
-        for i in range(0, len(sums)+1 - size):
+    for size in range(min_size+2, max_size+1, 2):
+        for i in range(0, len(sums)+1 - size, 1):
             these_sums = sums[i:i+size]
             # take the number of non gap positions
             # for each column in this window
@@ -180,19 +182,23 @@ def removeInsertions(arr, log, min_size, max_size, min_flank):
     put_indels = np.array(sorted(list(put_indels)))
     # for the putative indels, check if any sequence without the indel
     # flanks the indel site - if it does it confirms it is an indel
-    rmpos = []
+    rmpos = set()
+    print (len(put_indels))
     for p in put_indels:
         has_flanks = 0
         for a in arr:
-            thispos = a[p]
-            if thispos == "-":
-                leftsum = sum(a[:p] != "-")
-                rightsum = sum(a[p:] != "-")
+            nongaps = a == "-"
+            thispos = nongaps[p]
+            if thispos:
+                leftsum = sum(nongaps[:p])
+                rightsum = sum(nongaps[p:])
                 if leftsum > min_flank and rightsum > min_flank:
                     has_flanks += 1
-        if has_flanks > sums[p]:
-            rmpos.append(p)
+            if has_flanks == sums[p]:
+                rmpos.add(p)
+                break
     # make a list of positions to keep
+    rmpos = np.array(list(rmpos))
     keeppos = np.arange(0, len(sums))
     keeppos = np.invert(np.in1d(keeppos, rmpos))
     log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
@@ -205,13 +211,55 @@ def removeTooShort(arr, log, min_length, fasta_dict):
     Removes sequences with fewer than min_length non-gap positions from
     the alignment.
     '''
-    arrT = arr.transpose()
-    sums = sum(arrT != "-")
-    arr = arr[sums > min_length]
-    rmnames = set(list(np.array(sorted(fasta_dict.keys()))[sums <= min_length]))
-    log.info("Removing sequences %s" % (", ".join(list(rmnames))))
+    if len(arr) != 0:
+        arrT = arr.transpose()
+        sums = sum(arrT != "-")
+        arr = arr[sums > min_length]
+        rmnames = set(list(np.array(sorted(fasta_dict.keys()))[sums <= min_length]))
+        log.info("Removing sequences %s" % (", ".join(list(rmnames))))
+    else:
+        rmnames = set()
     return (arr, rmnames)
 
+
+def removeGapOnly(arr, log):
+    if len(arr) != 0:
+        sums = sum(arr == "-")
+        rmpos = set(np.where(sums == len(arr[:,0]))[0])
+        arr = arr[:, sums != len(arr[:,0])]
+        log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
+    else:
+        rmpos = set()
+    return (arr, rmpos)
+
+
+def cropEnds(arr, log, fasta_dict, mingap):
+    newarr = []
+    names = sorted(fasta_dict.keys())
+    r = dict()
+    for i, row in enumerate(arr):
+        start, end = cropseq.determineStartEnd(row, mingap)
+        start = max(start - 1, 0)
+        end = end + 1
+        newseq = "-" * start + "".join(row[start:end]) + "-" * (len(row) - end)
+        newseq = np.array(list(newseq))
+        s = sum(newseq != row)
+        if s != 0:
+            nam = names[i]
+            non_gap_start = sum(row[0:start] != "-")
+            non_gap_end = sum(row[end:] != "-")
+            if non_gap_start != 0:
+                log.info("Removed %i bases from start of %s" % (non_gap_start, nam))
+            if non_gap_end != 0:
+                log.info("Removed %i bases from end of %s" % (non_gap_end, nam))
+            startpos = np.where(row[0:start] != "-")[0]
+            endpos = np.where(row[end:] != "-")[0] + end
+            r[nam] = ((startpos, endpos))
+        newarr.append(list(newseq))
+    
+    return (np.array(newarr), r)
+    
+        
 
 def drawMiniAlignment(arr, log, fasta_dict, outfile, typ, dpi, title, width, height,
                       markup=False, markupdict=None):
@@ -279,6 +327,9 @@ def main():
                         help="minimum number of bases on either side of deleted insertions")
     parser.add_argument("--remove_min_length", dest="remove_min_length",
                         type=int, default=50)
+    parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
+                        type=int, default=10,
+                        help="minimum gap size to crop from ends")
     parser.add_argument("--dpi", dest="plot_dpi",
                         type=int, default=300,
                         help="dpi for plots")
@@ -294,6 +345,10 @@ def main():
     parser.add_argument("--remove_insertions", dest="remove_insertions",
                         action="store_true")
     parser.add_argument("--remove_short", dest="remove_short",
+                        action="store_true")
+    parser.add_argument("--remove_gaponly", dest="remove_gaponly",
+                        action="store_false")
+    parser.add_argument("--crop_ends", dest="crop_ends",
                         action="store_true")
     parser.add_argument("--plot_input", dest="plot_input",
                         action="store_true")
@@ -357,6 +412,14 @@ def main():
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
 
+    if args.crop_ends:
+        arr, r = cropEnds(arr, log, fasta_dict, args.crop_ends_mingap)
+        markupdict['crop_ends'] = r
+    
+    if args.remove_gaponly:
+        arr, r = removeGapOnly(arr, log)
+        markupdict['remove_gaponly'] = r
+
     if args.plot_input:
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
         drawMiniAlignment(orig_arr, log, fasta_dict, outf, typ, args.plot_dpi,
@@ -373,6 +436,8 @@ def main():
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
 
+
+            
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     writeOutfile(outfile, arr, fasta_dict, orig_nams, removed_seqs)
 
