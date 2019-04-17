@@ -9,50 +9,11 @@ import matplotlib.pyplot as plt
 import copy
 import cropseq
 
-def FastaToDict(infile):
+
+
+def FastaToArray(infile):
     '''
-    Converts a fasta file to a dictionary
-
-    Keys are the sequence names (without ">") and values are the
-    sequences.
-
-    Parameters
-    ----------
-    infile: str
-        path to fasta file
-
-    Returns
-    -------
-    dict
-        dictionary where keys are sequence names and values are sequence or
-        sequence lengths
-    '''
-    D = dict()
-    seq = []
-    nam = ""
-    nams = []
-    with open(infile) as input:
-        for line in input:
-            line = line.strip()
-            if len(line) != 0:
-                if line[0] == ">":
-                    if len(seq) != 0:
-                        seq = "".join(seq)
-                        D[nam] = seq
-                        nams.append(nam)
-                        seq = []
-                    nam = line.replace(">", "")
-                else:
-                    seq.append(line)
-    seq = "".join(seq)
-    D[nam] = seq
-    nams.append(nam)
-    return (D, nams)
-
-
-def DictToArray(fasta_dict):
-    '''
-    Convert an alignment dictionary into a numpy array.
+    Convert an alignment into a numpy array.
     Parameters
     ----------
     fasta_dict: dict
@@ -66,25 +27,32 @@ def DictToArray(fasta_dict):
         represents a single column in the alignment and each column a
         single sequence.
     '''
-    arr = []
-    for nam in sorted(list(fasta_dict.keys())):
-        arr.append(np.array(list(fasta_dict[nam])))
-    arr = np.array(arr)
-    return (arr)
+
+    nams = []
+    seqs = []
+    nam = ""
+    seq = ""
+    with open(infile) as input:
+        for line in input:
+            line = line.strip()
+            if line[0] == ">":
+                    seqs.append(seq)
+                    nams.append(nam)
+                    seq = []
+                    nam = line.replace(">", "")
+            else:
+                seq += list(line)
+    seqs.append(seq)
+    nams.append(nam)
+    arr = np.array(seqs[1:])
+    return (arr, nams[1:])
 
 
-def writeOutfile(outfile, arr, fasta_dict, orig_nams, removed):
+def writeOutfile(outfile, arr, nams):
     out = open(outfile, "w")
-    F = dict()
     i = 0
-    for nam in sorted(fasta_dict.keys()):
-        if nam not in removed:
-            F[nam] = "".join(list(arr[i]))
-            i += 1
-    # ensures the output file is in the same order as the input file
-    for nam in orig_nams:
-        if nam in F:
-            out.write(">%s\n%s\n" % (nam, F[nam]))
+    for i, nam in enumerate(nams):
+        out.write(">%s\n%s\n" % (nam, "".join(list(arr[i]))))
     out.close()
 
 
@@ -206,7 +174,7 @@ def removeInsertions(arr, log, min_size, max_size, min_flank):
     return (arr, set(rmpos))
 
 
-def removeTooShort(arr, log, min_length, fasta_dict):
+def removeTooShort(arr, log, min_length, nams):
     '''
     Removes sequences with fewer than min_length non-gap positions from
     the alignment.
@@ -215,7 +183,7 @@ def removeTooShort(arr, log, min_length, fasta_dict):
         arrT = arr.transpose()
         sums = sum(arrT != "-")
         arr = arr[sums > min_length]
-        rmnames = set(list(np.array(sorted(fasta_dict.keys()))[sums <= min_length]))
+        rmnames = np.array(nams)[sums <= min_length]
         log.info("Removing sequences %s" % (", ".join(list(rmnames))))
     else:
         rmnames = set()
@@ -233,9 +201,8 @@ def removeGapOnly(arr, log):
     return (arr, rmpos)
 
 
-def cropEnds(arr, log, fasta_dict, mingap):
+def cropEnds(arr, log, nams, mingap):
     newarr = []
-    names = sorted(fasta_dict.keys())
     r = dict()
     for i, row in enumerate(arr):
         start, end = cropseq.determineStartEnd(row, mingap)
@@ -245,7 +212,7 @@ def cropEnds(arr, log, fasta_dict, mingap):
         newseq = np.array(list(newseq))
         s = sum(newseq != row)
         if s != 0:
-            nam = names[i]
+            nam = nams[i]
             non_gap_start = sum(row[0:start] != "-")
             non_gap_end = sum(row[end:] != "-")
             if non_gap_start != 0:
@@ -261,7 +228,7 @@ def cropEnds(arr, log, fasta_dict, mingap):
 
 
 
-def drawMiniAlignment(arr, log, fasta_dict, outfile, typ, dpi, title, width, height,
+def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
                       markup=False, markupdict=None):
     ali_height, ali_width = np.shape(arr)
 
@@ -298,9 +265,8 @@ def drawMiniAlignment(arr, log, fasta_dict, outfile, typ, dpi, title, width, hei
     if markup:
         if "remove_short" in markupdict:
             colour = "#d7ddf2"
-            allnams = sorted(list(fasta_dict.keys()))
             for nam in markupdict['remove_short']:
-                i = allnams.index(nam)
+                i = nams.index(nam)
                 a.hlines((i - 0.5), 0, ali_width, color=colour, lw=0.75, zorder=0)
         if "remove_insertions" in markupdict:
             colour = "#fece88"
@@ -374,15 +340,14 @@ def main():
 
     log.info("Initial parameters: %s" % str(args))
 
-    # convert the input fasta file into a dictionary and make a list of
+    # convert the input fasta file into an array and make a list of
     # sequence names so the order can be maintained
-    fasta_dict, orig_nams = FastaToDict(args.infile)
+    arr, nams = FastaToArray(args.infile)
 
-    # convert the fasta file dictionary into a numpy array
-    arr = DictToArray(fasta_dict)
-
+    print (arr)
     # store a copy of the original array
     orig_arr = copy.copy(arr)
+    orig_nams = copy.copy(nams)
 
     # make a dictionary to store the changes made
     markupdict = dict()
@@ -408,12 +373,12 @@ def main():
         removed_cols = removed_cols | r
 
     if args.remove_short:
-        arr, r = removeTooShort(arr, log, args.remove_min_length, fasta_dict)
+        arr, r = removeTooShort(arr, log, args.remove_min_length, nams)
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
 
     if args.crop_ends:
-        arr, r = cropEnds(arr, log, fasta_dict, args.crop_ends_mingap)
+        arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap)
         markupdict['crop_ends'] = r
 
     if args.remove_gaponly:
@@ -422,24 +387,24 @@ def main():
 
     if args.plot_input:
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
-        drawMiniAlignment(orig_arr, log, fasta_dict, outf, typ, args.plot_dpi,
+        drawMiniAlignment(orig_arr, log, nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height)
 
     if args.plot_output:
         outf = "%s_output.%s" % (args.outfile_stem, args.plot_format)
-        drawMiniAlignment(arr, log, fasta_dict, outf, typ, args.plot_dpi,
+        drawMiniAlignment(arr, log, nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height)
 
     if args.plot_markup:
         outf = "%s_markup.%s" % (args.outfile_stem, args.plot_format)
-        drawMiniAlignment(orig_arr, log, fasta_dict, outf, typ, args.plot_dpi,
+        drawMiniAlignment(orig_arr, log, nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
 
 
 
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
-    writeOutfile(outfile, arr, fasta_dict, orig_nams, removed_seqs)
+    writeOutfile(outfile, arr, nams)
 
 
 if __name__ == "__main__":
