@@ -256,10 +256,10 @@ def cropEnds(arr, log, fasta_dict, mingap):
             endpos = np.where(row[end:] != "-")[0] + end
             r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
-    
+
     return (np.array(newarr), r)
-    
-        
+
+
 
 def drawMiniAlignment(arr, log, fasta_dict, outfile, typ, dpi, title, width, height,
                       markup=False, markupdict=None):
@@ -415,7 +415,7 @@ def main():
     if args.crop_ends:
         arr, r = cropEnds(arr, log, fasta_dict, args.crop_ends_mingap)
         markupdict['crop_ends'] = r
-    
+
     if args.remove_gaponly:
         arr, r = removeGapOnly(arr, log)
         markupdict['remove_gaponly'] = r
@@ -437,7 +437,7 @@ def main():
                           markup=True, markupdict=markupdict)
 
 
-            
+
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     writeOutfile(outfile, arr, fasta_dict, orig_nams, removed_seqs)
 
