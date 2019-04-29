@@ -129,12 +129,11 @@ def removeInsertions(arr, log, min_size, max_size, min_flank):
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
     sums = sum(boolarr)
-
     # run a sliding window along the alignment and check for regions
     # which have higher coverage at the ends of the window than in the
     # middle - store these in put_indels
     put_indels = set()
-    for size in range(min_size+2, max_size+1, 2):
+    for size in range(min_size, max_size, 1):
         for i in range(0, len(sums)+1 - size, 1):
             these_sums = sums[i:i+size]
             # take the number of non gap positions
@@ -151,18 +150,19 @@ def removeInsertions(arr, log, min_size, max_size, min_flank):
     # for the putative indels, check if any sequence without the indel
     # flanks the indel site - if it does it confirms it is an indel
     rmpos = set()
-    print (len(put_indels))
     for p in put_indels:
         has_flanks = 0
         for a in arr:
-            nongaps = a == "-"
+            nongaps = a != "-"
             thispos = nongaps[p]
-            if thispos:
+            if not thispos:
                 leftsum = sum(nongaps[:p])
                 rightsum = sum(nongaps[p:])
-                if leftsum > min_flank and rightsum > min_flank:
+                if leftsum >= min_flank and rightsum >= min_flank:
                     has_flanks += 1
-            if has_flanks == sums[p]:
+            # if there are more sequences with a gap at this position but
+            # sequence on either side than 
+            if has_flanks > sums[p]:
                 rmpos.add(p)
                 break
     # make a list of positions to keep
@@ -183,7 +183,7 @@ def removeTooShort(arr, log, min_length, nams):
         arrT = arr.transpose()
         sums = sum(arrT != "-")
         arr = arr[sums > min_length]
-        rmnames = np.array(nams)[sums <= min_length]
+        rmnames = set(np.array(nams)[sums <= min_length])
         log.info("Removing sequences %s" % (", ".join(list(rmnames))))
     else:
         rmnames = set()
@@ -344,7 +344,6 @@ def main():
     # sequence names so the order can be maintained
     arr, nams = FastaToArray(args.infile)
 
-    print (arr)
     # store a copy of the original array
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
