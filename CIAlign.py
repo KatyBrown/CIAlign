@@ -8,7 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import copy
 import cropseq
-
+import consensusSeq
 
 
 def FastaToArray(infile):
@@ -293,6 +293,8 @@ def main():
                         help="minimum number of bases on either side of deleted insertions")
     parser.add_argument("--remove_min_length", dest="remove_min_length",
                         type=int, default=50)
+    parser.add_argument("--consensus_keep_gaps", dest="consensus_keep_gaps",
+                        action="store_false")
     parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
                         type=int, default=10,
                         help="minimum gap size to crop from ends")
@@ -321,6 +323,8 @@ def main():
     parser.add_argument("--plot_output", dest="plot_output",
                         action="store_true")
     parser.add_argument("--plot_markup", dest="plot_markup",
+                        action="store_true")
+    parser.add_argument("--make_consensus", dest="make_consensus",
                         action="store_true")
 
     args = parser.parse_args()
@@ -399,9 +403,19 @@ def main():
         drawMiniAlignment(orig_arr, log, nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
+    if args.make_consensus:
+        cons, coverage = consensusSeq.findConsensus(arr)
+        consarr = np.array(cons)
+        arr_plus_cons = np.row_stack((arr, consarr))
+        cons = "".join(cons)
+        if not args.consensus_keep_gaps:
+            cons = cons.replace("-", "")
+        out = open("%s_consensus.fasta" % args.outfile_stem, "w")
+        out.write(">%s\n%s\n" % (args.outfile_stem.split("/")[-1], cons))
+        out.close()
+        outf = "%s_with_consensus.fasta" % args.outfile_stem
+        writeOutfile(outf, arr_plus_cons, nams + ['consensus'])
 
-
-            
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     writeOutfile(outfile, arr, nams)
 

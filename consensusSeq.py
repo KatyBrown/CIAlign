@@ -9,7 +9,6 @@ import operator
 from scipy.interpolate import spline #for interpolating coverage function
 import matplotlib.patheffects
 
-from CIAlign import FastaToDict, DictToArray
 
 # python3 consensusSeq.py --infile /Users/lotti/Documents/Test_Case/gap_test/SevenJEV.afa
 
@@ -23,8 +22,9 @@ class Scale(matplotlib.patheffects.RendererBase):
         affine=affine.identity().scale(self._sx, self._sy)+affine
         renderer.draw_path(gc, tpath, affine, rgbFace)
 
-def findConsensus(alignment, keepgaps=True):
-
+def findConsensus(alignment):
+    '''
+    '''
     consensus = []
     coverage = []
     numberOfSequences = len(alignment[:,0])
@@ -33,13 +33,22 @@ def findConsensus(alignment, keepgaps=True):
     for i in range(0,len(alignment[0,:])):
         unique, counts = np.unique(alignment[:,i], return_counts=True)
         count = dict(zip(unique, counts))
+        unique_ng = unique[unique != "-"]
+        counts_ng = counts[unique != "-"]
+        count_ng = dict(zip(unique_ng, counts_ng))
         if '-' in count:
             nonGapContent = 1-(count['-']/numberOfSequences)
         else:
             nonGapContent = 1
-        maxChar = max(count.items(), key=operator.itemgetter(1))[0]
-        if maxChar != "-" or keepgaps is True:
-            consensus.append(maxChar)
+        maxChar, maxCount = max(count.items(), key=operator.itemgetter(1))
+        maxChar_ng, maxCount_ng = max(count_ng.items(), key=operator.itemgetter(1))
+        
+        # if there are an equal number of gap and non-gap characters at the
+        # site, keep the non-gap character
+
+        if maxCount_ng == maxCount:
+            maxChar = maxChar_ng
+        consensus.append(maxChar)
         coverage.append(nonGapContent)
 
     return consensus, coverage
