@@ -293,8 +293,14 @@ def main():
                         help="minimum number of bases on either side of deleted insertions")
     parser.add_argument("--remove_min_length", dest="remove_min_length",
                         type=int, default=50)
+    parser.add_argument("--consensus_type", dest="consensus_type", type=str,
+                        default="majority")
     parser.add_argument("--consensus_keep_gaps", dest="consensus_keep_gaps",
-                        action="store_false")
+                        action="store_false", help="keep gaps in consensus at positions where a gap is the consensus")
+    parser.add_argument("--consensus_name", dest="consensus_name",
+                        type=str, default="consensus",
+                        help="name of consensus sequence")
+
     parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
                         type=int, default=10,
                         help="minimum gap size to crop from ends")
@@ -404,17 +410,17 @@ def main():
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
     if args.make_consensus:
-        cons, coverage = consensusSeq.findConsensus(arr)
+        cons, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
         consarr = np.array(cons)
         arr_plus_cons = np.row_stack((arr, consarr))
         cons = "".join(cons)
         if not args.consensus_keep_gaps:
             cons = cons.replace("-", "")
         out = open("%s_consensus.fasta" % args.outfile_stem, "w")
-        out.write(">%s\n%s\n" % (args.outfile_stem.split("/")[-1], cons))
+        out.write(">%s\n%s\n" % (args.consensus_name, cons))
         out.close()
         outf = "%s_with_consensus.fasta" % args.outfile_stem
-        writeOutfile(outf, arr_plus_cons, nams + ['consensus'])
+        writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name])
 
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     writeOutfile(outfile, arr, nams)

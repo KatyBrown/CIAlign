@@ -22,7 +22,7 @@ class Scale(matplotlib.patheffects.RendererBase):
         affine=affine.identity().scale(self._sx, self._sy)+affine
         renderer.draw_path(gc, tpath, affine, rgbFace)
 
-def findConsensus(alignment):
+def findConsensus(alignment, consensus_type="majority"):
     '''
     '''
     consensus = []
@@ -46,7 +46,7 @@ def findConsensus(alignment):
         # if there are an equal number of gap and non-gap characters at the
         # site, keep the non-gap character
 
-        if maxCount_ng == maxCount:
+        if maxCount_ng == maxCount or consensus_type == "majority_nongap":
             maxChar = maxChar_ng
         consensus.append(maxChar)
         coverage.append(nonGapContent)
