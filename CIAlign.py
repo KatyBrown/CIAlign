@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 import copy
 import cropseq
 import consensusSeq
+import sys
+
+emptyAlignmentMessage = "We deleted so much that the alignment is gone forever. We are so sorry. You're fucked."
 
 
 def FastaToArray(infile):
@@ -117,7 +120,7 @@ def seqType(arr):
         raise RuntimeError ("Majority of positions are not known nucleotides or amino acids")
 
 
-def removeInsertions(arr, log, min_size, max_size, min_flank):
+def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank):
     '''
     Removes insertions of size between min_size and
     max_size which have lower coverage than their flanking regions, if at least
@@ -190,14 +193,24 @@ def removeTooShort(arr, log, min_length, nams):
     return (arr, rmnames)
 
 
-def removeGapOnly(arr, log):
+def removeGapOnly(arr, relativePositions, log):
+    print(arr)
     if len(arr) != 0:
         sums = sum(arr == "-")
-        rmpos = set(np.where(sums == len(arr[:,0]))[0])
+        absolutePositions = set(np.where(sums == len(arr[:,0]))[0])
+        rmpos = []
+        for n in absolutePositions:
+            rmpos.append(relativePositions[n])
+        print(relativePositions)
+        print(absolutePositions)
+        print(rmpos)
+        rmpos = set(rmpos)
+        print (rmpos)
         arr = arr[:, sums != len(arr[:,0])]
         log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
     else:
         rmpos = set()
+    print(rmpos)
     return (arr, rmpos)
 
 
@@ -223,10 +236,10 @@ def cropEnds(arr, log, nams, mingap):
             endpos = np.where(row[end:] != "-")[0] + end
             r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
-    
+
     return (np.array(newarr), r)
-    
-        
+
+
 
 def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
                       markup=False, markupdict=None):
@@ -361,6 +374,10 @@ def main():
     # make a dictionary to store the changes made
     markupdict = dict()
 
+    # remember positions relative to original alignment
+    relativePositions = list(range(0, len(orig_arr[0])))
+    print(relativePositions)
+
     removed_seqs = set()
     removed_cols = set()
 
@@ -372,26 +389,44 @@ def main():
     else:
         log.info("Nucleotide alignment detected")
 
+    if args.crop_ends:
+        # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
+        arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap)
+        if arr.size == 0:
+            log.error(emptyAlignmentMessage)
+            sys.exit()
+        markupdict['crop_ends'] = r
+
     if args.remove_insertions:
+        # HERE
         arr, r = removeInsertions(arr,
+                                  relativePositions,
                                   log,
                                   args.insertion_min_size,
                                   args.insertion_max_size,
                                   args.insertion_min_flank)
+        if arr.size == 0:
+            log.error(emptyAlignmentMessage)
+            sys.exit()
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
 
     if args.remove_short:
         arr, r = removeTooShort(arr, log, args.remove_min_length, nams)
+        if arr.size == 0:
+            log.error(emptyAlignmentMessage)
+            sys.exit()
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
 
-    if args.crop_ends:
-        arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap)
-        markupdict['crop_ends'] = r
-    
     if args.remove_gaponly:
-        arr, r = removeGapOnly(arr, log)
+        # for now: run as default
+        # HERE
+        print("test")
+        arr, r = removeGapOnly(arr, relativePositions, log)
+        if arr.size == 0:
+            log.error(emptyAlignmentMessage)
+            sys.exit()
         markupdict['remove_gaponly'] = r
 
     if args.plot_input:

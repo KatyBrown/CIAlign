@@ -27,6 +27,7 @@ def determineStartEnd(sequence, mingap):
     start = findValue(sequence, mingap)
     end = len(sequence) - findValue(sequence[::-1])
 
+    # todo: look into this!
     if start > end:
         return (0, 0)
     return(start, end)
@@ -53,6 +54,8 @@ def findValue(sequence, mingap=10):
     boundary1 = 50
     boundary2 = 80
     boundary3 = 20
+
+    # todo: make boundarys parameters!
 
     gaps = countGaps(sequence)
 
@@ -105,6 +108,9 @@ def countGaps(sequence):
             gapNumbers.append(gapCounter)
 
     return gapNumbers
+
+# replace all before start and after end with gaps and output that change into
+# return an array and a list of (start,end)
 
 def main():
     print('blaaa')
