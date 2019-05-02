@@ -8,6 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import copy
 import cropseq
+import consensusSeq
 import sys
 
 emptyAlignmentMessage = "We deleted so much that the alignment is gone forever. We are so sorry. You're fucked."
@@ -131,7 +132,6 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
     sums = sum(boolarr)
-
     # run a sliding window along the alignment and check for regions
     # which have higher coverage at the ends of the window than in the
     # middle - store these in put_indels
@@ -153,18 +153,19 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
     # for the putative indels, check if any sequence without the indel
     # flanks the indel site - if it does it confirms it is an indel
     rmpos = set()
-    print (len(put_indels))
     for p in put_indels:
         has_flanks = 0
         for a in arr:
             nongaps = a != "-"
             thispos = nongaps[p]
-            if thispos:
+            if not thispos:
                 leftsum = sum(nongaps[:p])
                 rightsum = sum(nongaps[p:])
-                if leftsum > min_flank and rightsum > min_flank:
+                if leftsum >= min_flank and rightsum >= min_flank:
                     has_flanks += 1
-            if has_flanks == sums[p]:
+            # if there are more sequences with a gap at this position but
+            # sequence on either side than 
+            if has_flanks > sums[p]:
                 rmpos.add(p)
                 break
     # make a list of positions to keep
@@ -305,6 +306,14 @@ def main():
                         help="minimum number of bases on either side of deleted insertions")
     parser.add_argument("--remove_min_length", dest="remove_min_length",
                         type=int, default=50)
+    parser.add_argument("--consensus_type", dest="consensus_type", type=str,
+                        default="majority")
+    parser.add_argument("--consensus_keep_gaps", dest="consensus_keep_gaps",
+                        action="store_false", help="keep gaps in consensus at positions where a gap is the consensus")
+    parser.add_argument("--consensus_name", dest="consensus_name",
+                        type=str, default="consensus",
+                        help="name of consensus sequence")
+
     parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
                         type=int, default=10,
                         help="minimum gap size to crop from ends")
@@ -334,6 +343,8 @@ def main():
                         action="store_true")
     parser.add_argument("--plot_markup", dest="plot_markup",
                         action="store_true")
+    parser.add_argument("--make_consensus", dest="make_consensus",
+                        action="store_true")
 
     args = parser.parse_args()
 
@@ -356,7 +367,6 @@ def main():
     # sequence names so the order can be maintained
     arr, nams = FastaToArray(args.infile)
 
-    print (arr)
     # store a copy of the original array
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
@@ -434,8 +444,18 @@ def main():
         drawMiniAlignment(orig_arr, log, nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
-
-
+    if args.make_consensus:
+        cons, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
+        consarr = np.array(cons)
+        arr_plus_cons = np.row_stack((arr, consarr))
+        cons = "".join(cons)
+        if not args.consensus_keep_gaps:
+            cons = cons.replace("-", "")
+        out = open("%s_consensus.fasta" % args.outfile_stem, "w")
+        out.write(">%s\n%s\n" % (args.consensus_name, cons))
+        out.close()
+        outf = "%s_with_consensus.fasta" % args.outfile_stem
+        writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name])
 
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     writeOutfile(outfile, arr, nams)
