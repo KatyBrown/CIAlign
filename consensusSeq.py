@@ -10,7 +10,7 @@ from scipy.interpolate import spline #for interpolating coverage function
 import matplotlib.patheffects
 import rna
 
-from CIAlign import FastaToDict, DictToArray
+from CIAlign import FastaToArray
 
 
 # python3 consensusSeq.py --infile /Users/lotti/Documents/Test_Case/gap_test/SevenJEV.afa
@@ -45,7 +45,7 @@ def findConsensus(alignment, consensus_type="majority"):
             nonGapContent = 1
         maxChar, maxCount = max(count.items(), key=operator.itemgetter(1))
         maxChar_ng, maxCount_ng = max(count_ng.items(), key=operator.itemgetter(1))
-        
+
         # if there are an equal number of gap and non-gap characters at the
         # site, keep the non-gap character
 

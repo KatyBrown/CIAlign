@@ -123,7 +123,7 @@ def seqType(arr):
 def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank):
     '''
     Removes insertions of size between min_size and
-    max_size which have lower coverage than their flanking regions, if at least
+    max_size which have lower coverage than their flanking reg ions, if at least
     twice as many other sequences have the flanking regions
     but not the insertions.
     '''
@@ -153,6 +153,7 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
     # for the putative indels, check if any sequence without the indel
     # flanks the indel site - if it does it confirms it is an indel
     rmpos = set()
+    absolutePositions = set()
     for p in put_indels:
         has_flanks = 0
         for a in arr:
@@ -164,13 +165,18 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
                 if leftsum >= min_flank and rightsum >= min_flank:
                     has_flanks += 1
             # if there are more sequences with a gap at this position but
-            # sequence on either side than 
+            # sequence on either side than
             if has_flanks > sums[p]:
-                rmpos.add(p)
+                absolutePositions.add(p)
                 break
     # make a list of positions to keep
+    for n in absolutePositions:
+        rmpos.add(relativePositions[n])
+    for n in absolutePositions:
+        relativePositions.remove(n)
     rmpos = np.array(list(rmpos))
     keeppos = np.arange(0, len(sums))
+    #keeppos = np.invert(np.in1d(keeppos, rmpos)) # I think here we need the absolute positions? not sure though
     keeppos = np.invert(np.in1d(keeppos, rmpos))
     log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
     arr = arr[:, keeppos]
@@ -194,6 +200,8 @@ def removeTooShort(arr, log, min_length, nams):
 
 
 def removeGapOnly(arr, relativePositions, log):
+    print("remove gap only:")
+    print("----------------")
     print(arr)
     if len(arr) != 0:
         sums = sum(arr == "-")
@@ -201,16 +209,24 @@ def removeGapOnly(arr, relativePositions, log):
         rmpos = []
         for n in absolutePositions:
             rmpos.append(relativePositions[n])
+        print("relative positions:")
         print(relativePositions)
+        print("absolute positions:")
         print(absolutePositions)
+        print("rmpos:")
         print(rmpos)
+        # remove deleted columns from relativePositions
+        for n in rmpos:
+            relativePositions.remove(n)
+        print("relative positions now:")
+        print(relativePositions)
         rmpos = set(rmpos)
-        print (rmpos)
         arr = arr[:, sums != len(arr[:,0])]
         log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
     else:
         rmpos = set()
     print(rmpos)
+    print(arr)
     return (arr, rmpos)
 
 
