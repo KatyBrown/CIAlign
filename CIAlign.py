@@ -51,12 +51,23 @@ def FastaToArray(infile):
     return (arr, nams[1:])
 
 
-def writeOutfile(outfile, arr, nams):
+def writeOutfile(outfile, arr, nams, removed, rmfile=None):
     out = open(outfile, "w")
+    if rmfile is not None:
+        rm = open(rmfile, "w")
+    else:
+        rm = None
     i = 0
-    for i, nam in enumerate(nams):
-        out.write(">%s\n%s\n" % (nam, "".join(list(arr[i]))))
+    for nam in nams:
+        if nam not in removed:
+            out.write(">%s\n%s\n" % (nam, "".join(list(arr[i]))))
+            i += 1
+        else:
+            if rm is not None:
+                rm.write("%s\n" % nam)
     out.close()
+    if rm is not None:
+        rm.close()
 
 
 def getAAColours():
@@ -256,6 +267,46 @@ def cropEnds(arr, log, nams, mingap):
     return (np.array(newarr), r)
 
 
+def removeBadlyAligned(arr, nams, percidentity=0.9):
+    '''
+    Remove sequences which don't have the most common non-gap residue at
+    > percidentity non-gap positions
+    '''
+    j = 0
+    keep = []
+    for a in arr:
+        i = 0
+        y = 0
+        t = 0
+        if sum(a != "-") != 0:
+            o = 0
+            oss = []
+            for base in a:
+                if base != "-":
+                    others = arr[:, i]
+                    others = others[others != "-"]
+                    if len(list(others)) > 1:
+                        o += 1
+                        oss.append(len(list(others)))
+                    counts = np.unique(others, return_counts=True)
+                    mc = counts[0][counts[1] == max(counts[1])][0]
+                    if base == mc:
+                        y += 1
+                    t += 1
+                i += 1
+            if y / t > percidentity and o / t > percidentity:
+                print (y, o, t, "".join(list(a)), oss)
+                keep.append(True)
+            else:
+                keep.append(False)
+        else:
+            keep.append(False)
+        j += 1
+    keep = np.array(keep)
+    newarr = arr[keep,:]
+    r = set(np.array(nams)[np.invert(keep)])
+    return (newarr, r)
+
 
 def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
                       markup=False, markupdict=None):
@@ -303,6 +354,14 @@ def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
     f.savefig(outfile, dpi=dpi)
 
 
+def updateNams(nams, removed_seqs):
+    nams2 = []
+    for nam in nams:
+        if nam not in removed_seqs:
+            nams2.append(nam)
+    return (nams2)
+
+
 def main():
     parser = argparse.ArgumentParser(
             description='''Improve a multiple sequence alignment''')
@@ -333,6 +392,8 @@ def main():
     parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
                         type=int, default=10,
                         help="minimum gap size to crop from ends")
+    parser.add_argument("--remove_badlyaligned_minperc", dest="remove_badlyaligned_minperc",
+                        type=float, default=0.9)
     parser.add_argument("--dpi", dest="plot_dpi",
                         type=int, default=300,
                         help="dpi for plots")
@@ -351,6 +412,8 @@ def main():
                         action="store_true")
     parser.add_argument("--remove_gaponly", dest="remove_gaponly",
                         action="store_false")
+    parser.add_argument("--remove_badlyaligned", dest="remove_badlyaligned",
+                        action="store_true")
     parser.add_argument("--crop_ends", dest="crop_ends",
                         action="store_true")
     parser.add_argument("--plot_input", dest="plot_input",
@@ -406,6 +469,7 @@ def main():
         log.info("Nucleotide alignment detected")
 
     if args.crop_ends:
+        print ("crop ends")
         # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
         arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap)
         if arr.size == 0:
@@ -413,7 +477,15 @@ def main():
             sys.exit()
         markupdict['crop_ends'] = r
 
+    if args.remove_badlyaligned:
+        print ("remove badly aligned")
+        arr, r = removeBadlyAligned(arr, nams, args.remove_badlyaligned_minperc)
+        markupdict['remove_badlyaligned'] = r
+        removed_seqs = removed_seqs | r
+        nams = updateNams(nams, r)
+
     if args.remove_insertions:
+        print ("remove insertions")
         # HERE
         arr, r = removeInsertions(arr,
                                   relativePositions,
@@ -428,14 +500,18 @@ def main():
         removed_cols = removed_cols | r
 
     if args.remove_short:
+        print ("remove short")
         arr, r = removeTooShort(arr, log, args.remove_min_length, nams)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
+        nams = updateNams(nams, r)
+
 
     if args.remove_gaponly:
+        print ("remove gap only")
         # for now: run as default
         # HERE
         print("test")
@@ -446,21 +522,25 @@ def main():
         markupdict['remove_gaponly'] = r
 
     if args.plot_input:
+        print ("plot input")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
         drawMiniAlignment(orig_arr, log, nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height)
 
     if args.plot_output:
+        print ("plot output")
         outf = "%s_output.%s" % (args.outfile_stem, args.plot_format)
         drawMiniAlignment(arr, log, nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height)
 
     if args.plot_markup:
+        print ("plot markup")
         outf = "%s_markup.%s" % (args.outfile_stem, args.plot_format)
         drawMiniAlignment(orig_arr, log, nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
     if args.make_consensus:
+        print ("make consensus")
         cons, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
         consarr = np.array(cons)
         arr_plus_cons = np.row_stack((arr, consarr))
@@ -471,10 +551,11 @@ def main():
         out.write(">%s\n%s\n" % (args.consensus_name, cons))
         out.close()
         outf = "%s_with_consensus.fasta" % args.outfile_stem
-        writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name])
+        writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
 
+    rmfile = "%s_removed.txt" % args.outfile_stem
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
-    writeOutfile(outfile, arr, nams)
+    writeOutfile(outfile, arr, orig_nams, removed_seqs, rmfile)
 
 
 if __name__ == "__main__":
