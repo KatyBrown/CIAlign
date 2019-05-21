@@ -10,6 +10,8 @@ import copy
 import cropseq
 import consensusSeq
 import sys
+import itertools
+
 
 emptyAlignmentMessage = "We deleted so much that the alignment is gone forever. We are so sorry. You're fucked."
 
@@ -308,6 +310,45 @@ def removeBadlyAligned(arr, nams, percidentity=0.9):
     return (newarr, r)
 
 
+def calculateSimilarityMatrix(arr, nams, minoverlap=1,
+                              keepgaps=False, outfile=None, dp=4):
+    '''
+    Calculates a pairwise similarity matrix for the alignment
+    dp = decimal places (in the output file only)
+    outfile = path to outfile
+    keepgaps = should positions with gaps in either sequence in the pair
+    be discarded before calculating identity?
+    minoverlap = minimum number of positions at which both sequences should
+    have a non-gap character for the percentage to not be 0
+    '''
+    ident = np.empty((len(arr), len(arr)))
+    for i, j in itertools.combinations_with_replacement(range(len(arr)), 2):
+        p1 = arr[i]
+        p2 = arr[j]
+        if not keepgaps:
+            nongap = (p1 != "-") & (p2 != "-")
+        else:
+            nongap = np.array([True] * len(p1))
+        matches = sum(p1[nongap] == p2[nongap])
+        length = sum(nongap)
+        # minimum overlap is currently used regardless of the keepgaps settings
+        if length >= minoverlap and sum((p1 != "-") & (p2 != "-")) >= minoverlap:
+            perc = matches / length
+        else:
+            perc = 0
+        ident[i, j] = perc
+        ident[j, i] = perc
+
+    if outfile:
+        out = open(outfile, "w")
+        out.write("\t%s\n" % ("\t".join(nams)))
+        for i, line in enumerate(ident):
+            out.write("%s\t%s\n" % (
+                    nams[i], "\t".join([str(round(L, dp)) for L in line])))
+        out.close()
+    return(ident)
+
+
 def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
                       markup=False, markupdict=None):
     ali_height, ali_width = np.shape(arr)
@@ -350,7 +391,8 @@ def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
                 a.hlines((i - 0.5), 0, ali_width, color=colour, lw=0.75, zorder=0)
         if "remove_insertions" in markupdict:
             colour = "#fece88"
-            a.vlines(list(markupdict['remove_insertions']), 0, ali_height, color=colour, lw=0.75, zorder=1)
+            a.vlines(list(markupdict['remove_insertions']),
+                     0, ali_height, color=colour, lw=0.75, zorder=1)
     f.savefig(outfile, dpi=dpi)
 
 
@@ -388,12 +430,18 @@ def main():
     parser.add_argument("--consensus_name", dest="consensus_name",
                         type=str, default="consensus",
                         help="name of consensus sequence")
-
     parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
                         type=int, default=10,
                         help="minimum gap size to crop from ends")
     parser.add_argument("--remove_badlyaligned_minperc", dest="remove_badlyaligned_minperc",
                         type=float, default=0.9)
+    parser.add_argument("--make_simmatrix_dp", dest="make_simmatrix_dp",
+                        type=int, default=4)
+    parser.add_argument("--make_simmatrix_minoverlap",
+                        dest="make_simmatrix_minoverlap",
+                        type=int, default=1)
+    parser.add_argument("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
+                        type=bool, default=False)
     parser.add_argument("--dpi", dest="plot_dpi",
                         type=int, default=300,
                         help="dpi for plots")
@@ -424,7 +472,10 @@ def main():
                         action="store_true")
     parser.add_argument("--make_consensus", dest="make_consensus",
                         action="store_true")
-
+    parser.add_argument("--make_similarity_matrix_input", dest="make_simmatrix_input",
+                        action="store_true")
+    parser.add_argument("--make_similarity_matrix_output", dest="make_simmatrix_output",
+                        action="store_true")
     args = parser.parse_args()
 
     log = logging.getLogger(__name__)
@@ -521,10 +572,26 @@ def main():
             sys.exit()
         markupdict['remove_gaponly'] = r
 
+    if args.make_simmatrix_input:
+        print ("make similarity matrix input")
+        outf = "%s_input_similarity.tsv" % (args.outfile_stem)
+        calculateSimilarityMatrix(orig_arr, orig_nams,
+                                  minoverlap=args.make_simmatrix_minoverlap,
+                                  keepgaps=args.make_simmatrix_keepgaps,
+                                  outfile=outf, dp=args.make_simmatrix_dp)
+
+    if args.make_simmatrix_output:
+        print ("make similarity matrix output")
+        outf = "%s_output_similarity.tsv" % (args.outfile_stem)
+        calculateSimilarityMatrix(arr, nams,
+                                  minoverlap=args.make_simmatrix_minoverlap,
+                                  keepgaps=args.make_simmatrix_keepgaps,
+                                  outfile=outf, dp=args.make_simmatrix_dp)
+
     if args.plot_input:
         print ("plot input")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
-        drawMiniAlignment(orig_arr, log, nams, outf, typ, args.plot_dpi,
+        drawMiniAlignment(orig_arr, log, orig_nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height)
 
     if args.plot_output:
