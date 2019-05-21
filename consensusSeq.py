@@ -8,9 +8,9 @@ import copy
 import operator
 from scipy.interpolate import spline #for interpolating coverage function
 import matplotlib.patheffects
-import rna
+# import rna
 
-from CIAlign import FastaToArray
+#from CIAlign import FastaToArray
 
 
 # python3 consensusSeq.py --infile /Users/lotti/Documents/Test_Case/gap_test/SevenJEV.afa
