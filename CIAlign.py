@@ -415,6 +415,10 @@ def main():
                         help='path to input alignment')
     parser.add_argument("--outfile_stem", dest='outfile_stem', type=str,
                         help="stem for output files (including path)")
+    
+    parser.add_argument("--remove_insertions", dest="remove_insertions",
+                        help="run the removeInsertions function to remove insertions",
+                        action="store_true")
     parser.add_argument("--insertion_min_size", dest="insertion_min_size",
                         type=int, default=3,
                         help="minimum size insertion to remove")
@@ -424,28 +428,59 @@ def main():
     parser.add_argument("--insertion_min_flank", dest="insertion_min_flank",
                         type=int, default=5,
                         help="minimum number of bases on either side of deleted insertions")
+
+    parser.add_argument("--remove_short", dest="remove_short",
+                        help="run the removeShort function to remove sequences with less than n non-gap positions",
+                        action="store_true")
     parser.add_argument("--remove_min_length", dest="remove_min_length",
-                        type=int, default=50)
+                        type=int, default=50,
+                        help="minimum length sequence to remove")
+
+    parser.add_argument("--make_consensus", dest="make_consensus",
+                        action="store_true", help="run the findConsensus function to make a consensus sequence")
+    
     parser.add_argument("--consensus_type", dest="consensus_type", type=str,
-                        default="majority")
+                        default="majority", help="type of consensus sequence to make")
     parser.add_argument("--consensus_keep_gaps", dest="consensus_keep_gaps",
                         action="store_false", help="keep gaps in consensus at positions where a gap is the consensus")
     parser.add_argument("--consensus_name", dest="consensus_name",
                         type=str, default="consensus",
                         help="name of consensus sequence")
+
+    parser.add_argument("--crop_ends", dest="crop_ends",
+                        action="store_true", help="run the cropEnds function to remove badly aligned ends")
     parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
                         type=int, default=10,
                         help="minimum gap size to crop from ends")
+
+    parser.add_argument("--remove_badlyaligned", dest="remove_badlyaligned",
+                        action="store_true", help="run the removeBadlyAligned function to remove badly aligned sequences")
     parser.add_argument("--remove_badlyaligned_minperc", dest="remove_badlyaligned_minperc",
-                        type=float, default=0.9)
+                        type=float, default=0.9,
+                        help="minimum percentage identity to majority to not be removed")
+
+    parser.add_argument("--remove_gaponly", dest="remove_gaponly",
+                        action="store_false", help="run the removeGapOnly function to remove gap only columns from the alignment")
+
+    parser.add_argument("--make_similarity_matrix_input", dest="make_simmatrix_input",
+                        action="store_true", help="run the calculateSimilarityMatrix function to make a similarity matrix for the input alignment")
+    parser.add_argument("--make_similarity_matrix_output", dest="make_simmatrix_output",
+                        action="store_true", help="run the calculateSimilarityMatrix function to make a similarity matrix for the output alignment")
     parser.add_argument("--make_simmatrix_dp", dest="make_simmatrix_dp",
-                        type=int, default=4)
+                        type=int, default=4, help="n decimal places for the similarity matrix (output file only)")
     parser.add_argument("--make_simmatrix_minoverlap",
                         dest="make_simmatrix_minoverlap",
-                        type=int, default=1)
+                        type=int, default=1, help="minimum overlap between two sequences to have non-zero similarity in the similarity matrix")
     parser.add_argument("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
-                        type=bool, default=False)
-    parser.add_argument("--dpi", dest="plot_dpi",
+                        type=bool, default=False, help="include positions with gaps in either or both sequences in the similarity matrix calculation")
+
+    parser.add_argument("--plot_input", dest="plot_input",
+                        action="store_true", help="run the drawMiniAlignment function to plot the input alignment")
+    parser.add_argument("--plot_output", dest="plot_output",
+                        action="store_true", help="run the drawMiniAlignment function to plot the output alignment")
+    parser.add_argument("--plot_markup", dest="plot_markup",
+                        action="store_true", help="run the drawMiniAlignment function to plot the changes made to the alignment")
+    parser.add_argument("--plot_dpi", dest="plot_dpi",
                         type=int, default=300,
                         help="dpi for plots")
     parser.add_argument("--plot_format", dest="plot_format",
@@ -457,28 +492,14 @@ def main():
     parser.add_argument("--plot_height", dest="plot_height",
                         type=int, default=3,
                         help="height for plots (inches)")
-    parser.add_argument("--remove_insertions", dest="remove_insertions",
-                        action="store_true")
-    parser.add_argument("--remove_short", dest="remove_short",
-                        action="store_true")
-    parser.add_argument("--remove_gaponly", dest="remove_gaponly",
-                        action="store_false")
-    parser.add_argument("--remove_badlyaligned", dest="remove_badlyaligned",
-                        action="store_true")
-    parser.add_argument("--crop_ends", dest="crop_ends",
-                        action="store_true")
-    parser.add_argument("--plot_input", dest="plot_input",
-                        action="store_true")
-    parser.add_argument("--plot_output", dest="plot_output",
-                        action="store_true")
-    parser.add_argument("--plot_markup", dest="plot_markup",
-                        action="store_true")
-    parser.add_argument("--make_consensus", dest="make_consensus",
-                        action="store_true")
-    parser.add_argument("--make_similarity_matrix_input", dest="make_simmatrix_input",
-                        action="store_true")
-    parser.add_argument("--make_similarity_matrix_output", dest="make_simmatrix_output",
-                        action="store_true")
+
+
+
+
+
+
+
+
     args = parser.parse_args()
 
     log = logging.getLogger(__name__)
