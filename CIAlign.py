@@ -408,16 +408,19 @@ def main():
     parser = argparse.ArgumentParser(
             description='''Improve a multiple sequence alignment''')
 
+    parser.add_argument("--inifile", dest='inifile', type=str,
+                        help='path to input alignment')
+    # not to confuse with inifile :)
     parser.add_argument("--infile", dest='infile', type=str,
                         help='path to input alignment')
     parser.add_argument("--outfile_stem", dest='outfile_stem', type=str,
                         help="stem for output files (including path)")
     parser.add_argument("--insertion_min_size", dest="insertion_min_size",
                         type=int, default=3,
-                        help="miniumum size insertion to remove")
+                        help="minimum size insertion to remove")
     parser.add_argument("--insertion_max_size", dest="insertion_max_size",
                         type=int, default=300,
-                        help="miniumum size insertion to remove")
+                        help="maximum size insertion to remove")
     parser.add_argument("--insertion_min_flank", dest="insertion_min_flank",
                         type=int, default=5,
                         help="minimum number of bases on either side of deleted insertions")
@@ -490,6 +493,28 @@ def main():
 
     # add the handlers to the logger
     log.addHandler(handler)
+
+    # read INI file
+    args = parser.parse_args()
+    inifile = args.inifile
+    print(inifile)
+
+    parameter = dict()
+    for line in open(inifile).readlines():
+        if "=" in line and line[0] != ";":
+            line = line.split("#")[0].strip().split("=")
+            try:
+                a = float(line[1])
+                if a == int(a):
+                    parameter[line[0]] = int(a)
+                else:
+                    parameter[line[0]] = a
+            except:
+                try:
+                    parameter[line[0]] = line[1].replace('"', '')
+                except:
+                    parameter[line[0]] = ""
+    print(parameter)
 
     log.info("Initial parameters: %s" % str(args))
 
