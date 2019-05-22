@@ -415,7 +415,7 @@ def main():
                         help='path to input alignment')
     parser.add_argument("--outfile_stem", dest='outfile_stem', type=str,
                         help="stem for output files (including path)")
-    
+
     parser.add_argument("--remove_insertions", dest="remove_insertions",
                         help="run the removeInsertions function to remove insertions",
                         action="store_true")
@@ -438,7 +438,6 @@ def main():
 
     parser.add_argument("--make_consensus", dest="make_consensus",
                         action="store_true", help="run the findConsensus function to make a consensus sequence")
-    
     parser.add_argument("--consensus_type", dest="consensus_type", type=str,
                         default="majority", help="type of consensus sequence to make")
     parser.add_argument("--consensus_keep_gaps", dest="consensus_keep_gaps",
@@ -492,10 +491,6 @@ def main():
     parser.add_argument("--plot_height", dest="plot_height",
                         type=int, default=3,
                         help="height for plots (inches)")
-
-
-
-
 
 
 
