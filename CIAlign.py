@@ -11,6 +11,7 @@ import cropseq
 import consensusSeq
 import sys
 import itertools
+import pathlib
 
 
 emptyAlignmentMessage = "We deleted so much that the alignment is gone forever. We are so sorry. You're fucked."
@@ -141,6 +142,7 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
     but not the insertions.
     '''
     log.info("Removing insertions\n")
+    print ("start")
     # record which sites are not "-"
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
@@ -163,25 +165,23 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
                        (these_sums < right)])
             put_indels = put_indels | x
     put_indels = np.array(sorted(list(put_indels)))
-    # for the putative indels, check if any sequence without the indel
-    # flanks the indel site - if it does it confirms it is an indel
+    # for the putative indels, check if there are more sequences
+    # with a gap at this position (but with sequence on either side)
+    # than with no gap (but with sequence on either side)
     rmpos = set()
     absolutePositions = set()
     for p in put_indels:
-        has_flanks = 0
-        for a in arr:
-            nongaps = a != "-"
-            thispos = nongaps[p]
-            if not thispos:
-                leftsum = sum(nongaps[:p])
-                rightsum = sum(nongaps[p:])
-                if leftsum >= min_flank and rightsum >= min_flank:
-                    has_flanks += 1
-            # if there are more sequences with a gap at this position but
-            # sequence on either side than
-            if has_flanks > sums[p]:
-                absolutePositions.add(p)
-                break
+        left = arr[:,:p]
+        right = arr[:,p+1:]
+        pcol = arr[:,p]
+        pcol_nongaps = pcol != "-"
+        pcol_gaps = pcol == "-"
+        leftsum = sum(left.T != "-")
+        rightsum = sum(right.T != "-")
+        covers_region = (sum((pcol_nongaps) & (leftsum >= min_flank) & (rightsum >= min_flank)))
+        lacks_region = (sum((pcol_gaps) & (leftsum >= min_flank) & (rightsum >= min_flank)))
+        if lacks_region > covers_region:
+            absolutePositions.add(p)
     # make a list of positions to keep
     for n in absolutePositions:
         rmpos.add(relativePositions[n])
@@ -217,6 +217,7 @@ def removeGapOnly(arr, relativePositions, log):
     print("----------------")
     print(arr)
     if len(arr) != 0:
+        print (arr.shape)
         sums = sum(arr == "-")
         absolutePositions = set(np.where(sums == len(arr[:,0]))[0])
         rmpos = []
@@ -281,23 +282,17 @@ def removeBadlyAligned(arr, nams, percidentity=0.9):
         y = 0
         t = 0
         if sum(a != "-") != 0:
-            o = 0
-            oss = []
             for base in a:
                 if base != "-":
                     others = arr[:, i]
                     others = others[others != "-"]
-                    if len(list(others)) > 1:
-                        o += 1
-                        oss.append(len(list(others)))
                     counts = np.unique(others, return_counts=True)
                     mc = counts[0][counts[1] == max(counts[1])][0]
                     if base == mc:
                         y += 1
                     t += 1
                 i += 1
-            if y / t > percidentity and o / t > percidentity:
-                print (y, o, t, "".join(list(a)), oss)
+            if y / t > percidentity:
                 keep.append(True)
             else:
                 keep.append(False)
@@ -404,6 +399,14 @@ def updateNams(nams, removed_seqs):
     return (nams2)
 
 
+def checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile):
+    if 0 in np.shape(arr):
+        writeOutfile(outfile, arr, orig_nams, removed_seqs, rmfile)
+        raise RuntimeError (emptyAlignmentMessage)
+    if len(np.shape(arr)) == 1:
+        raise RuntimeError ("Sequences in alignment are not the same length")
+
+
 def main():
     parser = argparse.ArgumentParser(
             description='''Improve a multiple sequence alignment''')
@@ -442,7 +445,7 @@ def main():
     parser.add_argument("--consensus_type", dest="consensus_type", type=str,
                         default="majority", help="type of consensus sequence to make")
     parser.add_argument("--consensus_keep_gaps", dest="consensus_keep_gaps",
-                        action="store_false", help="keep gaps in consensus at positions where a gap is the consensus")
+                        action="store_true", help="keep gaps in consensus at positions where a gap is the consensus")
     parser.add_argument("--consensus_name", dest="consensus_name",
                         type=str, default="consensus",
                         help="name of consensus sequence")
@@ -492,14 +495,6 @@ def main():
     parser.add_argument("--plot_height", dest="plot_height",
                         type=int, default=3,
                         help="height for plots (inches)")
-
-
-
-
-
-
-
-
     args = parser.parse_args()
 
     log = logging.getLogger(__name__)
@@ -511,6 +506,8 @@ def main():
     # create a logging format
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
+    rmfile = "%s_removed.txt" % args.outfile_stem
+    outfile = "%s_parsed.fasta" % (args.outfile_stem)
 
     # add the handlers to the logger
     log.addHandler(handler)
@@ -542,7 +539,8 @@ def main():
     # convert the input fasta file into an array and make a list of
     # sequence names so the order can be maintained
     arr, nams = FastaToArray(args.infile)
-
+    
+    print (arr.shape)
     # store a copy of the original array
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
@@ -565,6 +563,10 @@ def main():
     else:
         log.info("Nucleotide alignment detected")
 
+    rmfile = "%s_removed.txt" % args.outfile_stem
+    outfile = "%s_parsed.fasta" % (args.outfile_stem)
+    print (args.outfile_stem)
+    checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
     if args.crop_ends:
         print ("crop ends")
         # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
@@ -573,6 +575,7 @@ def main():
             log.error(emptyAlignmentMessage)
             sys.exit()
         markupdict['crop_ends'] = r
+        checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.remove_badlyaligned:
         print ("remove badly aligned")
@@ -580,6 +583,7 @@ def main():
         markupdict['remove_badlyaligned'] = r
         removed_seqs = removed_seqs | r
         nams = updateNams(nams, r)
+        checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.remove_insertions:
         print ("remove insertions")
@@ -595,6 +599,7 @@ def main():
             sys.exit()
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
+        checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.remove_short:
         print ("remove short")
@@ -605,7 +610,7 @@ def main():
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
         nams = updateNams(nams, r)
-
+        checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.remove_gaponly:
         print ("remove gap only")
@@ -617,6 +622,7 @@ def main():
             log.error(emptyAlignmentMessage)
             sys.exit()
         markupdict['remove_gaponly'] = r
+        checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.make_simmatrix_input:
         print ("make similarity matrix input")
@@ -634,11 +640,13 @@ def main():
                                   keepgaps=args.make_simmatrix_keepgaps,
                                   outfile=outf, dp=args.make_simmatrix_dp)
 
+
     if args.plot_input:
         print ("plot input")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
         drawMiniAlignment(orig_arr, log, orig_nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height)
+
 
     if args.plot_output:
         print ("plot output")
@@ -666,8 +674,6 @@ def main():
         outf = "%s_with_consensus.fasta" % args.outfile_stem
         writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
 
-    rmfile = "%s_removed.txt" % args.outfile_stem
-    outfile = "%s_parsed.fasta" % (args.outfile_stem)
     writeOutfile(outfile, arr, orig_nams, removed_seqs, rmfile)
 
 
