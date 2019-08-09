@@ -512,27 +512,29 @@ def main():
     # add the handlers to the logger
     log.addHandler(handler)
 
-    # read INI file
-    args = parser.parse_args()
-    inifile = args.inifile
-    print(inifile)
-
-    parameter = dict()
-    for line in open(inifile).readlines():
-        if "=" in line and line[0] != ";":
-            line = line.split("#")[0].strip().split("=")
-            try:
-                a = float(line[1])
-                if a == int(a):
-                    parameter[line[0]] = int(a)
-                else:
-                    parameter[line[0]] = a
-            except:
-                try:
-                    parameter[line[0]] = line[1].replace('"', '')
-                except:
-                    parameter[line[0]] = ""
-    print(parameter)
+# =============================================================================
+#     # read INI file
+#     args = parser.parse_args()
+#     inifile = args.inifile
+#     print(inifile)
+# 
+#     parameter = dict()
+#     for line in open(inifile).readlines():
+#         if "=" in line and line[0] != ";":
+#             line = line.split("#")[0].strip().split("=")
+#             try:
+#                 a = float(line[1])
+#                 if a == int(a):
+#                     parameter[line[0]] = int(a)
+#                 else:
+#                     parameter[line[0]] = a
+#             except:
+#                 try:
+#                     parameter[line[0]] = line[1].replace('"', '')
+#                 except:
+#                     parameter[line[0]] = ""
+#     print(parameter)
+# =============================================================================
 
     log.info("Initial parameters: %s" % str(args))
 

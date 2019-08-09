@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 import operator
-from scipy.interpolate import spline #for interpolating coverage function
+#from scipy.interpolate import spline #for interpolating coverage function
 import matplotlib.patheffects
 # import rna
 
