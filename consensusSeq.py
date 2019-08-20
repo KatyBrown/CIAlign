@@ -1,20 +1,65 @@
 #! /usr/bin/env python
 
+import matplotlib
+matplotlib.use('Agg')
 import logging
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
 import operator
-from scipy.interpolate import spline #for interpolating coverage function
+from scipy.interpolate import spline #this one is obsolete
+#from scipy.interpolate import BSpline #for interpolating coverage function
 import matplotlib.patheffects
-# import rna
+
+
+import sys
+import itertools
+
 
 #from CIAlign import FastaToArray
 
 
 # python3 consensusSeq.py --infile /Users/lotti/Documents/Test_Case/gap_test/SevenJEV.afa
 
+
+def FastaToArray(infile):
+    '''
+    Convert an alignment into a numpy array.
+    Parameters
+    ----------
+    fasta_dict: dict
+        dictionary based on a fasta file with sequence names as keys and
+        sequences as values
+
+    Returns
+    -------
+    arr: np.array
+        2D numpy array in the same order as fasta_dict where each row
+        represents a single column in the alignment and each column a
+        single sequence.
+    '''
+
+    nams = []
+    seqs = []
+    nam = ""
+    seq = ""
+    with open(infile) as input:
+        for line in input:
+            line = line.strip()
+            if line[0] == ">":
+                    seqs.append(seq)
+                    nams.append(nam)
+                    seq = []
+                    nam = line.replace(">", "")
+            else:
+                seq += list(line)
+    seqs.append(seq)
+    nams.append(nam)
+    arr = np.array(seqs[1:])
+    return (arr, nams[1:])
+
+    
 class Scale(matplotlib.patheffects.RendererBase):
     #Credits: Markus Piotrowski See: https://github.com/biopython/biopython/issues/850#issuecomment-225708297
     def __init__(self, sx, sy=None):
@@ -90,6 +135,7 @@ def makePlot(consensus, coverage):
     plt.show()
 
 def main():
+    # this is just for testing purposes
     print('blaaa')
     parser = argparse.ArgumentParser(
             description='''Improve a multiple sequence alignment''')
@@ -99,10 +145,7 @@ def main():
 
     args = parser.parse_args()
 
-    fasta_dict, orig_nams = FastaToDict(args.infile)
-
-    # convert the fasta file dictionary into a numpy array
-    arr = DictToArray(fasta_dict)
+    arr, orig_nams = FastaToArray(args.infile)
 
     consensus, coverage = findConsensus(arr)
     makePlot(consensus, coverage)
