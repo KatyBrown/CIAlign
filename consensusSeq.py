@@ -8,8 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 import operator
-#from scipy.interpolate import spline #this one is obsolete
-from scipy.interpolate import BSpline #for interpolating coverage function
+from scipy.interpolate import spline #this one is obsolete
+#from scipy.interpolate import BSpline #for interpolating coverage function
 import matplotlib.patheffects
 
 
@@ -20,7 +20,7 @@ import itertools
 #from CIAlign import FastaToArray
 
 
-# python3 consensusSeq.py --infile /Users/lotti/Documents/Test_Case/gap_test/SevenJEV.afa
+# python3 consensus Seq.py --infile /Users/lotti/Documents/Test_Case/gap_test/SevenJEV.afa
 
 
 def FastaToArray(infile):
@@ -59,7 +59,7 @@ def FastaToArray(infile):
     arr = np.array(seqs[1:])
     return (arr, nams[1:])
 
-    
+
 class Scale(matplotlib.patheffects.RendererBase):
     #Credits: Markus Piotrowski See: https://github.com/biopython/biopython/issues/850#issuecomment-225708297
     def __init__(self, sx, sy=None):
@@ -136,7 +136,7 @@ def makePlot(consensus, coverage):
 
 def main():
     # this is just for testing purposes
-    print('blaaa')
+    print('consensus test')
     parser = argparse.ArgumentParser(
             description='''Improve a multiple sequence alignment''')
 
