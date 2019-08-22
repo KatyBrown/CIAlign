@@ -2,6 +2,7 @@
 
 import matplotlib
 matplotlib.use('Agg')
+from math import log
 import logging
 import argparse
 import numpy as np
@@ -83,11 +84,19 @@ def findConsensus(alignment, consensus_type="majority"):
         count = dict(zip(unique, counts))
         unique_ng = unique[unique != "-"]
         counts_ng = counts[unique != "-"]
-        count_ng = dict(zip(unique_ng, counts_ng))
-        if '-' in count:
-            nonGapContent = 1-(count['-']/numberOfSequences)
+        print(count)
+        if counts_ng.size == 0:
+            count_ng = {"N": len(alignment[:,i])}
+            print(count_ng)
+            nonGapContent = 0
         else:
-            nonGapContent = 1
+            count_ng = dict(zip(unique_ng, counts_ng))
+            if '-' in count:
+                nonGapContent = 1-(count['-']/numberOfSequences)
+            else:
+                nonGapContent = 1
+
+        # dealing with gap only collumns
         maxChar, maxCount = max(count.items(), key=operator.itemgetter(1))
         maxChar_ng, maxCount_ng = max(count_ng.items(), key=operator.itemgetter(1))
 
@@ -120,19 +129,59 @@ def makePlot(consensus, coverage):
 
     b.plot(xnew,power_smooth)
     b.get_xaxis().set_visible(False)
-    f.savefig('/Users/lotti/blub.png')
+    f.savefig('blub.png')
 
-    #c = f.add_subplot('313')
-    #txt = plt.text(x,consensus)
-    #txt.set_path_effects([Scale(x_scale, y_scale)])
+def sequence_logo(alignment):
+
     plt.figure()
-    txt = plt.text(0, 0, "T", fontsize=64,color='red')
-    txt.set_path_effects([Scale(1,5)])
-    txt = plt.text(0.1, 0, "G", fontsize=64,color='green')
-    txt.set_path_effects([Scale(1,3)])
-    txt = plt.text(0.2, 0, "B", fontsize=64,color='blue')
-    txt.set_path_effects([Scale(1,7)])
+    seq_count = len(alignment[:,0])
+
+    for i in range(0,len(alignment[0,:])):
+        unique, counts = np.unique(alignment[:,i], return_counts=True)
+        count = dict(zip(unique, counts))
+        print(count)
+        entropy, info_per_base, freq_per_base = calc_entropy(count, seq_count)
+        print(2 - entropy)
+        print(info_per_base)
+        print(freq_per_base)
+
+        txt = plt.text(0, 0, "T", fontsize=64,color='red')
+        txt.set_path_effects([Scale(1,5)])
+        txt = plt.text(0, 0.1, "G", fontsize=64,color='green')
+        txt.set_path_effects([Scale(1,3)])
+        txt = plt.text(0.2, 0, "B", fontsize=64,color='blue')
+        txt.set_path_effects([Scale(1,7)])
+
     plt.show()
+    plt.savefig('plotileini.png')
+
+def calc_entropy(count, seq_count):
+
+    # total number of Sequences - gap number
+    # adjust total height later to make up for gaps
+    if count.get("-"):
+        seq_count -= count.get("-")
+    info_per_base = []
+    freq_per_base = []
+    hight_per_base = []
+    bases = []
+    entropy = 0
+    if seq_count == 0:
+        return entropy, info_per_base, freq_per_base
+
+    for base, quantity in count.items():
+        if base != "-":
+            frequency = quantity/seq_count
+            freq_per_base.append(frequency)
+            bases.append(base)
+            entropy -= frequency*log(frequency, 2)
+            info_per_base.append(2 + frequency*log(frequency, 2))
+    for i in range(0,len(freq_per_base)):
+        hight_per_base.append(freq_per_base[i]*entropy)
+    hights = dict(zip(hight_per_base, bases))
+    print(hights)
+
+    return entropy, info_per_base, freq_per_base, hight_per_base
 
 def main():
     # this is just for testing purposes
@@ -148,6 +197,7 @@ def main():
     arr, orig_nams = FastaToArray(args.infile)
 
     consensus, coverage = findConsensus(arr)
+    sequence_logo(arr)
     makePlot(consensus, coverage)
     print(consensus)
     print(coverage)
