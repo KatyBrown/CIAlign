@@ -6,11 +6,12 @@ from math import log
 import logging
 import argparse
 import numpy as np
+import numpy as np
+import scipy.interpolate as interpolate
 import matplotlib.pyplot as plt
 import copy
 import operator
-from scipy.interpolate import spline #this one is obsolete
-#from scipy.interpolate import BSpline #for interpolating coverage function
+#from scipy.interpolate import spline #this one is obsolete
 import matplotlib.patheffects
 
 
@@ -84,10 +85,8 @@ def findConsensus(alignment, consensus_type="majority"):
         count = dict(zip(unique, counts))
         unique_ng = unique[unique != "-"]
         counts_ng = counts[unique != "-"]
-        print(count)
         if counts_ng.size == 0:
             count_ng = {"N": len(alignment[:,i])}
-            print(count_ng)
             nonGapContent = 0
         else:
             count_ng = dict(zip(unique_ng, counts_ng))
@@ -115,6 +114,7 @@ def makePlot(consensus, coverage):
 
     x = np.arange(0, len(coverage), 1);
     y = coverage
+    print(len(x), len(y))
 
     f = plt.figure()
     a = f.add_subplot('311')
@@ -123,11 +123,14 @@ def makePlot(consensus, coverage):
 
     b = f.add_subplot('312')
 
-    xnew = np.linspace(x.min(),x.max(),300) #300 represents number of points to make between T.min and T.max
+    #xnew = np.linspace(x.min(),x.max(),300) #300 represents number of points to make between T.min and T.max
 
-    power_smooth = spline(x,y,xnew)
-
-    b.plot(xnew,power_smooth)
+    t, c, k = interpolate.splrep(x, y, s=0, k=4)
+    N = 100
+    xmin, xmax = x.min(), x.max()
+    xx = np.linspace(xmin, xmax, N)
+    spline = interpolate.BSpline(t, c, k, extrapolate=False)
+    b.plot(xx, spline(xx))
     b.get_xaxis().set_visible(False)
     f.savefig('blub.png')
 
@@ -139,11 +142,7 @@ def sequence_logo(alignment):
     for i in range(0,len(alignment[0,:])):
         unique, counts = np.unique(alignment[:,i], return_counts=True)
         count = dict(zip(unique, counts))
-        print(count)
-        entropy, info_per_base, freq_per_base = calc_entropy(count, seq_count)
-        print(2 - entropy)
-        print(info_per_base)
-        print(freq_per_base)
+        entropy, info_per_base, freq_per_base, height_per_base = calc_entropy(count, seq_count)
 
         txt = plt.text(0, 0, "T", fontsize=64,color='red')
         txt.set_path_effects([Scale(1,5)])
@@ -161,27 +160,25 @@ def calc_entropy(count, seq_count):
     # adjust total height later to make up for gaps
     if count.get("-"):
         seq_count -= count.get("-")
-    info_per_base = []
-    freq_per_base = []
-    hight_per_base = []
-    bases = []
+    info_per_base = {"A": 0, "G": 0, "U": 0, "C": 0}
+    freq_per_base = info_per_base
+    height_per_base = info_per_base
     entropy = 0
     if seq_count == 0:
-        return entropy, info_per_base, freq_per_base
+        return entropy, info_per_base, freq_per_base, height_per_base
 
     for base, quantity in count.items():
         if base != "-":
             frequency = quantity/seq_count
-            freq_per_base.append(frequency)
-            bases.append(base)
+            freq_per_base[base] = frequency
             entropy -= frequency*log(frequency, 2)
-            info_per_base.append(2 + frequency*log(frequency, 2))
-    for i in range(0,len(freq_per_base)):
-        hight_per_base.append(freq_per_base[i]*entropy)
-    hights = dict(zip(hight_per_base, bases))
-    print(hights)
+            info_per_base[base] = 2 + frequency*log(frequency, 2)
+    for base, quantity in info_per_base.items():
+        height_per_base[base] = freq_per_base[base]*(2-entropy)
+    print('freq', freq_per_base)
+    print('height', height_per_base)
 
-    return entropy, info_per_base, freq_per_base, hight_per_base
+    return entropy, info_per_base, freq_per_base, height_per_base
 
 def main():
     # this is just for testing purposes
