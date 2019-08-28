@@ -517,7 +517,7 @@ def main():
 #     args = parser.parse_args()
 #     inifile = args.inifile
 #     print(inifile)
-# 
+#
 #     parameter = dict()
 #     for line in open(inifile).readlines():
 #         if "=" in line and line[0] != ";":
@@ -541,7 +541,7 @@ def main():
     # convert the input fasta file into an array and make a list of
     # sequence names so the order can be maintained
     arr, nams = FastaToArray(args.infile)
-    
+
     print (arr.shape)
     # store a copy of the original array
     orig_arr = copy.copy(arr)
@@ -677,6 +677,7 @@ def main():
         writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
 
     writeOutfile(outfile, arr, orig_nams, removed_seqs, rmfile)
+    print(outfile)
 
 
 if __name__ == "__main__":
