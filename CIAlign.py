@@ -392,7 +392,7 @@ def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
                 if boundary[0].shape[0] > 0:
                     a.hlines((i - 0.5), boundary[0][0], boundary[0][-1] + 1, color=colour, lw=0.75, zorder=0)
                 if boundary[1].shape[0] > 0:
-                    a.hlines((i - 0.5), boundary[1][0], boundary[1][-1] + 1, color=colour, lw=0.75, zorder=0)                    
+                    a.hlines((i - 0.5), boundary[1][0], boundary[1][-1] + 1, color=colour, lw=0.75, zorder=0)
         if "remove_insertions" in markupdict:
             colour = "#fece88"
             a.vlines(list(markupdict['remove_insertions']),
@@ -419,6 +419,23 @@ def checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile):
     if len(np.shape(arr)) == 1:
         raise RuntimeError ("Sequences in alignment are not the same length")
 
+def listFonts(outfile):
+    flist = matplotlib.font_manager.get_fontconfig_fonts()
+    flist2 = []
+    for fname in flist:
+        try:
+            g = matplotlib.font_manager.FontProperties(fname=fname).get_name()
+            flist2.append(g)
+        except:
+            pass
+    f = plt.figure(figsize=(3, len(flist2) / 4), dpi=200)
+    a = f.add_subplot(111)
+    a.set_ylim(0, len(flist2))
+    a.set_xlim(0, 1)
+    for i, fname in enumerate(flist2):
+        a.text(0, i, fname, fontdict={'name': fname})
+    a.set_axis_off()
+    f.savefig(outfile, dpi=200, bbox_inches='tight')
 
 def main():
     parser = argparse.ArgumentParser(
@@ -430,6 +447,7 @@ def main():
     parser.add_argument("--infile", dest='infile', type=str,
                         help='path to input alignment')
     parser.add_argument("--outfile_stem", dest='outfile_stem', type=str,
+                        default="CIAlign",
                         help="stem for output files (including path)")
 
     parser.add_argument("--remove_insertions", dest="remove_insertions",
@@ -508,6 +526,21 @@ def main():
                         type=int, default=3,
                         help="height for plots (inches)")
 
+    parser.add_argument("--make_sequence_logo", dest="make_sequence_logo",
+                        action="store_true", help="draw a sequence logo")
+    parser.add_argument("--sequence_logo_type", dest="sequence_logo_type",
+                        type=str, default='bar',
+                        help="type of sequence logo - bar/text/both")
+    parser.add_argument("--sequence_logo_dpi", dest="sequence_logo_dpi",
+                        type=int, default=200,
+                        help="dpi for sequence logo image")
+    parser.add_argument("--sequence_logo_font", dest="sequence_logo_font",
+                        type=str, default='monospace',
+                        help="font for text sequence logo")
+    parser.add_argument("--list_fonts_only", dest='list_fonts_only',
+                        action="store_true",
+                        help="make a swatch showing available fonts")
+
     args = parser.parse_args()
 
     log = logging.getLogger(__name__)
@@ -551,8 +584,16 @@ def main():
 
     log.info("Initial parameters: %s" % str(args))
 
+    if args.list_fonts_only:
+        print ("list fonts")
+        out = "%s_fonts.png" % args.outfile_stem
+        listFonts(out)
+        exit()
     # convert the input fasta file into an array and make a list of
     # sequence names so the order can be maintained
+    if not args.infile:
+        raise RuntimeError ("Input alignment must be provided")
+
     arr, nams = FastaToArray(args.infile)
 
     print (arr.shape)
@@ -582,6 +623,7 @@ def main():
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     print (args.outfile_stem)
     checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
+
     if args.crop_ends:
         print ("crop ends")
         # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
@@ -694,7 +736,26 @@ def main():
         outf = "%s_with_consensus.fasta" % args.outfile_stem
         writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
 
-    # todo sequence logo todo maybe with boundaries of what should be shown?
+    if args.make_sequence_logo:
+        print ("make sequence logo")
+
+        if args.sequence_logo_type == 'bar':
+            out = "%s_logo_bar.png" % args.outfile_stem
+            consensusSeq.sequence_bar_logo(arr, out,
+                                           figdpi=args.sequence_logo_dpi)
+        elif args.sequence_logo_type == 'text':
+            out = "%s_logo_text.png" % args.outfile_stem
+            consensusSeq.sequence_logo(arr, out,
+                                           figdpi=args.sequence_logo_dpi,
+                                           figfontname=args.sequence_logo_font)
+        elif args.sequence_logo_type == 'both':
+            out = "%s_logo_bar.png" % args.outfile_stem
+            consensusSeq.sequence_bar_logo(arr, out,
+                                           figdpi=args.sequence_logo_dpi)
+            out = "%s_logo_text.png" % args.outfile_stem
+            consensusSeq.sequence_logo(arr, out,
+                                       figdpi=args.sequence_logo_dpi,
+                                       figfontname=args.sequence_logo_font)
 
     writeOutfile(outfile, arr, orig_nams, removed_seqs, rmfile)
     print(outfile)
