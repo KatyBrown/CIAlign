@@ -165,9 +165,6 @@ def sequence_logo(alignment):
                 #txt = plt.text(x, height_sum_higher, base, fontsize=80, color='red')
                 #txt.set_path_effects([Scale(1,height)])
                 height_sum_higher += height
-            elif height < 0:
-                #todo
-                print('jo')
         # coordinates and then scale aha aha aha
         # txt = plt.text(0, 0, "T", fontsize=64,color='red')
         # txt.set_path_effects([Scale(1,5)])
@@ -214,7 +211,6 @@ def sequence_bar_logo(alignment):
         count = dict(zip(unique, counts))
         height_per_base, info_per_base = calc_entropy(count, seq_count, that_letter)
         print('height', height_per_base)
-        # todo: multiple with non gap count
 
         A_height.append(height_per_base["A"])
         G_height.append(height_per_base["G"])
@@ -233,15 +229,20 @@ def sequence_bar_logo(alignment):
 
 
     plt.savefig('plotileini_bar.png')
+    #todo tidy up and use normal names and normals files 
 
 
 def calc_entropy(count, seq_count, that_letter):
 
     # total number of Sequences - gap number
     # adjust total height later to make up for gaps - i think that's covered (?)
-    sample_size_correction = (1/log(2)) * (3/(2*seq_count))
+
+    sample_size_correction = (1/log(2)) * (3/(2*seq_count)) # wahh here or later?
+    gap_correction = seq_count
     if count.get("-"):
         seq_count -= count.get("-")
+    gap_correction = seq_count/gap_correction
+    print('gap correction', gap_correction)
     info_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
     freq_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
     height_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
@@ -263,7 +264,9 @@ def calc_entropy(count, seq_count, that_letter):
         if freq_per_base[base]*information_per_column < 0:
             height_per_base[base] = 0
         else:
-            height_per_base[base] = freq_per_base[base]*information_per_column
+            #scale to accomodate gaps, or do we even need to that here if already
+            #used in the sample size correction?
+            height_per_base[base] = gap_correction*freq_per_base[base]*information_per_column
 
     return height_per_base, info_per_base
 
