@@ -164,7 +164,7 @@ def tempPlotLetters(string, heights,
     for char in string:
         a.matshow(letters[char], extent=(x, x+0.2, 0, y), resample=False)
         x += 0.2
-        y += y_int    
+        y += y_int
     f.set_size_inches(figwidth, figheight)
     f.savefig("test.png", dpi=500)
 

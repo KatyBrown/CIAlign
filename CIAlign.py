@@ -379,14 +379,27 @@ def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
         t.set_fontsize(8)
 
     if markup:
+        print(markupdict)
         if "remove_short" in markupdict:
             colour = "#d7ddf2"
             for nam in markupdict['remove_short']:
-                i = nams.index(nam)
+                i = nams.index(nam) + 1
                 a.hlines((i - 0.5), 0, ali_width, color=colour, lw=0.75, zorder=0)
+        if "crop_ends" in markupdict:
+            colour = "#8470FF"
+            for nam, boundary in markupdict['crop_ends'].items():
+                i = nams.index(nam) + 1
+                if boundary[0].shape[0] > 0:
+                    a.hlines((i - 0.5), boundary[0][0], boundary[0][-1] + 1, color=colour, lw=0.75, zorder=0)
+                if boundary[1].shape[0] > 0:
+                    a.hlines((i - 0.5), boundary[1][0], boundary[1][-1] + 1, color=colour, lw=0.75, zorder=0)                    
         if "remove_insertions" in markupdict:
             colour = "#fece88"
             a.vlines(list(markupdict['remove_insertions']),
+                     0, ali_height, color=colour, lw=0.75, zorder=1)
+        if "remove_gaponly" in markupdict:
+            colour = "#EEAEEE"
+            a.vlines(list(markupdict['remove_gaponly']),
                      0, ali_height, color=colour, lw=0.75, zorder=1)
     f.savefig(outfile, dpi=dpi)
 
@@ -573,6 +586,7 @@ def main():
         print ("crop ends")
         # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
         arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap)
+        print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -582,6 +596,7 @@ def main():
     if args.remove_badlyaligned:
         print ("remove badly aligned")
         arr, r = removeBadlyAligned(arr, nams, args.remove_badlyaligned_minperc)
+        print(r)
         markupdict['remove_badlyaligned'] = r
         removed_seqs = removed_seqs | r
         nams = updateNams(nams, r)
@@ -596,6 +611,7 @@ def main():
                                   args.insertion_min_size,
                                   args.insertion_max_size,
                                   args.insertion_min_flank)
+        print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -620,6 +636,7 @@ def main():
         # HERE
         print("test")
         arr, r = removeGapOnly(arr, relativePositions, log)
+        print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -659,9 +676,10 @@ def main():
     if args.plot_markup:
         print ("plot markup")
         outf = "%s_markup.%s" % (args.outfile_stem, args.plot_format)
-        drawMiniAlignment(orig_arr, log, nams, outf, typ, args.plot_dpi,
+        drawMiniAlignment(orig_arr, log, orig_nams, outf, typ, args.plot_dpi,
                           args.outfile_stem, args.plot_width, args.plot_height,
                           markup=True, markupdict=markupdict)
+
     if args.make_consensus:
         print ("make consensus")
         cons, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
@@ -675,6 +693,8 @@ def main():
         out.close()
         outf = "%s_with_consensus.fasta" % args.outfile_stem
         writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
+
+    # todo sequence logo todo maybe with boundaries of what should be shown?
 
     writeOutfile(outfile, arr, orig_nams, removed_seqs, rmfile)
     print(outfile)

@@ -59,10 +59,14 @@ def findValue(sequence, mingap=10):
 
     gaps = countGaps(sequence)
 
+    if len(gaps) < 11:
+        return(gaps[0] + 1)
+
     if len(gaps) <= 80:
         boundary1 = 10
         boundary2 = 19
         boundary3 = 10
+
 
     # this pattern doesn't indicate an incomplete sequence, set start to 0
     if gaps[boundary1] < boundary3:
