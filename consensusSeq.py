@@ -199,7 +199,7 @@ def sequence_bar_logo(alignment):
     seq_count = len(alignment[:,0])
     x = 0
     width = 0.75
-
+    #todo alternative color scheme
     ind = np.arange(len(alignment[0,:]))
     A_height = []
     G_height = []
@@ -229,7 +229,7 @@ def sequence_bar_logo(alignment):
 
 
     plt.savefig('plotileini_bar.png')
-    #todo tidy up and use normal names and normals files 
+    #todo tidy up and use normal names and normals files
 
 
 def calc_entropy(count, seq_count, that_letter):
