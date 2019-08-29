@@ -11,6 +11,7 @@ import scipy.interpolate as interpolate
 import matplotlib.pyplot as plt
 import copy
 import operator
+import os
 from matplotlib.font_manager import FontProperties
 #from scipy.interpolate import spline #this one is obsolete
 import matplotlib.patheffects
@@ -90,13 +91,13 @@ def getAAColours():
 
 
 def getNtColours():
-    return {'A': '#f43131',
+    return {'A': '#1ed30f',
             'G': '#f4d931',
-            'T': '#315af4',
-            'C': '#1ed30f',
+            'T': '#f43131',
+            'C': '#315af4',
             'N': '#b2b2b2',
             "-": '#FFFFFF',
-            "U": '#315af4'}
+            "U": '#f43131'}
 
 
 def getAxisUnits(figure, subplot):
@@ -119,55 +120,33 @@ def getFontSize(figure, subplot, rectangle_height_u):
     rect_height_pixels = D['axis_height_px'] * rect_perc_height
     dpi = figure.dpi
     rect_height_points = PixelsToPoints(rect_height_pixels, dpi)
-    return (rect_height_points * 1.4)
+    return (rect_height_points * 1.8)
 
 
 def PixelsToPoints(pixels, dpi):
     return (pixels * (72 / dpi))
 
 
-def getLetters(typ='nt', fontfamily='monospace'):
+def getLetters(typ='nt', fontname='monospace', dpi=500):
     if typ == 'nt':
         colours = getNtColours()
     elif typ == 'aa':
         colours = getAAColours()
-    D = dict()
     for base in colours.keys():
-        f = plt.figure(figsize=(1, 1), dpi=500)
+        f = plt.figure(figsize=(1, 1), dpi=dpi, edgecolor='black')
         a = f.add_subplot(111)
         a.set_xlim(0, 1)
         a.set_ylim(0, 1)
         fs = getFontSize(f, a, 1)
-        a.text(0, 0, base, fontsize=fs, fontdict={'family': fontfamily},
-               color=colours[base])
-        a.set_axis_off()
-        f.canvas.draw()
-        letter = np.frombuffer(f.canvas.tostring_rgb(), dtype=np.uint8)
-        letter = letter.reshape(f.canvas.get_width_height()[::-1] + (3,))
-        D[base] = letter
-    return (D)
-
-def tempPlotLetters(string, heights,
-                    typ='nt',
-                    figheight=2,
-                    figwidth=10,
-                    figfontfamily='monospace'):
-    f = plt.figure(figsize=(figwidth, figheight), dpi=500)
-    a = f.add_subplot(111)
-    a.set_xlim(0, 1)
-    a.set_ylim(0, 1)
-    letters = getLetters(typ=typ)
-    D = getAxisUnits(f, a)
-    y_int = 1 / len(string)
-    x = 0
-    y = 0
-    for char in string:
-        a.matshow(letters[char], extent=(x, x+0.2, 0, y), resample=False)
-        x += 0.2
-        y += y_int    
-    f.set_size_inches(figwidth, figheight)
-    f.savefig("test.png", dpi=500)
-
+        a.text(0.5, 0, base, fontsize=fs, fontdict={'family': 'monospace',
+                                                  'name': fontname},
+               color=colours[base], va='baseline', ha='center')
+        plt.gca().set_axis_off()
+        a.margins(0, 0)
+        f.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, wspace=None, hspace=None)
+        a.set_frame_on(False)
+        f.savefig("%s_temp.png" % base, dpi=500,
+                  pad_inches=0)
 
 # class Scale(matplotlib.patheffects.RendererBase):
 #     #Credits: Markus Piotrowski See: https://github.com/biopython/biopython/issues/850#issuecomment-225708297
@@ -243,9 +222,57 @@ def makePlot(consensus, coverage):
     f.savefig('blub.png')
 
 
-def sequence_logo(alignment):
+def sequence_logo(alignment,
+                  figname,
+                  typ='nt',
+                  figfontname='Arial',
+                  figdpi=500):
+    for seq in alignment:
+        if np.any(seq == "U"):
+            that_letter = "U"
+        if np.any(seq == "T"):
+            that_letter = "T"
+    f = plt.figure(figsize=(10, 2), dpi=figdpi)
+    a = f.add_subplot(111)
+    getLetters(typ=typ, fontname=figfontname, dpi=figdpi)
+    a.set_xlim(0, len(alignment[0,:]))
+    a.set_ylim(0, 3.1)
+    limits = a.axis()
+    getLetters(typ=typ, fontname=figfontname)
+    for i in range(0, len(alignment[0,:])):
+        unique, counts = np.unique(alignment[:,i],
+                                   return_counts=True)
+        count = dict(zip(unique, counts))
+        height_per_base, info_per_base = calc_entropy(count,
+                                                      len(alignment[:,0]),
+                                                      that_letter=that_letter)
 
-    plt.figure(figsize=(len(alignment[0,:]),2.5))
+        height_sum_higher = 0
+        for base, height in height_per_base.items():
+            if height > 0:
+                L = plt.imread("%s_temp.png" % base)
+                print (base, height)
+                a.imshow(L, extent=(i, i+1, height_sum_higher, height_sum_higher+height))
+                height_sum_higher += height
+    a.axis(limits)
+    f.set_size_inches(10, 2)
+    a.set_xticks(np.arange(0, len(alignment[0,:])))
+    a.set_xticklabels(np.arange(1, len(alignment[0,:]) + 1))
+    a.set_yticks(np.arange(0, 3.1, 1))
+    a.spines['right'].set_visible(False)
+    a.spines['top'].set_visible(False)
+    a.set_xlabel("Position")
+    a.set_ylabel("Bit Score")
+    if typ == 'nt':
+        allbases = getNtColours()
+    elif typ == 'aa':
+        allbases = getAAColours()
+    for base in allbases:
+        os.unlink("%s_temp.png" % base)
+    f.savefig(figname, dpi=figdpi, bbox_inches='tight')
+
+"""    
+    #plt.figure(figsize=(len(alignment[0,:]),2.5))
 
     #plt.xkcd()
     axes = plt.gca()
@@ -281,9 +308,12 @@ def sequence_logo(alignment):
 
     plt.show()
     plt.savefig('plotileini.png')
+"""
 
-
-def sequence_bar_logo(alignment):
+def sequence_bar_logo(alignment,
+                      figname,
+                      typ='nt',
+                      figdpi=500):
 
     for seq in alignment:
         print(type(seq))
@@ -294,13 +324,14 @@ def sequence_bar_logo(alignment):
     # if len(alignment[0,:]) < 65536:
     #     plt.figure(figsize=(len(alignment[0,:]) + 1,4))
     # else:
-    plt.figure(1, figsize=(len(alignment[0,:]),4), frameon=False, dpi=100)
+    plt.figure(1, figsize=(len(alignment[0,:]), 4), frameon=False,
+               dpi=figdpi)
     fig, ax = plt.subplots()
 
     #plt.xkcd()
     axes = plt.gca()
-    axes.set_xlim([-1,len(alignment[0,:])+1])
-    axes.set_ylim([0,3])
+    axes.set_xlim([-0.5, len(alignment[0,:])-0.5])
+    axes.set_ylim([0, 3.1])
     seq_count = len(alignment[:,0])
     x = 0
     width = 0.75
@@ -322,18 +353,30 @@ def sequence_bar_logo(alignment):
         C_height.append(height_per_base["C"])
         U_height.append(height_per_base[that_letter])
 
+    if typ == 'nt':
+        colours = getNtColours()
+    elif typ == 'aa':
+        colours = getAAColours()
 
-    bar_plot = plt.bar(ind, A_height, width, color='#f43131')
+    bar_plot = plt.bar(ind, A_height, width, color=colours['A'])
     # for idx,rect in enumerate(bar_plot):
     #     height = rect.get_height()
     #     ax.text(rect.get_x() + rect.get_width(), height, "A", ha='center', va='bottom')
-    plt.bar(ind, G_height, width, bottom=A_height, color='#f4d931')
-    plt.bar(ind, C_height, bottom=[i+j for i,j in zip(A_height, G_height)], width=width, color='#1ed30f')
-    plt.bar(ind, U_height, bottom=[i+j+k for i,j,k in zip(A_height, G_height, C_height)], width=width, color='#315af4')
 
+    plt.bar(ind, G_height, width, bottom=A_height, color=colours['G'])
+    plt.bar(ind, C_height, bottom=[i+j for i,j in zip(A_height, G_height)], width=width, color=colours['C'])
+    plt.bar(ind, U_height, bottom=[i+j+k for i,j,k in zip(A_height, G_height, C_height)], width=width,
+                                   color=colours['U'])
+    plt.xticks(np.arange(0, len(alignment[0,:])),
+               np.arange(1, len(alignment[0,:]) + 1))
+    plt.yticks(np.arange(0, 3.1, 1))
+    plt.xlabel("Position")
+    plt.ylabel("Bit Score")
 
+    axes.spines['right'].set_visible(False)
+    axes.spines['top'].set_visible(False)
 
-    plt.savefig('plotileini_bar.png')
+    plt.savefig(figname, bbox_inches='tight', dpi=figdpi)
     #todo tidy up and use normal names and normals files 
 
 
