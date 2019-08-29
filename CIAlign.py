@@ -112,8 +112,8 @@ def seqType(arr):
     Detects if an alignment is of nucleotides or amino acids
     '''
     seq1 = arr[0]
-    nucs = set(list(getNtColours().keys()))
-    aas = set(list(getAAColours().keys()))
+    nucs = set(list(consensusSeq.getNtColours().keys()))
+    aas = set(list(consensusSeq.getAAColours().keys()))
     n = 0
     a = 0
     x = 0
@@ -349,9 +349,9 @@ def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
     ali_height, ali_width = np.shape(arr)
 
     if  typ == 'nt':
-        cD = getNtColours()
+        cD = consensusSeq.getNtColours()
     elif typ == 'aa':
-        cD = getAAColours()
+        cD = consensusSeq.getAAColours()
 
     f = plt.figure(figsize=(width, height), dpi=dpi)
 
