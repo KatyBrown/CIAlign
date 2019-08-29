@@ -64,6 +64,110 @@ def FastaToArray(infile):
     arr = np.array(seqs[1:])
     return (arr, nams[1:])
 
+def getAAColours():
+    return {'D':'#E60A0A',
+            'E':'#E60A0A',
+            'C':'#E6E600',
+            'M':'#E6E600',
+            'K':'#145AFF',
+            'R':'#145AFF',
+            'S':'#FA9600',
+            'T':'#FA9600',
+            'F':'#3232AA',
+            'Y':'#3232AA',
+            'N':'#00DCDC',
+            'Q':'#00DCDC',
+            'G':'#EBEBEB',
+            'L':'#0F820F',
+            'V':'#0F820F',
+            'I':'#0F820F',
+            'A':'#C8C8C8',
+            'W':'#B45AB4',
+            'H':'#8282D2',
+            'P':'#DC9682',
+            'X': '#b2b2b2',
+            '-': '#FFFFFF00'}
+
+
+def getNtColours():
+    return {'A': '#f43131',
+            'G': '#f4d931',
+            'T': '#315af4',
+            'C': '#1ed30f',
+            'N': '#b2b2b2',
+            "-": '#FFFFFF',
+            "U": '#315af4'}
+
+
+def getAxisUnits(figure, subplot):
+    axis_dimensions = subplot.transData.transform([(subplot.get_xlim()[1], subplot.get_ylim()[1]),(0, 0)])- subplot.transData.transform((0,0))
+    D = dict()
+    D['axis_height_px'] = axis_dimensions[0][1]
+    D['axis_width_px'] = axis_dimensions[0][0]
+    D['axis_bottom'], D['axis_top'] = subplot.get_ylim()
+    D['axis_left'], D['axis_right'] = subplot.get_xlim()
+    D['axis_width_u'] = D['axis_right'] - D['axis_left']
+    D['axis_height_u'] = D['axis_top'] - D['axis_bottom']
+    D['u_height_px'] = D['axis_height_px'] / D['axis_height_u']
+    D['u_width_px'] =  D['axis_width_px'] / D['axis_width_u']
+    return (D)
+
+
+def getFontSize(figure, subplot, rectangle_height_u):
+    D = getAxisUnits(figure, subplot)
+    rect_perc_height = rectangle_height_u / (D['axis_top'] - D['axis_bottom'])
+    rect_height_pixels = D['axis_height_px'] * rect_perc_height
+    dpi = figure.dpi
+    rect_height_points = PixelsToPoints(rect_height_pixels, dpi)
+    return (rect_height_points * 1.4)
+
+
+def PixelsToPoints(pixels, dpi):
+    return (pixels * (72 / dpi))
+
+
+def getLetters(typ='nt', fontfamily='monospace'):
+    if typ == 'nt':
+        colours = getNtColours()
+    elif typ == 'aa':
+        colours = getAAColours()
+    D = dict()
+    for base in colours.keys():
+        f = plt.figure(figsize=(1, 1), dpi=500)
+        a = f.add_subplot(111)
+        a.set_xlim(0, 1)
+        a.set_ylim(0, 1)
+        fs = getFontSize(f, a, 1)
+        a.text(0, 0, base, fontsize=fs, fontdict={'family': fontfamily},
+               color=colours[base])
+        a.set_axis_off()
+        f.canvas.draw()
+        letter = np.frombuffer(f.canvas.tostring_rgb(), dtype=np.uint8)
+        letter = letter.reshape(f.canvas.get_width_height()[::-1] + (3,))
+        D[base] = letter
+    return (D)
+
+def tempPlotLetters(string, heights,
+                    typ='nt',
+                    figheight=2,
+                    figwidth=10,
+                    figfontfamily='monospace'):
+    f = plt.figure(figsize=(figwidth, figheight), dpi=500)
+    a = f.add_subplot(111)
+    a.set_xlim(0, 1)
+    a.set_ylim(0, 1)
+    letters = getLetters(typ=typ)
+    D = getAxisUnits(f, a)
+    y_int = 1 / len(string)
+    x = 0
+    y = 0
+    for char in string:
+        a.matshow(letters[char], extent=(x, x+0.2, 0, y), resample=False)
+        x += 0.2
+        y += y_int    
+    f.set_size_inches(figwidth, figheight)
+    f.savefig("test.png", dpi=500)
+
 
 # class Scale(matplotlib.patheffects.RendererBase):
 #     #Credits: Markus Piotrowski See: https://github.com/biopython/biopython/issues/850#issuecomment-225708297
@@ -74,6 +178,7 @@ def FastaToArray(infile):
 #     def draw_path(self, renderer, gc, tpath, affine, rgbFace):
 #         affine=affine.identity().scale(self._sx, self._sy)+affine
 #         renderer.draw_path(gc, tpath, affine, rgbFace)
+
 
 def findConsensus(alignment, consensus_type="majority"):
     '''
