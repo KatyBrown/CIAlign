@@ -134,7 +134,8 @@ def seqType(arr):
         raise RuntimeError ("Majority of positions are not known nucleotides or amino acids")
 
 
-def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank):
+def removeInsertions(arr, relativePositions, log, min_size, max_size,
+                     min_flank):
     '''
     Removes insertions of size between min_size and
     max_size which have lower coverage than their flanking reg ions, if at least
@@ -142,7 +143,7 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
     but not the insertions.
     '''
     log.info("Removing insertions\n")
-    print ("start")
+    # print ("start")
     # record which sites are not "-"
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
@@ -196,7 +197,7 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
     return (arr, set(rmpos))
 
 
-def removeTooShort(arr, log, min_length, nams):
+def removeTooShort(arr, nams, log, min_length):
     '''
     Removes sequences with fewer than min_length non-gap positions from
     the alignment.
@@ -213,9 +214,9 @@ def removeTooShort(arr, log, min_length, nams):
 
 
 def removeGapOnly(arr, relativePositions, log):
-    print("remove gap only:")
-    print("----------------")
-    print(arr)
+    #print("remove gap only:")
+    #print("----------------")
+    #print(arr)
     if len(arr) != 0:
         print (arr.shape)
         sums = sum(arr == "-")
@@ -223,24 +224,24 @@ def removeGapOnly(arr, relativePositions, log):
         rmpos = []
         for n in absolutePositions:
             rmpos.append(relativePositions[n])
-        print("relative positions:")
-        print(relativePositions)
-        print("absolute positions:")
-        print(absolutePositions)
-        print("rmpos:")
-        print(rmpos)
+        #print("relative positions:")
+        #print(relativePositions)
+        #print("absolute positions:")
+        #print(absolutePositions)
+        #print("rmpos:")
+        #print(rmpos)
         # remove deleted columns from relativePositions
         for n in rmpos:
             relativePositions.remove(n)
-        print("relative positions now:")
-        print(relativePositions)
+        #print("relative positions now:")
+        #print(relativePositions)
         rmpos = set(rmpos)
         arr = arr[:, sums != len(arr[:,0])]
         log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
     else:
         rmpos = set()
-    print(rmpos)
-    print(arr)
+    #print(rmpos)
+    #print(arr)
     return (arr, rmpos)
 
 
@@ -347,7 +348,7 @@ def calculateSimilarityMatrix(arr, nams, minoverlap=1,
 def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
                       markup=False, markupdict=None):
     ali_height, ali_width = np.shape(arr)
-
+    lineweight = 100 / ali_height
     if  typ == 'nt':
         cD = consensusSeq.getNtColours()
     elif typ == 'aa':
@@ -364,9 +365,10 @@ def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
         cols = []
         for s in row:
             cols.append(cD[s])
-        a.scatter(xpoints, [j]*ali_width, color=cols, s=0.75**2, marker="|", zorder=2)
+        a.scatter(xpoints, [j]*ali_width, color=cols, s=lineweight**2, marker="|", zorder=2)
         j += 1
 
+    
     a.spines['right'].set_visible(False)
     a.spines['top'].set_visible(False)
     a.spines['left'].set_visible(False)
@@ -379,7 +381,7 @@ def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
         t.set_fontsize(8)
 
     if markup:
-        print(markupdict)
+        # print(markupdict)
         if "remove_short" in markupdict:
             colour = "#d7ddf2"
             for nam in markupdict['remove_short']:
@@ -532,11 +534,15 @@ def main():
                         type=str, default='bar',
                         help="type of sequence logo - bar/text/both")
     parser.add_argument("--sequence_logo_dpi", dest="sequence_logo_dpi",
-                        type=int, default=200,
+                        type=int, default=300,
                         help="dpi for sequence logo image")
     parser.add_argument("--sequence_logo_font", dest="sequence_logo_font",
                         type=str, default='monospace',
                         help="font for text sequence logo")
+    parser.add_argument("--sequence_logo_nt_per_row", dest='sequence_logo_nt_per_row',
+                        type=int, default=50, help="number of nucleotides or aas to show per row in the sequence logo")
+    parser.add_argument("--sequence_logo_filetype", dest='sequence_logo_filetype',
+                        type=str, default='png', help="output file type for sequence logo - png/jpg/svg")    
     parser.add_argument("--list_fonts_only", dest='list_fonts_only',
                         action="store_true",
                         help="make a swatch showing available fonts")
@@ -596,7 +602,7 @@ def main():
 
     arr, nams = FastaToArray(args.infile)
 
-    print (arr.shape)
+    # print (arr.shape)
     # store a copy of the original array
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
@@ -606,7 +612,7 @@ def main():
 
     # remember positions relative to original alignment
     relativePositions = list(range(0, len(orig_arr[0])))
-    print(relativePositions)
+    # print(relativePositions)
 
     removed_seqs = set()
     removed_cols = set()
@@ -621,14 +627,14 @@ def main():
 
     rmfile = "%s_removed.txt" % args.outfile_stem
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
-    print (args.outfile_stem)
+    # print (args.outfile_stem)
     checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.crop_ends:
         print ("crop ends")
         # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
         arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap)
-        print(r)
+        # print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -636,9 +642,9 @@ def main():
         checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.remove_badlyaligned:
-        print ("remove badly aligned")
+        # print ("remove badly aligned")
         arr, r = removeBadlyAligned(arr, nams, args.remove_badlyaligned_minperc)
-        print(r)
+        # print(r)
         markupdict['remove_badlyaligned'] = r
         removed_seqs = removed_seqs | r
         nams = updateNams(nams, r)
@@ -653,7 +659,7 @@ def main():
                                   args.insertion_min_size,
                                   args.insertion_max_size,
                                   args.insertion_min_flank)
-        print(r)
+        # print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -663,7 +669,7 @@ def main():
 
     if args.remove_short:
         print ("remove short")
-        arr, r = removeTooShort(arr, log, args.remove_min_length, nams)
+        arr, r = removeTooShort(arr, nams, log, args.remove_min_length)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -676,9 +682,9 @@ def main():
         print ("remove gap only")
         # for now: run as default
         # HERE
-        print("test")
+        # print("test")
         arr, r = removeGapOnly(arr, relativePositions, log)
-        print(r)
+        # print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -740,25 +746,30 @@ def main():
         print ("make sequence logo")
 
         if args.sequence_logo_type == 'bar':
-            out = "%s_logo_bar.png" % args.outfile_stem
-            consensusSeq.sequence_bar_logo(arr, out,
-                                           figdpi=args.sequence_logo_dpi)
-        elif args.sequence_logo_type == 'text':
-            out = "%s_logo_text.png" % args.outfile_stem
-            consensusSeq.sequence_logo(arr, out,
+            out = "%s_logo_bar.%s" % (args.outfile_stem, args.sequence_logo_filetype)
+            print (out)
+            consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=args.sequence_logo_dpi,
-                                           figfontname=args.sequence_logo_font)
-        elif args.sequence_logo_type == 'both':
-            out = "%s_logo_bar.png" % args.outfile_stem
-            consensusSeq.sequence_bar_logo(arr, out,
-                                           figdpi=args.sequence_logo_dpi)
-            out = "%s_logo_text.png" % args.outfile_stem
-            consensusSeq.sequence_logo(arr, out,
+                                           figrowlength=args.sequence_logo_nt_per_row)
+        elif args.sequence_logo_type == 'text':
+            out = "%s_logo_text.%s" % (args.outfile_stem, args.sequence_logo_filetype)
+            consensusSeq.sequence_logo(arr, out, typ=typ,
                                        figdpi=args.sequence_logo_dpi,
-                                       figfontname=args.sequence_logo_font)
+                                       figfontname=args.sequence_logo_font,
+                                       figrowlength=args.sequence_logo_nt_per_row)
+        elif args.sequence_logo_type == 'both':
+            out = "%s_logo_bar.%s" % (args.outfile_stem, args.sequence_logo_filetype)
+            consensusSeq.sequence_bar_logo(arr, out, typ=typ,
+                                           figdpi=args.sequence_logo_dpi,
+                                           figrowlength=args.sequence_logo_nt_per_row)
+            out = "%s_logo_text.%s" % (args.outfile_stem, args.sequence_logo_filetype)
+            consensusSeq.sequence_logo(arr, out, typ=typ,
+                                       figdpi=args.sequence_logo_dpi,
+                                       figfontname=args.sequence_logo_font,
+                                       figrowlength=args.sequence_logo_nt_per_row)
 
     writeOutfile(outfile, arr, orig_nams, removed_seqs, rmfile)
-    print(outfile)
+    # print(outfile)
 
 
 if __name__ == "__main__":
