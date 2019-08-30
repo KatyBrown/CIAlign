@@ -256,9 +256,9 @@ def sequence_logo(alignment,
                 height_sum_higher += height
     a.axis(limits)
     f.set_size_inches(10, 2)
-    a.set_xticks(np.arange(0, len(alignment[0,:])))
-    a.set_xticklabels(np.arange(1, len(alignment[0,:]) + 1))
-    a.set_yticks(np.arange(0, 3.1, 1))
+    #a.set_xticks(np.arange(0, len(alignment[0,:])))
+    #a.set_xticklabels(np.arange(1, len(alignment[0,:]) + 1))
+    #a.set_yticks(np.arange(0, 3.1, 1))
     a.spines['right'].set_visible(False)
     a.spines['top'].set_visible(False)
     a.set_xlabel("Position")
@@ -367,9 +367,8 @@ def sequence_bar_logo(alignment,
     plt.bar(ind, C_height, bottom=[i+j for i,j in zip(A_height, G_height)], width=width, color=colours['C'])
     plt.bar(ind, U_height, bottom=[i+j+k for i,j,k in zip(A_height, G_height, C_height)], width=width,
                                    color=colours['U'])
-    plt.xticks(np.arange(0, len(alignment[0,:])),
-               np.arange(1, len(alignment[0,:]) + 1))
-    plt.yticks(np.arange(0, 3.1, 1))
+    #plt.xticks(np.arange(0, len(alignment[0,:])), np.arange(1, len(alignment[0,:]) + 1))
+    #plt.yticks(np.arange(0, 3.1, 1))
     plt.xlabel("Position")
     plt.ylabel("Bit Score")
 

@@ -57,7 +57,8 @@ def FastaToArray(infile):
 def writeOutfile(outfile, arr, nams, removed, rmfile=None):
     out = open(outfile, "w")
     if rmfile is not None:
-        rm = open(rmfile, "w")
+        rm = open(rmfile, "a")
+        rm.write("Removed sequences:\n")
     else:
         rm = None
     i = 0
@@ -134,7 +135,7 @@ def seqType(arr):
         raise RuntimeError ("Majority of positions are not known nucleotides or amino acids")
 
 
-def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank):
+def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank, rmfile):
     '''
     Removes insertions of size between min_size and
     max_size which have lower coverage than their flanking reg ions, if at least
@@ -142,6 +143,7 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
     but not the insertions.
     '''
     log.info("Removing insertions\n")
+    out = open(rmfile, "a")
     print ("start")
     # record which sites are not "-"
     boolarr = arr != "-"
@@ -192,6 +194,9 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank)
     #keeppos = np.invert(np.in1d(keeppos, rmpos)) # I think here we need the absolute positions? not sure though
     keeppos = np.invert(np.in1d(keeppos, rmpos))
     log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
+    out.write("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
+    out.write('\n')
+    out.close()
     arr = arr[:, keeppos]
     return (arr, set(rmpos))
 
@@ -212,10 +217,11 @@ def removeTooShort(arr, log, min_length, nams):
     return (arr, rmnames)
 
 
-def removeGapOnly(arr, relativePositions, log):
-    print("remove gap only:")
-    print("----------------")
-    print(arr)
+def removeGapOnly(arr, relativePositions, log, rmfile):
+    out = open(rmfile, "a")
+    if out.closed:
+        print('file is closed')
+
     if len(arr) != 0:
         print (arr.shape)
         sums = sum(arr == "-")
@@ -223,28 +229,23 @@ def removeGapOnly(arr, relativePositions, log):
         rmpos = []
         for n in absolutePositions:
             rmpos.append(relativePositions[n])
-        print("relative positions:")
-        print(relativePositions)
-        print("absolute positions:")
-        print(absolutePositions)
-        print("rmpos:")
-        print(rmpos)
         # remove deleted columns from relativePositions
         for n in rmpos:
             relativePositions.remove(n)
-        print("relative positions now:")
-        print(relativePositions)
         rmpos = set(rmpos)
         arr = arr[:, sums != len(arr[:,0])]
         log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
+        out.write("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
+        out.write('\n')
     else:
         rmpos = set()
-    print(rmpos)
-    print(arr)
+
+    out.close()
     return (arr, rmpos)
 
 
-def cropEnds(arr, log, nams, mingap):
+def cropEnds(arr, log, nams, mingap, rmfile):
+    out = open(rmfile, "a")
     newarr = []
     r = dict()
     for i, row in enumerate(arr):
@@ -260,13 +261,18 @@ def cropEnds(arr, log, nams, mingap):
             non_gap_end = sum(row[end:] != "-")
             if non_gap_start != 0:
                 log.info("Removed %i bases from start of %s" % (non_gap_start, nam))
+                out.write("Removed %i bases from start of %s" % (non_gap_start, nam))
+                out.write('\n')
             if non_gap_end != 0:
                 log.info("Removed %i bases from end of %s" % (non_gap_end, nam))
+                out.write("Removed %i bases from end of %s" % (non_gap_end, nam))
+                out.write('\n')
             startpos = np.where(row[0:start] != "-")[0]
             endpos = np.where(row[end:] != "-")[0] + end
             r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
 
+    out.close()
     return (np.array(newarr), r)
 
 
@@ -419,6 +425,7 @@ def checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile):
     if len(np.shape(arr)) == 1:
         raise RuntimeError ("Sequences in alignment are not the same length")
 
+
 def listFonts(outfile):
     flist = matplotlib.font_manager.get_fontconfig_fonts()
     flist2 = []
@@ -436,6 +443,7 @@ def listFonts(outfile):
         a.text(0, i, fname, fontdict={'name': fname})
     a.set_axis_off()
     f.savefig(outfile, dpi=200, bbox_inches='tight')
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -546,7 +554,8 @@ def main():
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
 
-    handler = logging.FileHandler("log.log")
+    logfile = "%s_log.txt" % args.outfile_stem
+    handler = logging.FileHandler(logfile)
     handler.setLevel(logging.INFO)
 
     # create a logging format
@@ -621,13 +630,15 @@ def main():
 
     rmfile = "%s_removed.txt" % args.outfile_stem
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
+    reset_rmfile = open(rmfile, "w")
+    reset_rmfile.close()
     print (args.outfile_stem)
     checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.crop_ends:
         print ("crop ends")
         # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
-        arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap)
+        arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap, rmfile)
         print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
@@ -636,6 +647,7 @@ def main():
         checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.remove_badlyaligned:
+        # removes sequences
         print ("remove badly aligned")
         arr, r = removeBadlyAligned(arr, nams, args.remove_badlyaligned_minperc)
         print(r)
@@ -652,7 +664,8 @@ def main():
                                   log,
                                   args.insertion_min_size,
                                   args.insertion_max_size,
-                                  args.insertion_min_flank)
+                                  args.insertion_min_flank,
+                                  rmfile)
         print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
@@ -677,7 +690,7 @@ def main():
         # for now: run as default
         # HERE
         print("test")
-        arr, r = removeGapOnly(arr, relativePositions, log)
+        arr, r = removeGapOnly(arr, relativePositions, log, rmfile)
         print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
