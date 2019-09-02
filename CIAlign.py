@@ -487,6 +487,8 @@ def main():
     parser.add_argument("--consensus_name", dest="consensus_name",
                         type=str, default="consensus",
                         help="name of consensus sequence")
+    parser.add_argument("--plot_coverage", dest="plot_coverage",
+                        action="store_true", help="plot the coverage as an interpolated function")
 
     parser.add_argument("--crop_ends", dest="crop_ends",
                         action="store_true", help="run the cropEnds function to remove badly aligned ends")
@@ -572,27 +574,27 @@ def main():
     log.addHandler(handler)
 
 # =============================================================================
-#     # read INI file
-#     args = parser.parse_args()
-#     inifile = args.inifile
-#     print(inifile)
-#
-#     parameter = dict()
-#     for line in open(inifile).readlines():
-#         if "=" in line and line[0] != ";":
-#             line = line.split("#")[0].strip().split("=")
-#             try:
-#                 a = float(line[1])
-#                 if a == int(a):
-#                     parameter[line[0]] = int(a)
-#                 else:
-#                     parameter[line[0]] = a
-#             except:
-#                 try:
-#                     parameter[line[0]] = line[1].replace('"', '')
-#                 except:
-#                     parameter[line[0]] = ""
-#     print(parameter)
+    # # read INI file
+    # args = parser.parse_args()
+    # inifile = args.inifile
+    # print(inifile)
+    #
+    # parameter = dict()
+    # for line in open(inifile).readlines():
+    #     if "=" in line and line[0] != ";":
+    #         line = line.split("#")[0].strip().split("=")
+    #         try:
+    #             a = float(line[1])
+    #             if a == int(a):
+    #                 parameter[line[0]] = int(a)
+    #             else:
+    #                 parameter[line[0]] = a
+    #         except:
+    #             try:
+    #                 parameter[line[0]] = line[1].replace('"', '')
+    #             except:
+    #                 parameter[line[0]] = ""
+    # print(parameter)
 # =============================================================================
 
     log.info("Initial parameters: %s" % str(args))
@@ -746,6 +748,14 @@ def main():
         out.close()
         outf = "%s_with_consensus.fasta" % args.outfile_stem
         writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
+
+    if args.plot_coverage:
+        coverage_file = args.outfile_stem + "_coverage.png"
+        if not args.make_consensus:
+            cons, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
+
+        consensusSeq.makeCoveragePlot(cons, coverage, coverage_file)
+
 
     if args.make_sequence_logo:
         print ("make sequence logo")
