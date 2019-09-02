@@ -27,9 +27,16 @@ This allows the user to:
 * numpy
 * scipy
 
-The tool runs in Python 3 
+## Installation
+? conda
+
+The current release of CIAlin can be downloaded directly using [this link](https://github.com/KatyBrown/CIAlign/archive/v0.1.0.tar.gz)
+
+Add the CIAlign directory to your PATH environment variable as described [here](https://gist.github.com/nex3/c395b2f8fd4b02068be37c961301caa7)
 
 ## Usage
+### Basic Usage
+`CIAlign --infile INFILE --outfile_stem STEM`
 
 ## Functions
 
