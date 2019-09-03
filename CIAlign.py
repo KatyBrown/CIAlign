@@ -74,40 +74,6 @@ def writeOutfile(outfile, arr, nams, removed, rmfile=None):
         rm.close()
 
 
-def getAAColours():
-    return {'D':'#E60A0A',
-            'E':'#E60A0A',
-            'C':'#E6E600',
-            'M':'#E6E600',
-            'K':'#145AFF',
-            'R':'#145AFF',
-            'S':'#FA9600',
-            'T':'#FA9600',
-            'F':'#3232AA',
-            'Y':'#3232AA',
-            'N':'#00DCDC',
-            'Q':'#00DCDC',
-            'G':'#EBEBEB',
-            'L':'#0F820F',
-            'V':'#0F820F',
-            'I':'#0F820F',
-            'A':'#C8C8C8',
-            'W':'#B45AB4',
-            'H':'#8282D2',
-            'P':'#DC9682',
-            'X': '#b2b2b2',
-            '-': '#FFFFFF00'}
-
-
-def getNtColours():
-    return {'A': '#f43131',
-            'G': '#f4d931',
-            'T': '#315af4',
-            'C': '#1ed30f',
-            'N': '#b2b2b2',
-            "-": '#FFFFFF'}
-
-
 def seqType(arr):
     '''
     Detects if an alignment is of nucleotides or amino acids
