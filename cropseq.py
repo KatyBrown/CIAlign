@@ -117,7 +117,7 @@ def countGaps(sequence):
 # return an array and a list of (start,end)
 
 def main():
-    print('blaaa')
+   # print('blaaa')
     parser = argparse.ArgumentParser(
             description='''Improve a multiple sequence alignment''')
 
@@ -133,8 +133,8 @@ def main():
 
     for row in arr:
         start, end = determineStartEnd(row)
-        print(start)
-        print(end)
+       # print(start)
+       # print(end)
 
 if __name__ == "__main__":
     main()

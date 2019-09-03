@@ -245,7 +245,7 @@ def removeGapOnly(arr, relativePositions, log):
     return (arr, rmpos)
 
 
-def cropEnds(arr, log, nams, mingap):
+def cropEnds(arr, nams, log, mingap):
     newarr = []
     r = dict()
     for i, row in enumerate(arr):
@@ -633,7 +633,7 @@ def main():
     if args.crop_ends:
         print ("crop ends")
         # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
-        arr, r = cropEnds(arr, log, nams, args.crop_ends_mingap)
+        arr, r = cropEnds(arr, nams, log, args.crop_ends_mingap)
         # print(r)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
@@ -730,7 +730,7 @@ def main():
 
     if args.make_consensus:
         print ("make consensus")
-        cons, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
+        cons, coverage = consensusSeq.findConsensus(arr, log, args.consensus_type)
         consarr = np.array(cons)
         arr_plus_cons = np.row_stack((arr, consarr))
         cons = "".join(cons)

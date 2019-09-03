@@ -160,7 +160,7 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
 #         renderer.draw_path(gc, tpath, affine, rgbFace)
 
 
-def findConsensus(alignment, consensus_type="majority"):
+def findConsensus(alignment, log, consensus_type="majority"):
     '''
     '''
     consensus = []
