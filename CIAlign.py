@@ -57,7 +57,8 @@ def FastaToArray(infile):
 def writeOutfile(outfile, arr, nams, removed, rmfile=None):
     out = open(outfile, "w")
     if rmfile is not None:
-        rm = open(rmfile, "w")
+        rm = open(rmfile, "a")
+        rm.write("Removed sequences:\n")
     else:
         rm = None
     i = 0
@@ -134,8 +135,7 @@ def seqType(arr):
         raise RuntimeError ("Majority of positions are not known nucleotides or amino acids")
 
 
-def removeInsertions(arr, relativePositions, log, min_size, max_size,
-                     min_flank):
+def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank, rmfile):
     '''
     Removes insertions of size between min_size and
     max_size which have lower coverage than their flanking reg ions, if at least
@@ -143,7 +143,7 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size,
     but not the insertions.
     '''
     log.info("Removing insertions\n")
-    # print ("start")
+    out = open(rmfile, "a")
     # record which sites are not "-"
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
@@ -193,6 +193,9 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size,
     #keeppos = np.invert(np.in1d(keeppos, rmpos)) # I think here we need the absolute positions? not sure though
     keeppos = np.invert(np.in1d(keeppos, rmpos))
     log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
+    out.write("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
+    out.write('\n')
+    out.close()
     arr = arr[:, keeppos]
     return (arr, set(rmpos))
 
@@ -213,10 +216,11 @@ def removeTooShort(arr, nams, log, min_length):
     return (arr, rmnames)
 
 
-def removeGapOnly(arr, relativePositions, log):
-    #print("remove gap only:")
-    #print("----------------")
-    #print(arr)
+def removeGapOnly(arr, relativePositions, log, rmfile):
+    out = open(rmfile, "a")
+    if out.closed:
+        print('file is closed')
+
     if len(arr) != 0:
         print (arr.shape)
         sums = sum(arr == "-")
@@ -224,28 +228,23 @@ def removeGapOnly(arr, relativePositions, log):
         rmpos = []
         for n in absolutePositions:
             rmpos.append(relativePositions[n])
-        #print("relative positions:")
-        #print(relativePositions)
-        #print("absolute positions:")
-        #print(absolutePositions)
-        #print("rmpos:")
-        #print(rmpos)
         # remove deleted columns from relativePositions
         for n in rmpos:
             relativePositions.remove(n)
-        #print("relative positions now:")
-        #print(relativePositions)
         rmpos = set(rmpos)
         arr = arr[:, sums != len(arr[:,0])]
         log.info("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
+        out.write("Removing gap only sites %s" % (", ".join([str(x) for x in rmpos])))
+        out.write('\n')
     else:
         rmpos = set()
-    #print(rmpos)
-    #print(arr)
+
+    out.close()
     return (arr, rmpos)
 
 
-def cropEnds(arr, nams, log, mingap):
+def cropEnds(arr, nams, log, mingap, rmfile):
+    out = open(rmfile, "a")
     newarr = []
     r = dict()
     for i, row in enumerate(arr):
@@ -261,13 +260,18 @@ def cropEnds(arr, nams, log, mingap):
             non_gap_end = sum(row[end:] != "-")
             if non_gap_start != 0:
                 log.info("Removed %i bases from start of %s" % (non_gap_start, nam))
+                out.write("Removed %i bases from start of %s" % (non_gap_start, nam))
+                out.write('\n')
             if non_gap_end != 0:
                 log.info("Removed %i bases from end of %s" % (non_gap_end, nam))
+                out.write("Removed %i bases from end of %s" % (non_gap_end, nam))
+                out.write('\n')
             startpos = np.where(row[0:start] != "-")[0]
             endpos = np.where(row[end:] != "-")[0] + end
             r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
 
+    out.close()
     return (np.array(newarr), r)
 
 
@@ -368,7 +372,7 @@ def drawMiniAlignment(arr, log, nams, outfile, typ, dpi, title, width, height,
         a.scatter(xpoints, [j]*ali_width, color=cols, s=lineweight**2, marker="|", zorder=2)
         j += 1
 
-    
+
     a.spines['right'].set_visible(False)
     a.spines['top'].set_visible(False)
     a.spines['left'].set_visible(False)
@@ -421,6 +425,7 @@ def checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile):
     if len(np.shape(arr)) == 1:
         raise RuntimeError ("Sequences in alignment are not the same length")
 
+
 def listFonts(outfile):
     flist = matplotlib.font_manager.get_fontconfig_fonts()
     flist2 = []
@@ -438,6 +443,7 @@ def listFonts(outfile):
         a.text(0, i, fname, fontdict={'name': fname})
     a.set_axis_off()
     f.savefig(outfile, dpi=200, bbox_inches='tight')
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -481,6 +487,8 @@ def main():
     parser.add_argument("--consensus_name", dest="consensus_name",
                         type=str, default="consensus",
                         help="name of consensus sequence")
+    parser.add_argument("--plot_coverage", dest="plot_coverage",
+                        action="store_true", help="plot the coverage as an interpolated function")
 
     parser.add_argument("--crop_ends", dest="crop_ends",
                         action="store_true", help="run the cropEnds function to remove badly aligned ends")
@@ -542,7 +550,7 @@ def main():
     parser.add_argument("--sequence_logo_nt_per_row", dest='sequence_logo_nt_per_row',
                         type=int, default=50, help="number of nucleotides or aas to show per row in the sequence logo")
     parser.add_argument("--sequence_logo_filetype", dest='sequence_logo_filetype',
-                        type=str, default='png', help="output file type for sequence logo - png/jpg/svg")    
+                        type=str, default='png', help="output file type for sequence logo - png/jpg/svg")
     parser.add_argument("--list_fonts_only", dest='list_fonts_only',
                         action="store_true",
                         help="make a swatch showing available fonts")
@@ -552,7 +560,8 @@ def main():
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
 
-    handler = logging.FileHandler("log.log")
+    logfile = "%s_log.txt" % args.outfile_stem
+    handler = logging.FileHandler(logfile)
     handler.setLevel(logging.INFO)
 
     # create a logging format
@@ -565,27 +574,27 @@ def main():
     log.addHandler(handler)
 
 # =============================================================================
-#     # read INI file
-#     args = parser.parse_args()
-#     inifile = args.inifile
-#     print(inifile)
-#
-#     parameter = dict()
-#     for line in open(inifile).readlines():
-#         if "=" in line and line[0] != ";":
-#             line = line.split("#")[0].strip().split("=")
-#             try:
-#                 a = float(line[1])
-#                 if a == int(a):
-#                     parameter[line[0]] = int(a)
-#                 else:
-#                     parameter[line[0]] = a
-#             except:
-#                 try:
-#                     parameter[line[0]] = line[1].replace('"', '')
-#                 except:
-#                     parameter[line[0]] = ""
-#     print(parameter)
+    # # read INI file
+    # args = parser.parse_args()
+    # inifile = args.inifile
+    # print(inifile)
+    #
+    # parameter = dict()
+    # for line in open(inifile).readlines():
+    #     if "=" in line and line[0] != ";":
+    #         line = line.split("#")[0].strip().split("=")
+    #         try:
+    #             a = float(line[1])
+    #             if a == int(a):
+    #                 parameter[line[0]] = int(a)
+    #             else:
+    #                 parameter[line[0]] = a
+    #         except:
+    #             try:
+    #                 parameter[line[0]] = line[1].replace('"', '')
+    #             except:
+    #                 parameter[line[0]] = ""
+    # print(parameter)
 # =============================================================================
 
     log.info("Initial parameters: %s" % str(args))
@@ -627,14 +636,16 @@ def main():
 
     rmfile = "%s_removed.txt" % args.outfile_stem
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
-    # print (args.outfile_stem)
+    reset_rmfile = open(rmfile, "w")
+    reset_rmfile.close()
     checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.crop_ends:
         print ("crop ends")
         # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
-        arr, r = cropEnds(arr, nams, log, args.crop_ends_mingap)
+        arr, r = cropEnds(arr, nams, log, args.crop_ends_mingap, rmfile)
         # print(r)
+
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -658,8 +669,8 @@ def main():
                                   log,
                                   args.insertion_min_size,
                                   args.insertion_max_size,
-                                  args.insertion_min_flank)
-        # print(r)
+                                  args.insertion_min_flank,
+                                  rmfile)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -682,9 +693,7 @@ def main():
         print ("remove gap only")
         # for now: run as default
         # HERE
-        # print("test")
-        arr, r = removeGapOnly(arr, relativePositions, log)
-        # print(r)
+        arr, r = removeGapOnly(arr, relativePositions, log, rmfile)
         if arr.size == 0:
             log.error(emptyAlignmentMessage)
             sys.exit()
@@ -741,6 +750,14 @@ def main():
         out.close()
         outf = "%s_with_consensus.fasta" % args.outfile_stem
         writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
+
+    if args.plot_coverage:
+        coverage_file = args.outfile_stem + "_coverage.png"
+        if not args.make_consensus:
+            cons, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
+
+        consensusSeq.makeCoveragePlot(cons, coverage, coverage_file)
+
 
     if args.make_sequence_logo:
         print ("make sequence logo")

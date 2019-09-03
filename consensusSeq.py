@@ -198,11 +198,17 @@ def findConsensus(alignment, log, consensus_type="majority"):
     return consensus, coverage
 
 
-def makePlot(consensus, coverage):
+def makeCoveragePlot(consensus, coverage, dest):
 
     x = np.arange(0, len(coverage), 1);
     y = coverage
-    # print(len(x), len(y))
+    bla = np.array(coverage)
+
+    xmin, xmax = x.min(), x.max()
+    N = 100
+
+    xx = np.linspace(xmin, xmax, N)
+
 
     f = plt.figure()
     a = f.add_subplot('311')
@@ -211,16 +217,21 @@ def makePlot(consensus, coverage):
 
     b = f.add_subplot('312')
 
+    # polynomial interpolation
+    #c = f.add_subplot('313')
+    #z = np.polyfit(x, bla, 30)
+    #p = np.poly1d(z)
+    #c.plot(xx, p(xx))
+
+
     #xnew = np.linspace(x.min(),x.max(),300) #300 represents number of points to make between T.min and T.max
 
     t, c, k = interpolate.splrep(x, y, s=0, k=4)
-    N = 100
-    xmin, xmax = x.min(), x.max()
-    xx = np.linspace(xmin, xmax, N)
+
     spline = interpolate.BSpline(t, c, k, extrapolate=False)
     b.plot(xx, spline(xx))
     b.get_xaxis().set_visible(False)
-    f.savefig('blub.png')
+    f.savefig(dest)
 
 
 def sequence_logo(alignment,
@@ -250,16 +261,17 @@ def sequence_logo(alignment,
         a.set_xlim(rstart, rstart+figrowlength)
         a.set_ylim(0, 3.1)
         limits = a.axis()
-    
+
         for i in range(rstart, rend):
-            
+
             unique, counts = np.unique(alignment[:,i],
                                        return_counts=True)
             count = dict(zip(unique, counts))
             height_per_base, info_per_base = calc_entropy(count,
                                                           len(alignment[:,0]),
-                                                          that_letter=that_letter)
-    
+                                                          that_letter=that_letter,
+                                                          typ=typ)
+
             height_sum_higher = 0
             for base, height in height_per_base.items():
                 if height > 0:
@@ -341,6 +353,7 @@ def sequence_bar_logo(alignment,
     # if len(alignment[0,:]) < 65536:
     #     plt.figure(figsize=(len(alignment[0,:]) + 1,4))
     # else:
+
     alignment_width = len(alignment[0,:])
     if alignment_width < figrowlength:
         figrowlength = alignment_width
@@ -349,7 +362,7 @@ def sequence_bar_logo(alignment,
     gs = gridspec.GridSpec(ncols=1, nrows=nsegs)
     rstart = 0
     rend = rstart + figrowlength
-        
+
     for n in range(nsegs):
         if rend > alignment_width:
             rend = alignment_width
@@ -359,65 +372,107 @@ def sequence_bar_logo(alignment,
         seq_count = len(alignment[:,0])
         width = 0.75
         ind = np.arange(rstart, rend)
-        A_height = []
-        G_height = []
-        C_height = []
-        U_height = []
-    
+
+        if typ == "nt":
+            element_list = getNtColours()
+        elif typ == "aa":
+            element_list = getAAColours()
+
+        height_list = {}
+
+        for element in element_list:
+            height_list[element] = []
+
+            # A_height = []
+            # G_height = []
+            # C_height = []
+            # U_height = []
+
+        bottom_height = []
+
         for i in range(rstart, rend):
             unique, counts = np.unique(alignment[:,i], return_counts=True)
             count = dict(zip(unique, counts))
-            height_per_base, info_per_base = calc_entropy(count, seq_count, that_letter)
-            # print('height', height_per_base)
-    
-            A_height.append(height_per_base["A"])
-            G_height.append(height_per_base["G"])
-            C_height.append(height_per_base["C"])
-            U_height.append(height_per_base[that_letter])
-    
+            height_per_base, info_per_base = calc_entropy(count, seq_count, that_letter, typ)
+            bottom_height.append(0)
+
+            for base, height in height_per_base.items():
+                height_list[base].append(height_per_base[base])
+
+            # A_height.append(height_per_base["A"])
+            # G_height.append(height_per_base["G"])
+            # C_height.append(height_per_base["C"])
+            # U_height.append(height_per_base[that_letter])
+
         if typ == 'nt':
             colours = getNtColours()
         elif typ == 'aa':
             colours = getAAColours()
-        plt.bar(ind, A_height, width, color=colours['A'])
-        # for idx,rect in enumerate(bar_plot):
-        #     height = rect.get_height()
-        #     ax.text(rect.get_x() + rect.get_width(), height, "A", ha='center', va='bottom')
-    
-        plt.bar(ind, G_height, width, bottom=A_height, color=colours['G'])
-        plt.bar(ind, C_height, bottom=[i+j for i,j in zip(A_height, G_height)], width=width, color=colours['C'])
-        plt.bar(ind, U_height, bottom=[i+j+k for i,j,k in zip(A_height, G_height, C_height)], width=width,
-                                       color=colours['U'])
+        # plt.bar(ind, A_height, width, color=colours['A'])
+        # # for idx,rect in enumerate(bar_plot):
+        # #     height = rect.get_height()
+        # #     ax.text(rect.get_x() + rect.get_width(), height, "A", ha='center', va='bottom')
+        #
+        # plt.bar(ind, G_height, width, bottom=A_height, color=colours['G'])
+        # plt.bar(ind, C_height, bottom=[i+j for i,j in zip(A_height, G_height)], width=width, color=colours['C'])
+        # plt.bar(ind, U_height, bottom=[i+j+k for i,j,k in zip(A_height, G_height, C_height)], width=width,
+        #                                color=colours['U'])
+
+        for base, height in height_list.items():
+                plt.bar(ind, height, width, bottom=bottom_height, color=colours[base])
+                bottom_height = [i+j for i,j in zip(bottom_height,height)]
+
+
         plt.xticks([rstart, rend-1], [rstart+1, rend])
         plt.yticks(np.arange(0, 3.1, 1))
         plt.xlabel("Position")
         plt.ylabel("Bit Score")
-    
+
         axes.spines['right'].set_visible(False)
         axes.spines['top'].set_visible(False)
         rstart += figrowlength
         rend += figrowlength
     plt.savefig(figname, bbox_inches='tight', dpi=figdpi)
     plt.close()
-    #todo tidy up and use normal names and normals files
+    #todo tidy up and use normal names and normal files
 
 
 
-def calc_entropy(count, seq_count, that_letter):
+def calc_entropy(count, seq_count, that_letter, typ):
 
     # total number of Sequences - gap number
     # adjust total height later to make up for gaps - i think that's covered (?)
+    if typ == "nt":
+        element_list = getNtColours()
+        s = 4
+        max_entropy = log(4,2)
+    elif typ == "aa":
+        element_list = getAAColours()
+        s = 20
+        max_entropy = log(20,2)
 
-    sample_size_correction = (1/log(2)) * (3/(2*seq_count)) # wahh here or later?
+    info_per_base = {}
+    freq_per_base = {}
+    height_per_base = {}
+    entropy_per_base = {}
+
+    for element in element_list:
+        info_per_base[element] = 0
+        freq_per_base[element] = 0
+        height_per_base[element] = 0
+        entropy_per_base[element] = 0
+
+
+    sample_size_correction = (1/log(2)) * ((s-1)/(2*seq_count)) # wahh here or later?
     gap_correction = seq_count
     if count.get("-"):
         seq_count -= count.get("-")
     gap_correction = seq_count/gap_correction
     # print('gap correction', gap_correction)
-    info_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
-    freq_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
-    height_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
-    entropy_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
+    # info_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
+    # freq_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
+    # height_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
+    # entropy_per_base = {"A": 0, "G": 0, that_letter: 0, "C": 0}
     entropy = 0
     if seq_count == 0:
         return height_per_base, info_per_base
@@ -427,9 +482,9 @@ def calc_entropy(count, seq_count, that_letter):
             frequency = quantity/seq_count
             freq_per_base[base] = frequency
             entropy -= frequency*log(frequency, 2)
-            info_per_base[base] = 2 + frequency*log(frequency, 2)
+            info_per_base[base] = max_entropy + frequency*log(frequency, 2)
             entropy_per_base[base] = -frequency*log(frequency,2)
-    information_per_column = 2-entropy-sample_size_correction
+    information_per_column = max_entropy-entropy-sample_size_correction
     # print("info", info_per_base)
     for base, quantity in info_per_base.items():
         if freq_per_base[base]*information_per_column < 0:
