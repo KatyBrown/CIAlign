@@ -39,7 +39,7 @@ Add the CIAlign directory to your PATH environment variable as described [here](
 `CIAlign --infile INFILE --outfile_stem STEM --inifile cialign.ini`
 #### Parameters
 | Parameter | Required / Optional | Description | Default Value |
-| --- | --- | --- | --- |
+| --------- | ------------------- | ------------------------------------------------------- | ------------ |
 | --infile | required | path to input alignment FASTA file | None |
 | --inifile | required | path to ini file | None |
 | --outfile_stem | optional | prefix for output files, including the path to the output directory, e.g. if the outfile_stem is /home/documents/alignment/my_alignment your parsed alignment will be saved as /home/documents/alignment/my_alignment_parsed.fasta | CIAlign |
@@ -53,7 +53,7 @@ Each of these steps will be performed sequentially in the order specified in the
 The parsed alignment after all steps have been performed will be saved as **OUTFILE_STEM_parsed.fasta**
 
 | Parameter | Required / Optional | Description | Default Value |
-| --- | --- | --- | --- |
+| --------- | ------------------- | ------------------------------------------------------- | ------------ |
 | --crop_ends | optional | Crop the ends of sequences if they are poorly aligned | False |
 | *--crop_ends_mingap* | optional | minimum gap size to consider when classifying a sequence as poorly aligned| 10 |
 | --remove_badlyaligned | optional | Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False |
@@ -75,7 +75,7 @@ Output files:
 * **OUTFILE_STEM_with_consensus.fasta** - the parsed alignment plus the consensus
 
 | Parameter | Required / Optional | Description | Default Value |
-| --- | --- | --- | --- |
+| --------- | ------------------- | ------------------------------------------------------- | ------------ |
 | --make_consensus | optional | Make a consensus sequence based on the parsed alignment | False |
 | *--consensus_type* | optional | Type of consensus sequence to make - can be majority, to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position | majority |
 | *--consensus_keepgaps* | optional | If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False) | False |
@@ -93,7 +93,7 @@ Output files:
 * **OUTFILE_STEM_markup.png (or svg, tiff, jpg)** - the input alignment with deleted rows and columns marked
 
 | Parameter | Required / Optional | Description | Default Value |
-| --- | --- | --- | --- |
+| --------- | ------------------- | ------------------------------------------------------- | ------------ |
 | --plot_input | optional | Draws a mini alignment for the input FASTA file | False |
 | --plot_output | optional | Draws a mini alignment for the output FASTA file | False |
 | --plot_markup | optional | Draws the input alignment but with the columns and rows which have been removed by each function marked | False |
@@ -111,7 +111,7 @@ Output_files:
 * **OUTFILE_STEM_logo_text.png (or svg, tiff, jpg)** - the alignment represented as a standard sequence logo using text
 
 | Parameter | Required / Optional | Description | Default Value |
-| --- | --- | --- | --- |
+| --------- | ------------------- | ------------------------------------------------------- | ------------ |
 | --make_sequence_logo | optional | Draw a sequence logo | False |
 | *--sequence_logo_type* | optional | Can be bar, to draw the logo as a bar chart, text, to draw a standard sequence logo using text, or both, to draw both | bar |
 | *--sequence_logo_dpi* | optional | DPI for sequence logo | 300 |
@@ -127,7 +127,7 @@ Output file:
 * **OUTFILE_STEM_coverage.png** - image showing the alignment coverage
 
 | Parameter | Required / Optional | Description | Default Value |
-| --- | --- | --- | --- |
+| --------- | ------------------- | ------------------------------------------------------- | ------------ |
 | --plot_coverage | optional | Plot the coverage of the MSA | False |
 
 ## Analysing Alignment Statistics
@@ -137,7 +137,7 @@ These functions provide additional analyses you may wish to perform on your alig
 Generates a matrix showing the proportion of identical bases / amino acids between each pair of sequences in the MSA.
 
 | Parameter | Required / Optional | Description | Default Value |
-| --- | --- | --- | --- |
+| --------- | ------------------- | ------------------------------------------------------- | ------------ |
 | --make_similarity_matrix_input | optional | make a similarity matrix for the input alignment | False |
 | --make_similarity_matrix_output | optional | make a similarity matrix for the output alignment | False |
 | *--make_simmatrix_keepgaps* | optional | Include positions with gaps in either or both sequences in the similarity calculation | False |
