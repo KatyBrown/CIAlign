@@ -54,6 +54,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     for t in a.get_xticklabels():
         t.set_fontsize(8)
 
+    """
     if markup:
         # print(markupdict)
         if "crop_ends" in markupdict:
@@ -79,4 +80,5 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
             colour = "#EEAEEE"
             a.vlines(list(markupdict['remove_gaponly']),
                      0, ali_height, color=colour, lw=0.75, zorder=1)
+    """
     f.savefig(outfile, dpi=dpi)

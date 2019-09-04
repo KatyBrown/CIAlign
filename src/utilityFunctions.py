@@ -4,7 +4,10 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import consensusSeq
+
+
+def emptyAlignmentMessage():
+    return ("We deleted so much that the alignment is gone forever. We are so sorry. You're fucked.")
 
 def FastaToArray(infile):
     '''
@@ -103,8 +106,8 @@ def seqType(arr):
     Detects if an alignment is of nucleotides or amino acids
     '''
     seq1 = arr[0]
-    nucs = set(list(consensusSeq.getNtColours().keys()))
-    aas = set(list(consensusSeq.getAAColours().keys()))
+    nucs = set(list(getNtColours().keys()))
+    aas = set(list(getAAColours().keys()))
     n = 0
     a = 0
     x = 0

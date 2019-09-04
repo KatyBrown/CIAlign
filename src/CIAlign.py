@@ -11,8 +11,6 @@ import miniAlignments
 import similarityMatrix
 import consensusSeq
 
-emptyAlignmentMessage = "We deleted so much that the alignment is gone forever. We are so sorry. You're fucked."
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -216,15 +214,18 @@ def main():
         # print(r)
 
         if arr.size == 0:
-            log.error(emptyAlignmentMessage)
+            log.error(utilityFunctions.emptyAlignmentMessage)
             sys.exit()
         markupdict['crop_ends'] = r
-        parsingFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
+        utilityFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
 
     if args.remove_badlyaligned:
         # print ("remove badly aligned")
         arr, r = parsingFunctions.removeBadlyAligned(arr, nams, args.remove_badlyaligned_minperc)
         # print(r)
+        if arr.size == 0:
+            log.error(utilityFunctions.emptyAlignmentMessage)
+            sys.exit()
         markupdict['remove_badlyaligned'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
@@ -241,7 +242,7 @@ def main():
                                                   args.insertion_min_flank,
                                                   rmfile)
         if arr.size == 0:
-            log.error(emptyAlignmentMessage)
+            log.error(utilityFunctions.emptyAlignmentMessage)
             sys.exit()
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
@@ -251,7 +252,7 @@ def main():
         print ("remove short")
         arr, r = parsingFunctions.removeTooShort(arr, nams, log, args.remove_min_length)
         if arr.size == 0:
-            log.error(emptyAlignmentMessage)
+            log.error(utilityFunctions.emptyAlignmentMessage)
             sys.exit()
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
@@ -264,7 +265,7 @@ def main():
         # HERE
         arr, r = parsingFunctions.removeGapOnly(arr, relativePositions, log, rmfile)
         if arr.size == 0:
-            log.error(emptyAlignmentMessage)
+            log.error(utilityFunctions.emptyAlignmentMessage)
             sys.exit()
         markupdict['remove_gaponly'] = r
         utilityFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
