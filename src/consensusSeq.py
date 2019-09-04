@@ -6,99 +6,15 @@ from math import log
 import logging
 import argparse
 import numpy as np
-import numpy as np
 import scipy.interpolate as interpolate
 import matplotlib.pyplot as plt
-import copy
 import operator
 import os
-from matplotlib.font_manager import FontProperties
 #from scipy.interpolate import spline #this one is obsolete
 import matplotlib.patheffects
 import math
-#from PIL import ImageFont
 from matplotlib import gridspec
-
-import sys
-import itertools
-
-
-#from CIAlign import FastaToArray
-
-
-# python3 consensus Seq.py --infile /Users/lotti/Documents/Test_Case/gap_test/SevenJEV.afa
-
-
-def FastaToArray(infile):
-    '''
-    Convert an alignment into a numpy array.
-    Parameters
-    ----------
-    fasta_dict: dict
-        dictionary based on a fasta file with sequence names as keys and
-        sequences as values
-
-    Returns
-    -------
-    arr: np.array
-        2D numpy array in the same order as fasta_dict where each row
-        represents a single column in the alignment and each column a
-        single sequence.
-    '''
-
-    nams = []
-    seqs = []
-    nam = ""
-    seq = ""
-    with open(infile) as input:
-        for line in input:
-            line = line.strip()
-            if line[0] == ">":
-                    seqs.append(seq)
-                    nams.append(nam)
-                    seq = []
-                    nam = line.replace(">", "")
-            else:
-                seq += list(line)
-    seqs.append(seq)
-    nams.append(nam)
-    arr = np.array(seqs[1:])
-    return (arr, nams[1:])
-
-def getAAColours():
-    return {'D':'#E60A0A',
-            'E':'#E60A0A',
-            'C':'#E6E600',
-            'M':'#E6E600',
-            'K':'#145AFF',
-            'R':'#145AFF',
-            'S':'#FA9600',
-            'T':'#FA9600',
-            'F':'#3232AA',
-            'Y':'#3232AA',
-            'N':'#00DCDC',
-            'Q':'#00DCDC',
-            'G':'#EBEBEB',
-            'L':'#0F820F',
-            'V':'#0F820F',
-            'I':'#0F820F',
-            'A':'#C8C8C8',
-            'W':'#B45AB4',
-            'H':'#8282D2',
-            'P':'#DC9682',
-            'X': '#b2b2b2',
-            '-': '#FFFFFF00'}
-
-
-def getNtColours():
-    return {'A': '#1ed30f',
-            'G': '#f4d931',
-            'T': '#f43131',
-            'C': '#315af4',
-            'N': '#b2b2b2',
-            "-": '#FFFFFF',
-            "U": '#f43131'}
-
+import utilityFunctions
 
 def getAxisUnits(figure, subplot):
     axis_dimensions = subplot.transData.transform([(subplot.get_xlim()[1], subplot.get_ylim()[1]),(0, 0)])- subplot.transData.transform((0,0))
@@ -129,9 +45,9 @@ def PixelsToPoints(pixels, dpi):
 
 def getLetters(typ='nt', fontname='monospace', dpi=500):
     if typ == 'nt':
-        colours = getNtColours()
+        colours = utilityFunctions.getNtColours()
     elif typ == 'aa':
-        colours = getAAColours()
+        colours = utilityFunctions.getAAColours()
     for base in colours.keys():
         f = plt.figure(figsize=(1, 1), dpi=dpi, edgecolor='black')
         a = f.add_subplot(111)
@@ -199,11 +115,8 @@ def findConsensus(alignment, log, consensus_type="majority"):
 
 
 def makeCoveragePlot(consensus, coverage, dest):
-
     x = np.arange(0, len(coverage), 1);
     y = coverage
-    bla = np.array(coverage)
-
     xmin, xmax = x.min(), x.max()
     N = 100
 
@@ -232,7 +145,6 @@ def makeCoveragePlot(consensus, coverage, dest):
     b.plot(xx, spline(xx))
     b.get_xaxis().set_visible(False)
     f.savefig(dest)
-
 
 def sequence_logo(alignment,
                   figname,
@@ -292,51 +204,14 @@ def sequence_logo(alignment,
         rend += figrowlength
 
     if typ == 'nt':
-        allbases = getNtColours()
+        allbases = utilityFunctions.getNtColours()
     elif typ == 'aa':
-        allbases = getAAColours()
+        allbases = utilityFunctions.getAAColours()
     for base in allbases:
         os.unlink("%s_temp.tiff" % base)
     f.savefig(figname, dpi=figdpi, bbox_inches='tight')
     plt.close()
-"""
-    #plt.figure(figsize=(len(alignment[0,:]),2.5))
 
-    #plt.xkcd()
-    axes = plt.gca()
-    axes.set_xlim([0,len(alignment[0,:])+1])
-    axes.set_ylim([0,3])
-    seq_count = len(alignment[:,0])
-    x = 0
-    font = FontProperties()
-    font.set_size(80)
-    #print("fuck die henne", font.ascent())
-
-    for i in range(0,len(alignment[0,:])):
-        unique, counts = np.unique(alignment[:,i], return_counts=True)
-        count = dict(zip(unique, counts))
-        height_per_base, info_per_base = calc_entropy(count, seq_count)
-        print('height', height_per_base)
-
-        height_sum_higher = 0
-        for base, height in height_per_base.items():
-            if height > 0:
-                txt = plt.text(x, height_sum_higher, base, fontsize=70, color='red')
-                #txt = plt.text(x, height_sum_higher, base, fontsize=80, color='red')
-                #txt.set_path_effects([Scale(1,height)])
-                height_sum_higher += height
-        # coordinates and then scale aha aha aha
-        # txt = plt.text(0, 0, "T", fontsize=64,color='red')
-        # txt.set_path_effects([Scale(1,5)])
-        # txt = plt.text(0, 0.1, "G", fontsize=64,color='green')
-        # txt.set_path_effects([Scale(1,3)])
-        # txt = plt.text(0.2, 0, "B", fontsize=64,color='blue')
-        # txt.set_path_effects([Scale(1,7)])
-        x += 1
-
-    plt.show()
-    plt.savefig('plotileini.png')
-"""
 
 def sequence_bar_logo(alignment,
                       figname,
@@ -374,10 +249,11 @@ def sequence_bar_logo(alignment,
         ind = np.arange(rstart, rend)
 
         if typ == "nt":
-            element_list = getNtColours()
+            element_list = utilityFunctions.getNtColours()
+            colours = utilityFunctions.getNtColours()
         elif typ == "aa":
-            element_list = getAAColours()
-
+            element_list = utilityFunctions.getAAColours()
+            colours = utilityFunctions.getAAColours()
         height_list = {}
 
         for element in element_list:
@@ -404,10 +280,7 @@ def sequence_bar_logo(alignment,
             # C_height.append(height_per_base["C"])
             # U_height.append(height_per_base[that_letter])
 
-        if typ == 'nt':
-            colours = getNtColours()
-        elif typ == 'aa':
-            colours = getAAColours()
+            
         # plt.bar(ind, A_height, width, color=colours['A'])
         # # for idx,rect in enumerate(bar_plot):
         # #     height = rect.get_height()
@@ -443,11 +316,11 @@ def calc_entropy(count, seq_count, that_letter, typ):
     # total number of Sequences - gap number
     # adjust total height later to make up for gaps - i think that's covered (?)
     if typ == "nt":
-        element_list = getNtColours()
+        element_list = utilityFunctions.getNtColours()
         s = 4
         max_entropy = log(4,2)
     elif typ == "aa":
-        element_list = getAAColours()
+        element_list = utilityFunctions.getAAColours()
         s = 20
         max_entropy = log(20,2)
 
@@ -495,27 +368,3 @@ def calc_entropy(count, seq_count, that_letter, typ):
             height_per_base[base] = gap_correction*freq_per_base[base]*information_per_column
 
     return height_per_base, info_per_base
-
-def main():
-    # this is just for testing purposes
-    # print('consensus test')
-    parser = argparse.ArgumentParser(
-            description='''Improve a multiple sequence alignment''')
-
-    parser.add_argument("--infile", dest='infile', type=str,
-                        help='path to input alignment')
-
-    args = parser.parse_args()
-
-    arr, orig_nams = FastaToArray(args.infile)
-
-    consensus, coverage = findConsensus(arr)
-    sequence_bar_logo(arr)
-    makePlot(consensus, coverage)
-    # print(consensus)
-    # print(coverage)
-
-
-
-if __name__ == "__main__":
-    main()

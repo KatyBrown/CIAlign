@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
-import cropseq
+import cropSeq
 
 
 def cropEnds(arr, nams, log, mingap, rmfile):
@@ -11,7 +11,7 @@ def cropEnds(arr, nams, log, mingap, rmfile):
     newarr = []
     r = dict()
     for i, row in enumerate(arr):
-        start, end = cropseq.determineStartEnd(row, mingap)
+        start, end = cropSeq.determineStartEnd(row, mingap)
         start = max(start - 1, 0)
         end = end + 1
         newseq = "-" * start + "".join(row[start:end]) + "-" * (len(row) - end)
@@ -33,7 +33,6 @@ def cropEnds(arr, nams, log, mingap, rmfile):
             endpos = np.where(row[end:] != "-")[0] + end
             r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
-
     out.close()
     return (np.array(newarr), r)
 

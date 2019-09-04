@@ -1,17 +1,16 @@
 #! /usr/bin/env python
-import logging
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import utilityFunctions
 
-import consensusSeq
 
 def arrNumeric(arr, typ):
     if typ == 'nt':
-        D = consensusSeq.getNtColours()
+        D = utilityFunctions.getNtColours()
     else:
-        D = consensusSeq.getAAColours()
+        D = utilityFunctions.getAAColours()
     
     keys = list(D.keys())
     colours = list(D.values())
@@ -27,36 +26,23 @@ def arrNumeric(arr, typ):
     cmap = matplotlib.colors.ListedColormap(colours)
     return (arr2, cmap)
 
-def drawMiniAlignment(arr,
-                      nams,
-                      log,
-                      outfile,
-                      typ,
-                      dpi,
-                      title,
-                      width,
-                      height,
-                      markup=False,
+def drawMiniAlignment(arr, nams, log, outfile, typ,
+                      dpi, title, width, height, markup=False,
                       markupdict=None):
 
     ali_height, ali_width = np.shape(arr)
     lineweight_h = 10 / ali_height
     lineweight_v = 10 / ali_width
-    if  typ == 'nt':
-        cD = consensusSeq.getNtColours()
-    elif typ == 'aa':
-        cD = consensusSeq.getAAColours()
     f = plt.figure(figsize=(width, height), dpi=dpi)
     a = f.add_subplot('111')
     a.set_xlim(0, ali_width)
     a.set_ylim(-0.5, ali_height-0.5)
-    xpoints = range(0, ali_width)
     arr2, cm = arrNumeric(arr, typ)
     a.imshow(arr2, cmap=cm, aspect='auto')
-    a.hlines(np.arange(-0.5, ali_height), -0.5, ali_width, lw=lineweight_h, color='white')
-    a.vlines(np.arange(-0.5, ali_width), -0.5, ali_height, lw=lineweight_v, color='white')
-
-
+    a.hlines(np.arange(-0.5, ali_height), -0.5,
+             ali_width, lw=lineweight_h, color='white')
+    a.vlines(np.arange(-0.5, ali_width), -0.5,
+             ali_height, lw=lineweight_v, color='white')
     a.spines['right'].set_visible(False)
     a.spines['top'].set_visible(False)
     a.spines['left'].set_visible(False)

@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
-import cropseq
+import itertools
 
 def calculateSimilarityMatrix(arr, nams, minoverlap=1,
                               keepgaps=False, outfile=None, dp=4):
