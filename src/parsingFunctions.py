@@ -17,6 +17,7 @@ def cropEnds(arr, nams, rmfile, log, mingap):
         newseq = "-" * start + "".join(row[start:end]) + "-" * (len(row) - end)
         newseq = np.array(list(newseq))
         s = sum(newseq != row)
+
         if s != 0:
             nam = nams[i]
             non_gap_start = sum(row[0:start] != "-")
@@ -127,6 +128,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     for n in absolutePositions:
         relativePositions.remove(n)
     rmpos = np.array(list(rmpos))
+
     keeppos = np.arange(0, len(sums))
     #keeppos = np.invert(np.in1d(keeppos, rmpos)) # I think here we need the absolute positions? not sure though
     keeppos = np.invert(np.in1d(keeppos, rmpos))
@@ -135,7 +137,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     out.write('\n')
     out.close()
     arr = arr[:, keeppos]
-    return (arr, set(rmpos))
+    return (arr, set(rmpos), relativePositions)
 
 
 def removeTooShort(arr, nams, rmfile, log, min_length):
@@ -160,7 +162,6 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
         print('file is closed')
 
     if len(arr) != 0:
-        print (arr.shape)
         sums = sum(arr == "-")
         absolutePositions = set(np.where(sums == len(arr[:,0]))[0])
         rmpos = []
@@ -178,7 +179,7 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
         rmpos = set()
 
     out.close()
-    return (arr, rmpos)
+    return (arr, rmpos, relativePositions)
 
 
 

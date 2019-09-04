@@ -192,7 +192,7 @@ def main():
 
     removed_seqs = set()
     removed_cols = set()
-    removed_positions = set()
+    removed_positions = dict()
 
     # detect if the sequence is amino acids or nucleotides
     typ = utilityFunctions.seqType(arr)
@@ -211,11 +211,11 @@ def main():
     if args.crop_ends:
         # doesn't remove any whole columns or rows
         log.info("Cropping ends")
-
         arr, r = parsingFunctions.cropEnds(arr, nams, rmfile, log, args.crop_ends_mingap)
-
         markupdict['crop_ends'] = r
-        removed_positions = removed_positions | r
+        # if we add another function which removes single positions
+        # we need to think about how this dictionary works
+        removed_positions.update(r)
         utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_badlyaligned:
@@ -232,12 +232,11 @@ def main():
     if args.remove_insertions:
         log.info("Removing insertions")
         
-        arr, r = parsingFunctions.removeInsertions(arr, relativePositions,
-                                                   rmfile, log,
-                                                   args.insertion_min_size,
-                                                   args.insertion_max_size,
-                                                   args.insertion_min_flank,
-                                                   rmfile)
+        arr, r, relativePositions = parsingFunctions.removeInsertions(arr, relativePositions,
+                                                                       rmfile, log,
+                                                                       args.insertion_min_size,
+                                                                       args.insertion_max_size,
+                                                                       args.insertion_min_flank)
 
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
@@ -257,16 +256,10 @@ def main():
     if args.remove_gaponly:
         log.info("Removing gap only columns")
 
-        arr, r = parsingFunctions.removeGapOnly(arr, relativePositions,
-                                                rmfile, log)
-
-        if arr.size == 0:
-            log.error(utilityFunctions.emptyAlignmentMessage)
-            sys.exit()
+        arr, r, relativePositions = parsingFunctions.removeGapOnly(arr, relativePositions,
+                                                                   rmfile, log)
         markupdict['remove_gaponly'] = r
         utilityFunctions.checkArrLength(arr, log)
-
-
 
     if args.make_simmatrix_input:
         print ("make similarity matrix input")
@@ -290,29 +283,29 @@ def main():
     if args.plot_input:
         print ("plot input")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
-        miniAlignments.drawMiniAlignment(orig_arr, log, orig_nams,
+        miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
                                          outf, typ, args.plot_dpi,
-                                         args.outfile_stem, args.plot_width,
+                                         False, args.plot_width,
                                          args.plot_height)
 
 
     if args.plot_output:
         print ("plot output")
         outf = "%s_output.%s" % (args.outfile_stem, args.plot_format)
-        miniAlignments.drawMiniAlignment(arr, log, nams,
+        miniAlignments.drawMiniAlignment(arr, nams, log,
                                          outf, typ,
                                          args.plot_dpi,
-                                         args.outfile_stem,
+                                         False,
                                          args.plot_width,
                                          args.plot_height)
 
     if args.plot_markup:
         print ("plot markup")
         outf = "%s_markup.%s" % (args.outfile_stem, args.plot_format)
-        miniAlignments.drawMiniAlignment(orig_arr, log, orig_nams,
+        miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
                                          outf, typ,
                                          args.plot_dpi,
-                                         args.outfile_stem,
+                                         False,
                                          args.plot_width, args.plot_height,
                                          markup=True, markupdict=markupdict)
 
@@ -343,7 +336,6 @@ def main():
 
         if args.sequence_logo_type == 'bar':
             out = "%s_logo_bar.%s" % (args.outfile_stem, args.sequence_logo_filetype)
-            print (out)
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=args.sequence_logo_dpi,
                                            figrowlength=args.sequence_logo_nt_per_row)
