@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 import cropSeq
 
 
-def cropEnds(arr, nams, log, mingap, rmfile):
+def cropEnds(arr, nams, rmfile, log, mingap):
     out = open(rmfile, "a")
     newarr = []
     r = dict()
@@ -37,7 +37,7 @@ def cropEnds(arr, nams, log, mingap, rmfile):
     return (np.array(newarr), r)
 
 
-def removeBadlyAligned(arr, nams, percidentity=0.9):
+def removeBadlyAligned(arr, nams, rmfile, log, percidentity=0.9):
     '''
     Remove sequences which don't have the most common non-gap residue at
     > percidentity non-gap positions
@@ -72,7 +72,8 @@ def removeBadlyAligned(arr, nams, percidentity=0.9):
     return (newarr, r)
 
 
-def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank, rmfile):
+def removeInsertions(arr, relativePositions, rmfile, log,
+                     min_size, max_size, min_flank):
     '''
     Removes insertions of size between min_size and
     max_size which have lower coverage than their flanking reg ions, if at least
@@ -137,7 +138,7 @@ def removeInsertions(arr, relativePositions, log, min_size, max_size, min_flank,
     return (arr, set(rmpos))
 
 
-def removeTooShort(arr, nams, log, min_length):
+def removeTooShort(arr, nams, rmfile, log, min_length):
     '''
     Removes sequences with fewer than min_length non-gap positions from
     the alignment.
@@ -153,7 +154,7 @@ def removeTooShort(arr, nams, log, min_length):
     return (arr, rmnames)
 
 
-def removeGapOnly(arr, relativePositions, log, rmfile):
+def removeGapOnly(arr, relativePositions, rmfile, log):
     out = open(rmfile, "a")
     if out.closed:
         print('file is closed')

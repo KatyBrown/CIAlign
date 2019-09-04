@@ -5,10 +5,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-
-def emptyAlignmentMessage():
-    return ("We deleted so much that the alignment is gone forever. We are so sorry. You're fucked.")
-
 def FastaToArray(infile):
     '''
     Convert an alignment into a numpy array.
@@ -136,14 +132,17 @@ def updateNams(nams, removed_seqs):
     return (nams2)
 
 
-def checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile):
+def checkArrLength(arr, log):
+    emptyAlignmentMessage = "We deleted so much that the alignment is gone forever. We are so sorry. You're fucked."
+    differentLengthsMessage = "The sequences in your alignment are not all the same length.  You fucked up"
     if 0 in np.shape(arr):
-        writeOutfile(outfile, arr, orig_nams, removed_seqs, rmfile)
+        log.error(emptyAlignmentMessage)
         raise RuntimeError (emptyAlignmentMessage)
     if len(np.shape(arr)) == 1:
-        raise RuntimeError ("Sequences in alignment are not the same length")
+        log.error(differentLengthsMessage)
+        raise RuntimeError (differentLengthsMessage)
 
-
+    
 def listFonts(outfile):
     flist = matplotlib.font_manager.get_fontconfig_fonts()
     flist2 = []

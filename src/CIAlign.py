@@ -192,6 +192,7 @@ def main():
 
     removed_seqs = set()
     removed_cols = set()
+    removed_positions = set()
 
     # detect if the sequence is amino acids or nucleotides
     typ = utilityFunctions.seqType(arr)
@@ -205,70 +206,67 @@ def main():
     outfile = "%s_parsed.fasta" % (args.outfile_stem)
     reset_rmfile = open(rmfile, "w")
     reset_rmfile.close()
-    utilityFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
+    utilityFunctions.checkArrLength(arr, log)
 
     if args.crop_ends:
-        print ("crop ends")
-        # keep in mind that here we still have the full alignment, so we don't need any adjustments for column indicies yet
-        arr, r = parsingFunctions.cropEnds(arr, nams, log, args.crop_ends_mingap, rmfile)
-        # print(r)
+        # doesn't remove any whole columns or rows
+        log.info("Cropping ends")
 
-        if arr.size == 0:
-            log.error(utilityFunctions.emptyAlignmentMessage)
-            sys.exit()
+        arr, r = parsingFunctions.cropEnds(arr, nams, rmfile, log, args.crop_ends_mingap)
+
         markupdict['crop_ends'] = r
-        utilityFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
+        removed_positions = removed_positions | r
+        utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_badlyaligned:
-        # print ("remove badly aligned")
-        arr, r = parsingFunctions.removeBadlyAligned(arr, nams, args.remove_badlyaligned_minperc)
-        # print(r)
-        if arr.size == 0:
-            log.error(utilityFunctions.emptyAlignmentMessage)
-            sys.exit()
+        log.info("Removing badly aligned sequences")
+        
+        arr, r = parsingFunctions.removeBadlyAligned(arr, nams, rmfile, log,
+                                                     args.remove_badlyaligned_minperc)
+
         markupdict['remove_badlyaligned'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
-        utilityFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
+        utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_insertions:
-        print ("remove insertions")
-        # HERE
-        arr, r = parsingFunctions.removeInsertions(arr,
-                                                  relativePositions,
-                                                  log,
-                                                  args.insertion_min_size,
-                                                  args.insertion_max_size,
-                                                  args.insertion_min_flank,
-                                                  rmfile)
-        if arr.size == 0:
-            log.error(utilityFunctions.emptyAlignmentMessage)
-            sys.exit()
+        log.info("Removing insertions")
+        
+        arr, r = parsingFunctions.removeInsertions(arr, relativePositions,
+                                                   rmfile, log,
+                                                   args.insertion_min_size,
+                                                   args.insertion_max_size,
+                                                   args.insertion_min_flank,
+                                                   rmfile)
+
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
-        utilityFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
+        utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_short:
-        print ("remove short")
-        arr, r = parsingFunctions.removeTooShort(arr, nams, log, args.remove_min_length)
-        if arr.size == 0:
-            log.error(utilityFunctions.emptyAlignmentMessage)
-            sys.exit()
+        log.info("Removing short sequences")
+
+        arr, r = parsingFunctions.removeTooShort(arr, nams, rmfile, log,
+                                                 args.remove_min_length)
+
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
-        utilityFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
+        utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_gaponly:
-        print ("remove gap only")
-        # for now: run as default
-        # HERE
-        arr, r = parsingFunctions.removeGapOnly(arr, relativePositions, log, rmfile)
+        log.info("Removing gap only columns")
+
+        arr, r = parsingFunctions.removeGapOnly(arr, relativePositions,
+                                                rmfile, log)
+
         if arr.size == 0:
             log.error(utilityFunctions.emptyAlignmentMessage)
             sys.exit()
         markupdict['remove_gaponly'] = r
-        utilityFunctions.checkArrLength(outfile, arr, orig_nams, removed_seqs, rmfile)
+        utilityFunctions.checkArrLength(arr, log)
+
+
 
     if args.make_simmatrix_input:
         print ("make similarity matrix input")
