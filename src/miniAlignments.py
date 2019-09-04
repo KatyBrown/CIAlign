@@ -107,5 +107,19 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
                                                          ali_height,
                                                          color=colour,
                                                          zorder=46, lw=0))
-
+        legend = plt.figure(figsize=(2, 2), dpi=100)
+        l = legend.add_subplot(111)
+        colours = ['black', '#f434c5', "#7bc5ff", '#fff6b3', "#f57700"]
+        functions = ['Cropped Ends', 'Badly Aligned', 'Insertions', 'Too Short', 'Gap Only']
+        for i, c in enumerate(colours):
+            l.plot(1, 5-i, marker='.', color=c, markersize=20)
+            l.text(2, 5-i, functions[i])
+        l.set_xlim(0.5, 3)
+        l.set_ylim(-1, 6)
+        l.set_axis_off()
+        legend.gca().set_axis_off()
+        l.margins(0, 0)
+        legend.savefig("%s_legend.png" % (outfile.replace(".png", "")),
+                       dpi=100, bbox_inches='tight')
+        
     f.savefig(outfile, dpi=dpi)
