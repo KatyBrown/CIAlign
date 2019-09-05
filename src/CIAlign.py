@@ -1,10 +1,9 @@
 #! /usr/bin/env python
 
 import logging
-import argparse
+import configargparse
 import numpy as np
 import copy
-import sys
 import utilityFunctions
 import parsingFunctions
 import miniAlignments
@@ -13,133 +12,174 @@ import consensusSeq
 
 
 def main():
-    parser = argparse.ArgumentParser(
-            description='''Improve a multiple sequence alignment''')
-
-    parser.add_argument("--inifile", dest='inifile', type=str,
-                        help='path to input alignment')
+    parser = configargparse.ArgumentParser(
+            description='''Improve a multiple sequence alignment''',
+            add_help=False)
+    required = parser.add_argument_group('Required Arguments')
+    optional = parser.add_argument_group('Optional Arguments')
+    
+    # Files
     # not to confuse with inifile :)
-    parser.add_argument("--infile", dest='infile', type=str,
-                        help='path to input alignment')
-    parser.add_argument("--outfile_stem", dest='outfile_stem', type=str,
+    required.add("--infile", dest='infile', type=str, required=True,
+                        help='Path to input alignment. Required')
+    optional.add("--inifile", dest='inifile', type=str,
+               default=None,
+               help='Path to config file. Default: %(default)s',
+               is_config_file=True)
+    optional.add("--outfile_stem", dest='outfile_stem', type=str,
                         default="CIAlign",
-                        help="stem for output files (including path)")
+                        help="Stem for output files (including path). Default: %(default)s")
 
-    parser.add_argument("--silent", dest='silent',
-                        help="do not show progress on screen",
+    # Runtime
+    optional.add("--silent", dest='silent',
+                        help="Do not show progress on screen. Default: %(default)s",
                         action='store_true')
 
-    parser.add_argument("--crop_ends", dest="crop_ends",
-                        action="store_true", help="run the cropEnds function to remove badly aligned ends")
-    parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
-                        type=int, default=10,
-                        help="minimum gap size to crop from ends")
-
-    parser.add_argument("--remove_badlyaligned", dest="remove_badlyaligned",
-                        action="store_true", help="run the removeBadlyAligned function to remove badly aligned sequences")
-    parser.add_argument("--remove_badlyaligned_minperc", dest="remove_badlyaligned_minperc",
-                        type=float, default=0.9,
-                        help="minimum percentage identity to majority to not be removed")
-
-    parser.add_argument("--remove_insertions", dest="remove_insertions",
-                        help="run the removeInsertions function to remove insertions",
-                        action="store_true")
-    parser.add_argument("--insertion_min_size", dest="insertion_min_size",
-                        type=int, default=3,
-                        help="minimum size insertion to remove")
-    parser.add_argument("--insertion_max_size", dest="insertion_max_size",
-                        type=int, default=300,
-                        help="maximum size insertion to remove")
-    parser.add_argument("--insertion_min_flank", dest="insertion_min_flank",
-                        type=int, default=5,
-                        help="minimum number of bases on either side of deleted insertions")
-
-    parser.add_argument("--remove_short", dest="remove_short",
-                        help="run the removeShort function to remove sequences with less than n non-gap positions",
-                        action="store_true")
-    parser.add_argument("--remove_min_length", dest="remove_min_length",
-                        type=int, default=50,
-                        help="minimum length sequence to remove")
-
-    parser.add_argument("--remove_gaponly", dest="remove_gaponly",
-                        action="store_false", help="run the removeGapOnly function to remove gap only columns from the alignment")
-
-    parser.add_argument("--make_consensus", dest="make_consensus",
-                        action="store_true", help="run the findConsensus function to make a consensus sequence")
-    parser.add_argument("--consensus_type", dest="consensus_type", type=str,
-                        default="majority", help="type of consensus sequence to make")
-    parser.add_argument("--consensus_keep_gaps", dest="consensus_keep_gaps",
-                        action="store_true", help="keep gaps in consensus at positions where a gap is the consensus")
-    parser.add_argument("--consensus_name", dest="consensus_name",
-                        type=str, default="consensus",
-                        help="name of consensus sequence")
-
-    parser.add_argument("--plot_input", dest="plot_input",
-                        action="store_true", help="run the drawMiniAlignment function to plot the input alignment")
-    parser.add_argument("--plot_output", dest="plot_output",
-                        action="store_true", help="run the drawMiniAlignment function to plot the output alignment")
-    parser.add_argument("--plot_markup", dest="plot_markup",
-                        action="store_true", help="run the drawMiniAlignment function to plot the changes made to the alignment")
-    parser.add_argument("--plot_dpi", dest="plot_dpi",
-                        type=int, default=300,
-                        help="dpi for plots")
-    parser.add_argument("--plot_format", dest="plot_format",
-                        type=str, default='png',
-                        help="plot format (png or svg)")
-    parser.add_argument("--plot_width", dest="plot_width",
-                        type=int, default=5,
-                        help="width for plots (inches)")
-    parser.add_argument("--plot_height", dest="plot_height",
-                        type=int, default=3,
-                        help="height for plots (inches)")
-
-    parser.add_argument("--make_sequence_logo", dest="make_sequence_logo",
-                        action="store_true", help="draw a sequence logo")
-    parser.add_argument("--sequence_logo_type", dest="sequence_logo_type",
-                        type=str, default='bar',
-                        help="type of sequence logo - bar/text/both")
-    parser.add_argument("--sequence_logo_dpi", dest="sequence_logo_dpi",
-                        type=int, default=300,
-                        help="dpi for sequence logo image")
-    parser.add_argument("--sequence_logo_font", dest="sequence_logo_font",
-                        type=str, default='monospace',
-                        help="font for text sequence logo")
-    parser.add_argument("--sequence_logo_nt_per_row", dest='sequence_logo_nt_per_row',
-                        type=int, default=50, help="number of nucleotides or aas to show per row in the sequence logo")
-    parser.add_argument("--sequence_logo_filetype", dest='sequence_logo_filetype',
-                        type=str, default='png', help="output file type for sequence logo - png/jpg/svg")
-    parser.add_argument("--list_fonts_only", dest='list_fonts_only',
+    # Crop Ends
+    optional.add("--crop_ends", dest="crop_ends",
                         action="store_true",
-                        help="make a swatch showing available fonts")
+                        help="Crop badly aligned ends. Default: %(default)s")
+    optional.add("--crop_ends_mingap", dest='crop_ends_mingap',
+                        type=int, default=10,
+                        help="Minimum gap size to crop from ends. Default: %(default)s")
 
-    parser.add_argument("--plot_coverage_input", dest="plot_coverage_input",
-                        action="store_true", help="plot the coverage of the input file as an interpolated function")
-    parser.add_argument("--plot_coverage_output", dest="plot_coverage_output",
-                        action="store_true", help="plot the coverage of the output file as an interpolated function")
-    parser.add_argument("--plot_coverage_dpi", dest="plot_coverage_dpi",
-                        type=int, default=300, help="dpi for coverage plot")
-    parser.add_argument("--plot_coverage_height", dest="plot_coverage_height",
-                        type=int, default=3, help="height for coverage plot")  
-    parser.add_argument("--plot_coverage_width", dest="plot_coverage_width",
-                        type=int, default=5, help="width for coverage plot")
-    parser.add_argument("--plot_coverage_colour", dest="plot_coverage_colour",
-                        type=str, default='#007bf5', help="colour for coverage plot") 
-    parser.add_argument("--plot_coverage_filetype", dest="plot_coverage_filetype",
-                        type=str, default='png', help="file type for coverage plot - can be png, jpg, tiff, svg")
+    # Remove Badly Aligned
+    optional.add("--remove_badlyaligned", dest="remove_badlyaligned",
+                        action="store_true",
+                        help="Remove badly aligned sequences. Default: %(default)s")
+    optional.add("--remove_badlyaligned_minperc", dest="remove_badlyaligned_minperc",
+                        type=float, default=0.9,
+                        help="Minimum percentage identity to majority to not be removed. Default: %(default)s")
 
-    parser.add_argument("--make_similarity_matrix_input", dest="make_simmatrix_input",
-                        action="store_true", help="run the calculateSimilarityMatrix function to make a similarity matrix for the input alignment")
-    parser.add_argument("--make_similarity_matrix_output", dest="make_simmatrix_output",
-                        action="store_true", help="run the calculateSimilarityMatrix function to make a similarity matrix for the output alignment")
-    parser.add_argument("--make_simmatrix_dp", dest="make_simmatrix_dp",
-                        type=int, default=4, help="n decimal places for the similarity matrix (output file only)")
-    parser.add_argument("--make_simmatrix_minoverlap",
+    # Remove Insertions
+    optional.add("--remove_insertions", dest="remove_insertions",
+                        help="Remove insertions. Default: %(default)s",
+                        action="store_true")
+    optional.add("--insertion_min_size", dest="insertion_min_size",
+                        type=int, default=3,
+                        help="Minimum size insertion to remove. Default: %(default)s")
+    optional.add("--insertion_max_size", dest="insertion_max_size",
+                        type=int, default=300,
+                        help="Maximum size insertion to remove. Default: %(default)s")
+    optional.add("--insertion_min_flank", dest="insertion_min_flank",
+                        type=int, default=5,
+                        help="Minimum number of bases on either side of deleted insertions. Default: %(default)s")
+
+    # Remove Short
+    optional.add("--remove_short", dest="remove_short",
+                        help="Remove sequences with less than n non-gap positions. Default: %(default)s",
+                        action="store_true")
+    optional.add("--remove_min_length", dest="remove_min_length",
+                        type=int, default=50,
+                        help="Minimum length sequence to remove. Default: %(default)s")
+
+    optional.add("--remove_gaponly", dest="remove_gaponly",
+                        action="store_false",
+                        help="Remove gap only columns from the alignment. Default: %(default)s")
+
+    # Consensus
+    optional.add("--make_consensus", dest="make_consensus",
+                        action="store_true",
+                        help="Make a consensus sequence. Default: %(default)s")
+    optional.add("--consensus_type", dest="consensus_type", type=str,
+                        default="majority",
+                        help="Type of consensus sequence to make. Default: %(default)s")
+    optional.add("--consensus_keep_gaps", dest="consensus_keep_gaps",
+                        action="store_true",
+                        help="Keep gaps in consensus at positions where a gap is the consensus. Default: %(default)s")
+    optional.add("--consensus_name", dest="consensus_name",
+                        type=str, default="consensus",
+                        help="Name of consensus sequence. Default: %(default)s")
+
+    # Mini Alignments
+    optional.add("--plot_input", dest="plot_input",
+                        action="store_true",
+                        help="Plot a mini alignment - an image representing the input alignment. Default: %(default)s")
+    optional.add("--plot_output", dest="plot_output",
+                        action="store_true",
+                        help="Plot a mini alignment, an image reprsenting the output alignment. Default: %(default)s")
+    optional.add("--plot_markup", dest="plot_markup",
+                        action="store_true",
+                        help="Plot the changes made to the alignment. Default: %(default)s")
+    optional.add("--plot_dpi", dest="plot_dpi",
+                        type=int, default=300,
+                        help="DPI for mini alignments. Default: %(default)s")
+    optional.add("--plot_format", dest="plot_format",
+                        type=str, default='png',
+                        help="Mini alignment plot format (png or svg). Default: %(default)s")
+    optional.add("--plot_width", dest="plot_width",
+                        type=int, default=5,
+                        help="Width for mini alignments (inches). Default: %(default)s")
+    optional.add("--plot_height", dest="plot_height",
+                        type=int, default=3,
+                        help="Height for mini alignments (inches). Default: %(default)s")
+
+    # Mini Alignments
+    optional.add("--make_sequence_logo", dest="make_sequence_logo",
+                        action="store_true", 
+                        help="Draw a sequence logo. Default: %(default)s")
+    optional.add("--sequence_logo_type", dest="sequence_logo_type",
+                        type=str, default='bar',
+                        help="Type of sequence logo - bar/text/both. Default: %(default)s")
+    optional.add("--sequence_logo_dpi", dest="sequence_logo_dpi",
+                        type=int, default=300,
+                        help="dpi for sequence logo image. Default: %(default)s")
+    optional.add("--sequence_logo_font", dest="sequence_logo_font",
+                        type=str, default='monospace',
+                        help="Font for text sequence logo. Default: %(default)s")
+    optional.add("--sequence_logo_nt_per_row", dest='sequence_logo_nt_per_row',
+                        type=int, default=50,
+                        help="Number of nucleotides or aas to show per row in the sequence logo. Default: %(default)s")
+    optional.add("--sequence_logo_filetype", dest='sequence_logo_filetype',
+                        type=str, default='png',
+                        help="Output file type for sequence logo - png/jpg/svg. Default: %(default)s")
+    optional.add("--list_fonts_only", dest='list_fonts_only',
+                        action="store_true",
+                        help="Make a swatch showing available fonts. Default: %(default)s")
+
+    # Coverage
+    optional.add("--plot_coverage_input", dest="plot_coverage_input",
+                        action="store_true",
+                        help="Plot the coverage of the input file as an interpolated function. Default: %(default)s")
+    optional.add("--plot_coverage_output", dest="plot_coverage_output",
+                        action="store_true",
+                        help="Plot the coverage of the output file as an interpolated function. Default: %(default)s")
+    optional.add("--plot_coverage_dpi", dest="plot_coverage_dpi",
+                        type=int, default=300,
+                        help="DPI for coverage plot. Default: %(default)s")
+    optional.add("--plot_coverage_height", dest="plot_coverage_height",
+                        type=int, default=3,
+                        help="Height for coverage plot. Default: %(default)s")  
+    optional.add("--plot_coverage_width", dest="plot_coverage_width",
+                        type=int, default=5,
+                        help="Width for coverage plot. Default: %(default)s")
+    optional.add("--plot_coverage_colour", dest="plot_coverage_colour",
+                        type=str, default='#007bf5',
+                        help="Colour for coverage plot. Default: %(default)s") 
+    optional.add("--plot_coverage_filetype", dest="plot_coverage_filetype",
+                        type=str, default='png',
+                        help="File type for coverage plot - can be png, jpg, tiff, svg. Default: %(default)s")
+
+    # Similarity Matrix
+    optional.add("--make_similarity_matrix_input", dest="make_simmatrix_input",
+                        action="store_true",
+                        help="Make a similarity matrix for the input alignment. Default: %(default)s")
+    optional.add("--make_similarity_matrix_output", dest="make_simmatrix_output",
+                        action="store_true",
+                        help="Make a similarity matrix for the output alignment. Default: %(default)s")
+    optional.add("--make_simmatrix_dp", dest="make_simmatrix_dp",
+                        type=int, default=4,
+                        help="N decimal places for the similarity matrix (output file only). Default: %(default)s")
+    optional.add("--make_simmatrix_minoverlap",
                         dest="make_simmatrix_minoverlap",
-                        type=int, default=1, help="minimum overlap between two sequences to have non-zero similarity in the similarity matrix")
-    parser.add_argument("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
-                        type=bool, default=False, help="include positions with gaps in either or both sequences in the similarity matrix calculation")
+                        type=int, default=1,
+                        help="Minimum overlap between two sequences to have non-zero similarity in the similarity matrix. Default: %(default)s")
+    optional.add("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
+                        type=bool, default=False,
+                        help="Include positions with gaps in either or both sequences in the similarity matrix calculation. Default: %(default)s")
 
-
+    optional.add('-h', '--help', action='help', default=configargparse.SUPPRESS,
+                 help='Show this help message and exit')
     args = parser.parse_args()
 
     log = logging.getLogger(__name__)
@@ -182,7 +222,7 @@ def main():
     # print(parameter)
 # =============================================================================
 
-    log.info("Initial parameters: %s" % str(args))
+    log.info("\nInitial parameters:\n%s" % str(parser.format_values()))
 
     if args.list_fonts_only:
         print ("list fonts")

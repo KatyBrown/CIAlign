@@ -1,0 +1,113 @@
+# CIAlign Parameters
+
+[files]
+# Path to input alignment. 
+infile = XXXXX
+# Stem for output files (including path). 
+outfile_stem = CIAlign
+
+[runtime]
+# Do not show progress on screen. 
+silent = False
+
+[crop_ends]
+# Crop badly aligned ends. 
+crop_ends = False
+# Minimum gap size to crop from ends. 
+crop_ends_mingap = 10
+
+[remove_badlyaligned]
+# Remove badly aligned sequences. 
+remove_badlyaligned = False
+# Minimum percentage identity to majority to not be removed. 
+remove_badlyaligned_minperc = 0.9
+
+[remove_insertions]
+# Remove insertions. 
+remove_insertions = False
+# Minimum size insertion to remove. 
+insertion_min_size = 3
+# Maximum size insertion to remove. 
+insertion_max_size = 300
+# Minimum number of bases on either side of deleted insertions. 
+insertion_min_flank = 5
+
+[remove_short]
+# Remove sequences with less than n non-gap positions. 
+remove_short = False
+# Minimum length sequence to remove. 
+remove_min_length = 50
+
+[remove_gaponly]
+# Remove gap only columns from the alignment. 
+remove_gaponly = True
+
+[consensus]
+# Make a consensus sequence. 
+make_consensus = False
+# Type of consensus sequence to make. 
+consensus_type = majority
+# Keep gaps in consensus at positions where a gap is the consensus. 
+consensus_keep_gaps = False
+# Name of consensus sequence. 
+consensus_name = consensus
+
+[mini_alignments]
+# Plot a mini alignmeRun the calculateSimilarityMatrix function to mnt - an image representing the input alignment. 
+plot_input = False
+# Plot a mini alignment, an image reprsenting the output alignment. 
+plot_output = False
+# Plot the changes made to the alignment. 
+plot_markup = False
+# DPI for mini alignments. 
+plot_dpi = 300
+# Mini alignment plot format (png or svg). 
+plot_format = png
+# Width for mini alignments (inches). 
+plot_width = 5
+# Height for mini alignments (inches). 
+plot_height = 3
+
+[sequence_logos]
+# Draw a sequence logo. 
+make_sequence_logo = False
+# Type of sequence logo - bar/text/both. 
+sequence_logo_type = bar
+# dpi for sequence logo image. 
+sequence_logo_dpi = 300
+# Font for text sequence logo. 
+sequence_logo_font = monospace
+# Number of nucleotides or aas to show per row in the sequence logo. 
+sequence_logo_nt_per_row = 50
+# Output file type for sequence logo - png/jpg/svg. 
+sequence_logo_filetype = png
+# Make a swatch showing available fonts. 
+list_fonts_only = False
+
+[coverage]
+# Plot the coverage of the input file as an interpolated function. 
+plot_coverage_input = False
+# Plot the coverage of the output file as an interpolated function. 
+plot_coverage_output = False
+# DPI for coverage plot. 
+plot_coverage_dpi = 300
+# Height for coverage plot. 
+plot_coverage_height = 3
+# Width for coverage plot. 
+plot_coverage_width = 5
+# Colour for coverage plot. 
+plot_coverage_colour = #007bf5
+# File type for coverage plot - can be png, jpg, tiff, svg. 
+plot_coverage_filetype = png
+
+[similarity_matrix]
+# Make a similarity matrix for the input alignment. 
+make_similarity_matrix_input = False
+# Make a similarity matrix for the output alignment. 
+make_similarity_matrix_output = False
+# N decimal places for the similarity matrix (output file only). 
+make_simmatrix_dp = 4
+# Minimum overlap between two sequences to have non-zero similarity in the similarity matrix. 
+make_simmatrix_minoverlap = 1
+# Include positions with gaps in either or both sequences in the similarity matrix calculation. 
+make_simmatrix_keepgaps = False
