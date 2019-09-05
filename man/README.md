@@ -44,7 +44,7 @@ A template config file is provided in CIAlign/templates/ini_template.txt - edit 
 
 Parameters passed in the command line will take precedence over config file parameters, which take precedence over defaults.
 
-Command help can be accessed by typing CIAlign --help
+Command help can be accessed by typing `CIAlign --help`
 
 | Parameter | Description | Default |
 | -------------------------------------------------------------------- |------------------------------------------------------------------------------------------------- | ------------ |
