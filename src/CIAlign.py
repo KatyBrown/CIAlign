@@ -54,9 +54,20 @@ def main():
     parser.add_argument("--consensus_name", dest="consensus_name",
                         type=str, default="consensus",
                         help="name of consensus sequence")
-    parser.add_argument("--plot_coverage", dest="plot_coverage",
-                        action="store_true", help="plot the coverage as an interpolated function")
-
+    
+    parser.add_argument("--plot_coverage_input", dest="plot_coverage_input",
+                        action="store_true", help="plot the coverage of the input file as an interpolated function")
+    parser.add_argument("--plot_coverage_output", dest="plot_coverage_output",
+                        action="store_true", help="plot the coverage of the output file as an interpolated function")
+    parser.add_argument("--plot_coverage_dpi", dest="plot_coverage_dpi",
+                        type=int, default=300, help="dpi for coverage plot")
+    parser.add_argument("--plot_coverage_height", dest="plot_coverage_height",
+                        type=int, default=3, help="height for coverage plot")  
+    parser.add_argument("--plot_coverage_width", dest="plot_coverage_width",
+                        type=int, default=5, help="width for coverage plot")
+    parser.add_argument("--plot_coverage_colour", dest="plot_coverage_colour",
+                        type=str, default='#007bf5', help="colour for coverage plot") 
+    
     parser.add_argument("--crop_ends", dest="crop_ends",
                         action="store_true", help="run the cropEnds function to remove badly aligned ends")
     parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
@@ -323,13 +334,15 @@ def main():
         outf = "%s_with_consensus.fasta" % args.outfile_stem
         utilityFunctions.writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
 
-    if args.plot_coverage:
-        coverage_file = args.outfile_stem + "_coverage.png"
-        if not args.make_consensus:
-            cons, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
-
-        consensusSeq.makeCoveragePlot(cons, coverage, coverage_file)
-
+    if args.plot_coverage_input:
+        coverage_file = args.outfile_stem + "_input_coverage.png"
+        consx, coverage = consensusSeq.findConsensus(orig_arr, args.consensus_type)
+        consensusSeq.makeCoveragePlot(coverage, coverage_file)
+        
+    if args.plot_coverage_input:
+        coverage_file = args.outfile_stem + "_output_coverage.png"
+        consx, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
+        consensusSeq.makeCoveragePlot(coverage, coverage_file)
 
     if args.make_sequence_logo:
         print ("make sequence logo")

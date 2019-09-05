@@ -114,7 +114,9 @@ def findConsensus(alignment, log, consensus_type="majority"):
     return consensus, coverage
 
 
-def makeCoveragePlot(consensus, coverage, dest):
+def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
+                     colour='#007bf5'):
+    fontsize = 1500 / dpi
     x = np.arange(0, len(coverage), 1);
     y = coverage
     xmin, xmax = x.min(), x.max()
@@ -122,13 +124,16 @@ def makeCoveragePlot(consensus, coverage, dest):
 
     xx = np.linspace(xmin, xmax, N)
 
-
-    f = plt.figure()
-    a = f.add_subplot('311')
-    a.plot(x,y)
-    a.get_xaxis().set_visible(False)
-
-    b = f.add_subplot('312')
+    f = plt.figure(figsize=(width, height), dpi=dpi)
+    a = f.add_subplot('211')
+    a.plot(x, y, color=colour)
+    a.set_xlabel('Position', fontsize=fontsize)
+    a.set_ylabel('Coverage (Raw)', fontsize=fontsize)
+    a.set_xticks([0, xmax])
+    a.set_xticklabels([0, xmax], fontsize=fontsize)
+    a.set_yticks(np.arange(0, 1.1, 0.5))
+    a.set_yticklabels(np.arange(0, 1.1, 0.5), fontsize=fontsize)
+    b = f.add_subplot('212')
 
     # polynomial interpolation
     #c = f.add_subplot('313')
@@ -142,9 +147,15 @@ def makeCoveragePlot(consensus, coverage, dest):
     t, c, k = interpolate.splrep(x, y, s=0, k=4)
 
     spline = interpolate.BSpline(t, c, k, extrapolate=False)
-    b.plot(xx, spline(xx))
-    b.get_xaxis().set_visible(False)
-    f.savefig(dest)
+    b.plot(xx, spline(xx), color=colour)
+    b.set_xlabel('Position', fontsize=fontsize)
+    b.set_ylabel('Coverage (Smoothed)', fontsize=fontsize)
+    b.set_xticks([0, xmax])
+    b.set_xticklabels([0, xmax], fontsize=fontsize)
+    b.set_yticks(np.arange(0, 1.1, 0.5))
+    b.set_yticklabels(np.arange(0, 1.1, 0.5), fontsize=fontsize)
+    f.savefig(dest, dpi=dpi, bbox_inches='tight')
+
 
 def sequence_logo(alignment,
                   figname,
