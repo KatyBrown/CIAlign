@@ -231,7 +231,7 @@ def main():
         exit()
     # convert the input fasta file into an array and make a list of
     # sequence names so the order can be maintained
-    if not args.infile:
+    if not args.infile or args.infile == 'XXXXX':
         raise RuntimeError ("Input alignment must be provided")
 
     arr, nams = utilityFunctions.FastaToArray(args.infile)
