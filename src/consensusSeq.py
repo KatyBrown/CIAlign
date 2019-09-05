@@ -140,12 +140,9 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     #z = np.polyfit(x, bla, 30)
     #p = np.poly1d(z)
     #c.plot(xx, p(xx))
-
-
     #xnew = np.linspace(x.min(),x.max(),300) #300 represents number of points to make between T.min and T.max
 
     t, c, k = interpolate.splrep(x, y, s=0, k=4)
-
     spline = interpolate.BSpline(t, c, k, extrapolate=False)
     b.plot(xx, spline(xx), color=colour)
     b.set_xlabel('Position', fontsize=fontsize)

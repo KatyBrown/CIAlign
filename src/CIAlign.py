@@ -25,6 +25,22 @@ def main():
                         default="CIAlign",
                         help="stem for output files (including path)")
 
+    parser.add_argument("--silent", dest='silent',
+                        help="do not show progress on screen",
+                        action='store_true')
+
+    parser.add_argument("--crop_ends", dest="crop_ends",
+                        action="store_true", help="run the cropEnds function to remove badly aligned ends")
+    parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
+                        type=int, default=10,
+                        help="minimum gap size to crop from ends")
+
+    parser.add_argument("--remove_badlyaligned", dest="remove_badlyaligned",
+                        action="store_true", help="run the removeBadlyAligned function to remove badly aligned sequences")
+    parser.add_argument("--remove_badlyaligned_minperc", dest="remove_badlyaligned_minperc",
+                        type=float, default=0.9,
+                        help="minimum percentage identity to majority to not be removed")
+
     parser.add_argument("--remove_insertions", dest="remove_insertions",
                         help="run the removeInsertions function to remove insertions",
                         action="store_true")
@@ -45,6 +61,9 @@ def main():
                         type=int, default=50,
                         help="minimum length sequence to remove")
 
+    parser.add_argument("--remove_gaponly", dest="remove_gaponly",
+                        action="store_false", help="run the removeGapOnly function to remove gap only columns from the alignment")
+
     parser.add_argument("--make_consensus", dest="make_consensus",
                         action="store_true", help="run the findConsensus function to make a consensus sequence")
     parser.add_argument("--consensus_type", dest="consensus_type", type=str,
@@ -54,46 +73,6 @@ def main():
     parser.add_argument("--consensus_name", dest="consensus_name",
                         type=str, default="consensus",
                         help="name of consensus sequence")
-    
-    parser.add_argument("--plot_coverage_input", dest="plot_coverage_input",
-                        action="store_true", help="plot the coverage of the input file as an interpolated function")
-    parser.add_argument("--plot_coverage_output", dest="plot_coverage_output",
-                        action="store_true", help="plot the coverage of the output file as an interpolated function")
-    parser.add_argument("--plot_coverage_dpi", dest="plot_coverage_dpi",
-                        type=int, default=300, help="dpi for coverage plot")
-    parser.add_argument("--plot_coverage_height", dest="plot_coverage_height",
-                        type=int, default=3, help="height for coverage plot")  
-    parser.add_argument("--plot_coverage_width", dest="plot_coverage_width",
-                        type=int, default=5, help="width for coverage plot")
-    parser.add_argument("--plot_coverage_colour", dest="plot_coverage_colour",
-                        type=str, default='#007bf5', help="colour for coverage plot") 
-    
-    parser.add_argument("--crop_ends", dest="crop_ends",
-                        action="store_true", help="run the cropEnds function to remove badly aligned ends")
-    parser.add_argument("--crop_ends_mingap", dest='crop_ends_mingap',
-                        type=int, default=10,
-                        help="minimum gap size to crop from ends")
-
-    parser.add_argument("--remove_badlyaligned", dest="remove_badlyaligned",
-                        action="store_true", help="run the removeBadlyAligned function to remove badly aligned sequences")
-    parser.add_argument("--remove_badlyaligned_minperc", dest="remove_badlyaligned_minperc",
-                        type=float, default=0.9,
-                        help="minimum percentage identity to majority to not be removed")
-
-    parser.add_argument("--remove_gaponly", dest="remove_gaponly",
-                        action="store_false", help="run the removeGapOnly function to remove gap only columns from the alignment")
-
-    parser.add_argument("--make_similarity_matrix_input", dest="make_simmatrix_input",
-                        action="store_true", help="run the calculateSimilarityMatrix function to make a similarity matrix for the input alignment")
-    parser.add_argument("--make_similarity_matrix_output", dest="make_simmatrix_output",
-                        action="store_true", help="run the calculateSimilarityMatrix function to make a similarity matrix for the output alignment")
-    parser.add_argument("--make_simmatrix_dp", dest="make_simmatrix_dp",
-                        type=int, default=4, help="n decimal places for the similarity matrix (output file only)")
-    parser.add_argument("--make_simmatrix_minoverlap",
-                        dest="make_simmatrix_minoverlap",
-                        type=int, default=1, help="minimum overlap between two sequences to have non-zero similarity in the similarity matrix")
-    parser.add_argument("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
-                        type=bool, default=False, help="include positions with gaps in either or both sequences in the similarity matrix calculation")
 
     parser.add_argument("--plot_input", dest="plot_input",
                         action="store_true", help="run the drawMiniAlignment function to plot the input alignment")
@@ -132,6 +111,34 @@ def main():
     parser.add_argument("--list_fonts_only", dest='list_fonts_only',
                         action="store_true",
                         help="make a swatch showing available fonts")
+
+    parser.add_argument("--plot_coverage_input", dest="plot_coverage_input",
+                        action="store_true", help="plot the coverage of the input file as an interpolated function")
+    parser.add_argument("--plot_coverage_output", dest="plot_coverage_output",
+                        action="store_true", help="plot the coverage of the output file as an interpolated function")
+    parser.add_argument("--plot_coverage_dpi", dest="plot_coverage_dpi",
+                        type=int, default=300, help="dpi for coverage plot")
+    parser.add_argument("--plot_coverage_height", dest="plot_coverage_height",
+                        type=int, default=3, help="height for coverage plot")  
+    parser.add_argument("--plot_coverage_width", dest="plot_coverage_width",
+                        type=int, default=5, help="width for coverage plot")
+    parser.add_argument("--plot_coverage_colour", dest="plot_coverage_colour",
+                        type=str, default='#007bf5', help="colour for coverage plot") 
+    parser.add_argument("--plot_coverage_filetype", dest="plot_coverage_filetype",
+                        type=str, default='png', help="file type for coverage plot - can be png, jpg, tiff, svg")
+
+    parser.add_argument("--make_similarity_matrix_input", dest="make_simmatrix_input",
+                        action="store_true", help="run the calculateSimilarityMatrix function to make a similarity matrix for the input alignment")
+    parser.add_argument("--make_similarity_matrix_output", dest="make_simmatrix_output",
+                        action="store_true", help="run the calculateSimilarityMatrix function to make a similarity matrix for the output alignment")
+    parser.add_argument("--make_simmatrix_dp", dest="make_simmatrix_dp",
+                        type=int, default=4, help="n decimal places for the similarity matrix (output file only)")
+    parser.add_argument("--make_simmatrix_minoverlap",
+                        dest="make_simmatrix_minoverlap",
+                        type=int, default=1, help="minimum overlap between two sequences to have non-zero similarity in the similarity matrix")
+    parser.add_argument("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
+                        type=bool, default=False, help="include positions with gaps in either or both sequences in the similarity matrix calculation")
+
 
     args = parser.parse_args()
 
@@ -222,6 +229,8 @@ def main():
     if args.crop_ends:
         # doesn't remove any whole columns or rows
         log.info("Cropping ends")
+        if not args.silent:
+            print("Cropping ends")
         arr, r = parsingFunctions.cropEnds(arr, nams, rmfile, log, args.crop_ends_mingap)
         markupdict['crop_ends'] = r
         # if we add another function which removes single positions
@@ -231,7 +240,8 @@ def main():
 
     if args.remove_badlyaligned:
         log.info("Removing badly aligned sequences")
-        
+        if not args.silent:
+            print("Removing badly aligned sequences")
         arr, r = parsingFunctions.removeBadlyAligned(arr, nams, rmfile, log,
                                                      args.remove_badlyaligned_minperc)
 
@@ -242,7 +252,8 @@ def main():
 
     if args.remove_insertions:
         log.info("Removing insertions")
-        
+        if not args.silent:
+            print("Removing insertions")
         arr, r, relativePositions = parsingFunctions.removeInsertions(arr, relativePositions,
                                                                        rmfile, log,
                                                                        args.insertion_min_size,
@@ -255,7 +266,8 @@ def main():
 
     if args.remove_short:
         log.info("Removing short sequences")
-
+        if not args.silent:
+            print("Removing short sequences")
         arr, r = parsingFunctions.removeTooShort(arr, nams, rmfile, log,
                                                  args.remove_min_length)
 
@@ -266,6 +278,8 @@ def main():
 
     if args.remove_gaponly:
         log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
 
         arr, r, relativePositions = parsingFunctions.removeGapOnly(arr, relativePositions,
                                                                    rmfile, log)
@@ -273,7 +287,9 @@ def main():
         utilityFunctions.checkArrLength(arr, log)
 
     if args.make_simmatrix_input:
-        print ("make similarity matrix input")
+        log.info("Building similarity matrix for input alignment")
+        if not args.silent:
+            print("Building similarity matrix for input alignment")
         outf = "%s_input_similarity.tsv" % (args.outfile_stem)
         similarityMatrix.calculateSimilarityMatrix(orig_arr,
                                                    orig_nams,
@@ -282,7 +298,9 @@ def main():
                                                    outfile=outf, dp=args.make_simmatrix_dp)
 
     if args.make_simmatrix_output:
-        print ("make similarity matrix output")
+        log.info("Building similarity matrix for output alignment")
+        if not args.silent:
+            print("Building similarity matrix for output alignment")
         outf = "%s_output_similarity.tsv" % (args.outfile_stem)
         similarityMatrix.calculateSimilarityMatrix(arr,
                                                    nams,
@@ -292,7 +310,9 @@ def main():
 
 
     if args.plot_input:
-        print ("plot input")
+        log.info("Plotting mini alignment for input")
+        if not args.silent:
+            print("Building similarity matrix for output alignment")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
         miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
                                          outf, typ, args.plot_dpi,
@@ -301,7 +321,9 @@ def main():
 
 
     if args.plot_output:
-        print ("plot output")
+        log.info("Plotting mini alignment for output")
+        if not args.silent:
+            print("Plotting mini alignment for output")
         outf = "%s_output.%s" % (args.outfile_stem, args.plot_format)
         miniAlignments.drawMiniAlignment(arr, nams, log,
                                          outf, typ,
@@ -311,7 +333,9 @@ def main():
                                          args.plot_height)
 
     if args.plot_markup:
-        print ("plot markup")
+        log.info("Plotting mini alignment with markup")
+        if not args.silent:
+            print("Plotting mini alignment with markup")
         outf = "%s_markup.%s" % (args.outfile_stem, args.plot_format)
         miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
                                          outf, typ,
@@ -321,7 +345,9 @@ def main():
                                          markup=True, markupdict=markupdict)
 
     if args.make_consensus:
-        print ("make consensus")
+        log.info("Building consensus sequence")
+        if not args.silent:
+            print("Building consensus sequence")
         cons, coverage = consensusSeq.findConsensus(arr, log, args.consensus_type)
         consarr = np.array(cons)
         arr_plus_cons = np.row_stack((arr, consarr))
@@ -335,34 +361,50 @@ def main():
         utilityFunctions.writeOutfile(outf, arr_plus_cons, nams + [args.consensus_name], removed_seqs)
 
     if args.plot_coverage_input:
-        coverage_file = args.outfile_stem + "_input_coverage.png"
+        log.info("Plotting coverage for input")
+        if not args.silent:
+            print("Plotting coverage for input")
+        coverage_file = args.outfile_stem + "_input_coverage." + args.plot_coverage_filetype
         consx, coverage = consensusSeq.findConsensus(orig_arr, args.consensus_type)
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
         
     if args.plot_coverage_input:
-        coverage_file = args.outfile_stem + "_output_coverage.png"
+        log.info("Plotting coverage for output")
+        if not args.silent:
+            print("Plotting coverage for output")
+        coverage_file = args.outfile_stem + "_output_coverage." + args.plot_coverage_filetype
         consx, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
 
     if args.make_sequence_logo:
-        print ("make sequence logo")
-
         if args.sequence_logo_type == 'bar':
+            log.info("Generating sequence logo bar chart")
+        if not args.silent:
+            print("Generating sequence logo bar chart")
             out = "%s_logo_bar.%s" % (args.outfile_stem, args.sequence_logo_filetype)
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=args.sequence_logo_dpi,
                                            figrowlength=args.sequence_logo_nt_per_row)
         elif args.sequence_logo_type == 'text':
+            log.info("Generating text sequence logo")
+        if not args.silent:
+            print("Generating text sequence logo")
             out = "%s_logo_text.%s" % (args.outfile_stem, args.sequence_logo_filetype)
             consensusSeq.sequence_logo(arr, out, typ=typ,
                                        figdpi=args.sequence_logo_dpi,
                                        figfontname=args.sequence_logo_font,
                                        figrowlength=args.sequence_logo_nt_per_row)
         elif args.sequence_logo_type == 'both':
+            log.info("Generating sequence logo bar chart")
+        if not args.silent:
+            print("Generating sequence logo bar chart")
             out = "%s_logo_bar.%s" % (args.outfile_stem, args.sequence_logo_filetype)
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=args.sequence_logo_dpi,
                                            figrowlength=args.sequence_logo_nt_per_row)
+            log.info("Generating text sequence logo")
+        if not args.silent:
+            print("Generating text sequence logo")
             out = "%s_logo_text.%s" % (args.outfile_stem, args.sequence_logo_filetype)
             consensusSeq.sequence_logo(arr, out, typ=typ,
                                        figdpi=args.sequence_logo_dpi,
