@@ -1,4 +1,4 @@
-#CIAlign
+# CIAlign
 
 CIAlign is a command line tool which performs various functions to parse and analyse a multiple sequence alignment (MSA).
 
