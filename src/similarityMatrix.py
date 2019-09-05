@@ -1,20 +1,38 @@
 #!/usr/bin/env python3
-
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import itertools
 
+
 def calculateSimilarityMatrix(arr, nams, minoverlap=1,
                               keepgaps=False, outfile=None, dp=4):
     '''
-    Calculates a pairwise similarity matrix for the alignment
-    dp = decimal places (in the output file only)
-    outfile = path to outfile
-    keepgaps = should positions with gaps in either sequence in the pair
-    be discarded before calculating identity?
-    minoverlap = minimum number of positions at which both sequences should
-    have a non-gap character for the percentage to not be 0
+    Calculates a pairwise similarity matrix for the alignment - for each pair
+    of sequences, number of matching bases / total number of bases.
+    Outputs a text file containing this matrix.
+
+    Parameters
+    ----------
+    arr: np.array
+        The alignment stored as a numpy array
+    nams: list
+        The names of the sequences in the alignment
+    minoverlap: int
+        Minimum overlap between two sequences to have non-zero similarity
+        in the similarity matrix.
+    keepgaps: bool
+        Include positions with gaps in either or both sequences in the
+        similarity matrix calculation.
+    outfile: str
+        Path to output file.  Can be None (for no output)
+    dp: int
+        Number of decimal places for the similarity matrix (output file only).
+
+    Returns
+    -------
+    ident: np.array
+        The identity matrix as a numpy array
     '''
     ident = np.empty((len(arr), len(arr)))
     for i, j in itertools.combinations_with_replacement(range(len(arr)), 2):
@@ -26,8 +44,9 @@ def calculateSimilarityMatrix(arr, nams, minoverlap=1,
             nongap = np.array([True] * len(p1))
         matches = sum(p1[nongap] == p2[nongap])
         length = sum(nongap)
-        # minimum overlap is currently used regardless of the keepgaps settings
-        if length >= minoverlap and sum((p1 != "-") & (p2 != "-")) >= minoverlap:
+        # minimum overlap is currently used regardless of the keepgaps setting
+        if length >= minoverlap and sum(
+                (p1 != "-") & (p2 != "-")) >= minoverlap:
             perc = matches / length
         else:
             perc = 0
