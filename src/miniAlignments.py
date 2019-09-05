@@ -8,6 +8,26 @@ import math
 
 
 def arrNumeric(arr, typ):
+    '''
+    Converts the sequence array into a numerical matrix and a colour map
+    which matplotlib can interpret as an image (similar to
+    https://matplotlib.org/3.1.1/gallery/images_contours_and_fields/image_annotated_heatmap.html
+    
+    The rows in the array are inverted so that the output image has the rows
+    in the same order as the input alignment.
+    
+    Parameters
+    ----------
+    arr: np.array
+    The alignment stored as a numpy array
+    
+    typ: str
+    Either 'aa' - amino acid - or 'nt' - nucleotide
+    
+    Returns
+    -------
+    
+    '''
     arr = np.flip(arr, axis=0)
     if typ == 'nt':
         D = utilityFunctions.getNtColours()
@@ -26,6 +46,7 @@ def arrNumeric(arr, typ):
             arr2[y, x] = D[arr[y, x]]
     cmap = matplotlib.colors.ListedColormap(colours)
     return (arr2, cmap)
+
 
 def drawMiniAlignment(arr, nams, log, outfile, typ,
                       dpi, title, width, height, markup=False,

@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+import sys
+sys.path.append("../src")
 import glob
 import CIAlign
 import logging
@@ -33,12 +35,10 @@ class TestFunctions(object):
                 arr, nams = CIAlign.FastaToArray(file)
                 if direc == 'cols':
                     positions = list(range(0, len(arr[0])))
-                    arr2, r2 = function_test(arr, positions, self.log, *p) 
+                    arr2, r2 = function_test(arr, positions, rmfile, self.log, *p) 
                 elif direc == 'rows':
-                    arr2, r2 = function_test(arr, nams, self.log, *p) 
-                elif direc == 'NA':
-                    arr2, r2 = function_test(arr, self.log, *p) 
-                           
+                    arr2, r2 = function_test(arr, nams, rmfile, self.log, *p) 
+
             
             
     def test_remove_insertions(self):
@@ -47,33 +47,33 @@ class TestFunctions(object):
         params_test['insertion_max_size'] = [1, 10, 50]
         params_test['insertion_min_flank'] = [5, 25]
 
-        self.run_test(params_test, CIAlign.removeInsertions, 'remove_insertions',
+        self.run_test(params_test, parsingFunctions.removeInsertions, 'remove_insertions',
                       direc='cols')        
         
     def test_remove_short(self):
         params_test = OrderedDict()
         params_test['remove_min_length'] = [10, 50, 100]
-        self.run_test(params_test, CIAlign.removeTooShort, 'remove_short', direc='rows')
+        self.run_test(params_test, parsingFunctions.removeTooShort, 'remove_short', direc='rows')
 
 
     def test_make_consensus(self):
         params_test = OrderedDict()
         params_test['consensus_type'] = ['majority', 'majority_nongap']
-        self.run_test(params_test, consensusSeq.findConsensus, 'make_consensus',
+        self.run_test(params_test, parsingFunctions.findConsensus, 'make_consensus',
                       direc='NA')
 
         
     def test_crop_ends(self):
         params_test = OrderedDict()
         params_test['crop_ends_mingap'] = [0, 5, 10, 20, 50]
-        self.run_test(params_test, CIAlign.cropEnds, 'crop_ends',
+        self.run_test(params_test, parsingFunctions.cropEnds, 'crop_ends',
                       direc='rows')        
   
 
     def test_remove_badlyaligned(self):
         params_test = OrderedDict()
         params_test['remove_badlyaligned_minperc'] = [0, 0.5, 0.8, 1.0]
-        self.run_test(params_test, CIAlign.removeBadlyAligned, 'remove_badlyaligned', direc='rows')
+        self.run_test(params_test, parsingFunctions.removeBadlyAligned, 'remove_badlyaligned', direc='rows')
     
     """
     def test_remove_gaponly(self):

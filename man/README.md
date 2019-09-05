@@ -5,7 +5,6 @@ fontsize: 10pt
 mainfont: FreeSans
 geometry: [top=2cm, bottom=1.5cm, left=1cm, right=1cm]
 ---
-# CIAlign
 
 CIAlign is a command line tool which performs various functions to parse and analyse a multiple sequence alignment (MSA).
 
