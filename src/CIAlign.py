@@ -24,7 +24,7 @@ def main():
                         help='Path to input alignment. Required')
     optional.add("--inifile", dest='inifile', type=str,
                default=None,
-               help='Path to config file. Default: %(default)s',
+               help='Path to config file. consensusSeq.pyDefault: %(default)s',
                is_config_file=True)
     optional.add("--outfile_stem", dest='outfile_stem', type=str,
                         default="CIAlign",
