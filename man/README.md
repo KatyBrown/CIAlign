@@ -42,10 +42,10 @@ Add the CIAlign directory to your PATH environment variable as described [here](
 
 | Parameter | Description | Default |
 | -------------------------------------------------------------------- |------------------------------------------------------------------------------------------------- | ------------ |
-| --infile | path to input alignment FASTA file | None |
-| --inifile | path to ini file | None |
-| --outfile_stem | prefix for output files, including the path to the output directory | CIAlign |
-
+| --infile | Path to input alignment FASTA file | None |
+| --inifile | Path to ini file | None |
+| --outfile_stem | Prefix for output files, including the path to the output directory | CIAlign |
+| --silent | Do not print progress to the screen | False |
 ### Functions
 Specify which functions to run by adding the following optional arguments to the command
 
@@ -126,11 +126,19 @@ NB: to see available fonts on your system, run CIAlign --list_fonts_only and vie
 ### Coverage Plots
 This function plots the number of non-gap residues at each postion in the alignment.
 Output file:
-* **OUTFILE_STEM_coverage.png** - image showing the alignment coverage
+* **OUTFILE_STEM_input_coverage.png (or svg, tiff, jpg) ** - image showing the input alignment coverage
+* **OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) ** - image showing the parsed alignment coverage
 
 | Parameter | Description | Default |
 | -------------------------------------------------------------------- |------------------------------------------------------------------------------------------------- | ------------ |
-| **--plot_coverage** | Plot the coverage of the multiple sequence alignment | False |
+| **--plot_coverage_input** | Plot the coverage of the multiple sequence alignment | False |
+| **--plot_coverage_output** | Plot the coverage of the multiple sequence alignment | False |
+| *--plot_coverage_dpi* | DPI for coverage plot | 300 |
+| *--plot_coverage_height* | Height for coverage plot (inches) | 3 |
+| *--plot_coverage_width* | Width for coverage plot (inches) | 5 |
+| *--plot_coverage_colour* | Colour for coverage plot (hex code or name) | #007bf5 |
+| *--plot_coverage_filetype* | File type for coverage plot (can be png, svg, tiff, jpg) | png |
+
 
 ## Analysing Alignment Statistics
 These functions provide additional analyses you may wish to perform on your alignment.
