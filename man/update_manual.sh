@@ -1,1 +1,1 @@
-pandoc --from markdown_github --to latex -o user_guide.pdf README.md --template=template.tex
+pandoc --from markdown --to latex -o user_guide.pdf README.md --template=template.tex
