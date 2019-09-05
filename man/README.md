@@ -28,7 +28,6 @@ This allows the user to:
 * scipy >= 1.3.0
 
 ## Installation
-? conda
 
 The current release of CIAlign can be downloaded directly using [this link](https://github.com/KatyBrown/CIAlign/archive/v0.1.0.tar.gz)
 
@@ -36,9 +35,16 @@ Add the CIAlign directory to your PATH environment variable as described [here](
 
 ## Usage
 ### Basic Usage
-`CIAlign --infile INFILE --outfile_stem STEM --inifile cialign.ini`
+`CIAlign --infile INFILE --outfile_stem STEM --inifile my_config.ini`
 
 #### Parameters
+Parameters can be specified in the command line or in a config file using the naming system below.
+
+A template config file is provided in CIAlign/templates/ini_template.txt - edit this file and provide the path to the --inifile argument.  If this argument is not provided command line arguments and defaults will be used.
+
+Parameters passed in the command line will take precedence over config file parameters, which take precedence over defaults.
+
+Command help can be accessed by typing CIAlign --help
 
 | Parameter | Description | Default |
 | -------------------------------------------------------------------- |------------------------------------------------------------------------------------------------- | ------------ |
