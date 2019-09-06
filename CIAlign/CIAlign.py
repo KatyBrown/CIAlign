@@ -392,7 +392,7 @@ def main():
                                                      args.consensus_type)
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
 
-    if args.plot_coverage_input:
+    if args.plot_coverage_output:
         log.info("Plotting coverage for output")
         if not args.silent:
             print("Plotting coverage for output")
@@ -404,17 +404,17 @@ def main():
     if args.make_sequence_logo:
         if args.sequence_logo_type == 'bar':
             log.info("Generating sequence logo bar chart")
-        if not args.silent:
-            print("Generating sequence logo bar chart")
-            out = "%s_logo_bar.%s" % (args.outfile_stem,
-                                      args.sequence_logo_filetype)
-            consensusSeq.sequence_bar_logo(arr, out, typ=typ,
-                                           figdpi=args.sequence_logo_dpi,
-                                           figrowlength=args.sequence_logo_nt_per_row)
+            if not args.silent:
+                print("Generating sequence logo bar chart")
+                out = "%s_logo_bar.%s" % (args.outfile_stem,
+                                          args.sequence_logo_filetype)
+                consensusSeq.sequence_bar_logo(arr, out, typ=typ,
+                                               figdpi=args.sequence_logo_dpi,
+                                               figrowlength=args.sequence_logo_nt_per_row)
         elif args.sequence_logo_type == 'text':
             log.info("Generating text sequence logo")
-        if not args.silent:
-            print("Generating text sequence logo")
+            if not args.silent:
+                print("Generating text sequence logo")
             out = "%s_logo_text.%s" % (args.outfile_stem,
                                        args.sequence_logo_filetype)
             consensusSeq.sequence_logo(arr, out, typ=typ,
@@ -423,16 +423,16 @@ def main():
                                        figrowlength=args.sequence_logo_nt_per_row)
         elif args.sequence_logo_type == 'both':
             log.info("Generating sequence logo bar chart")
-        if not args.silent:
-            print("Generating sequence logo bar chart")
+            if not args.silent:
+                print("Generating sequence logo bar chart")
             out = "%s_logo_bar.%s" % (args.outfile_stem,
                                       args.sequence_logo_filetype)
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=args.sequence_logo_dpi,
                                            figrowlength=args.sequence_logo_nt_per_row)
             log.info("Generating text sequence logo")
-        if not args.silent:
-            print("Generating text sequence logo")
+            if not args.silent:
+                print("Generating text sequence logo")
             out = "%s_logo_text.%s" % (args.outfile_stem,
                                        args.sequence_logo_filetype)
             consensusSeq.sequence_logo(arr, out, typ=typ,
