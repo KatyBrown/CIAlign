@@ -1,26 +1,35 @@
 #! /usr/bin/env python
 
-def determineStartEnd(sequence, mingap):
+def determineStartEnd(sequence, mingap=10):
     '''
-    Determines the start and the end of a sequence
+    Determines the start and the end of a sequence by calling a subroutine
 
     Parameters
     ----------
-    sequence: array
+    sequence: numpy array
         sequence
+
+    mingap: int
+        minimal gap number (default: 10)
 
     Returns
     -------
-    todo
-        value for start and end of sequence
+    start: int
+        redefined start of the sequence
+
+    end: int
+        redefined end of the seuquence
+
     '''
+
     start = 0
     end = 0
 
     start = findValue(sequence, mingap)
+    # put in reverse for end
     end = len(sequence) - findValue(sequence[::-1])
 
-    # todo: look into this!
+
     if start > end:
         return (0, 0)
     return(start, end)
@@ -31,13 +40,16 @@ def findValue(sequence, mingap=10):
 
     Parameters
     ----------
-    sequence: array
+    sequence: numpy array
         sequence
+
+    mingap: int
+        minimal gap number (default: 10)
 
     Returns
     -------
     int
-        value for start or end of sequence
+        value for start or end (when put in reverse) of sequence
     '''
 
     position = 0
@@ -74,17 +86,18 @@ def findValue(sequence, mingap=10):
 
 def countGaps(sequence):
     '''
-    Counts the gaps in a sequence for each non-gap position
+    Counts the gaps in a sequence preceding each non-gap position
 
     Parameters
     ----------
 
-    sequence: array
+    sequence: numpy array
+        sequence
 
     Returns
     -------
-    todo
-        array of ints of the length of the sequence without gaps
+    gapNumbers: list
+        list of ints of the length of the sequence without gaps
 
     '''
 
@@ -98,4 +111,3 @@ def countGaps(sequence):
             gapNumbers.append(gapCounter)
 
     return gapNumbers
-

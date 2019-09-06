@@ -17,7 +17,7 @@ def main():
             add_help=False)
     required = parser.add_argument_group('Required Arguments')
     optional = parser.add_argument_group('Optional Arguments')
-    
+
     # Files
     # not to confuse with inifile :)
     required.add("--infile", dest='infile', type=str, required=True,
@@ -116,7 +116,7 @@ def main():
 
     # Mini Alignments
     optional.add("--make_sequence_logo", dest="make_sequence_logo",
-                        action="store_true", 
+                        action="store_true",
                         help="Draw a sequence logo. Default: %(default)s")
     optional.add("--sequence_logo_type", dest="sequence_logo_type",
                         type=str, default='bar',
@@ -149,13 +149,13 @@ def main():
                         help="DPI for coverage plot. Default: %(default)s")
     optional.add("--plot_coverage_height", dest="plot_coverage_height",
                         type=int, default=3,
-                        help="Height for coverage plot. Default: %(default)s")  
+                        help="Height for coverage plot. Default: %(default)s")
     optional.add("--plot_coverage_width", dest="plot_coverage_width",
                         type=int, default=5,
                         help="Width for coverage plot. Default: %(default)s")
     optional.add("--plot_coverage_colour", dest="plot_coverage_colour",
                         type=str, default='#007bf5',
-                        help="Colour for coverage plot. Default: %(default)s") 
+                        help="Colour for coverage plot. Default: %(default)s")
     optional.add("--plot_coverage_filetype", dest="plot_coverage_filetype",
                         type=str, default='png',
                         help="File type for coverage plot - can be png, jpg, tiff, svg. Default: %(default)s")
@@ -407,7 +407,7 @@ def main():
         coverage_file = args.outfile_stem + "_input_coverage." + args.plot_coverage_filetype
         consx, coverage = consensusSeq.findConsensus(orig_arr, args.consensus_type)
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
-        
+
     if args.plot_coverage_input:
         log.info("Plotting coverage for output")
         if not args.silent:
