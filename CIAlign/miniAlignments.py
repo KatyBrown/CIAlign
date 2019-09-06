@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import utilityFunctions
+import CIAlign.utilityFunctions as utilityFunctions
 import math
 
 

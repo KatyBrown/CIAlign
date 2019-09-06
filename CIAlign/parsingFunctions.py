@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
-import cropSeq
+import CIAlign.cropSeq as cropSeq
 
 
 def cropEnds(arr, nams, rmfile, log, mingap):

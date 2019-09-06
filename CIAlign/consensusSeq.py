@@ -14,7 +14,7 @@ import os
 import matplotlib.patheffects
 import math
 from matplotlib import gridspec
-import utilityFunctions
+import CIAlign.utilityFunctions as utilityFunctions
 
 def getAxisUnits(figure, subplot):
     axis_dimensions = subplot.transData.transform([(subplot.get_xlim()[1], subplot.get_ylim()[1]),(0, 0)])- subplot.transData.transform((0,0))
