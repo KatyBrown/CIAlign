@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='cialign',  
-     version='0.1.1',
+     version='0.1.2',
      author="Charlotte Tumescheit, Katy Brown",
      author_email="kab84@cam.ac.uk",
      description="Toolkit for cleaning and interpreting multiple sequence alignments",
