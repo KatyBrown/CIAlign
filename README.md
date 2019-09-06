@@ -29,10 +29,13 @@ This allows the user to:
 * scipy >= 1.3.0
 
 ## Installation
+The easiest way to install CIAlign is using pip3
 
-The current release of CIAlign can be downloaded directly using [this link](https://github.com/KatyBrown/CIAlign/archive/v0.1.0.tar.gz)
+`pip3 install cialign`
 
-Add the CIAlign directory to your PATH environment variable as described [here](https://gist.github.com/nex3/c395b2f8fd4b02068be37c961301caa7)
+The current release of CIAlign can also be downloaded directly using [this link](https://github.com/KatyBrown/CIAlign/archive/v0.1.1.tar.gz)
+
+If you download the package direcly, you will also need to add the CIAlign directory to your PATH environment variable as described [here](https://gist.github.com/nex3/c395b2f8fd4b02068be37c961301caa7)
 
 ## Usage
 ### Basic Usage
