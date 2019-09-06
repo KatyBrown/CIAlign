@@ -14,7 +14,10 @@ import os
 import matplotlib.patheffects
 import math
 from matplotlib import gridspec
-import CIAlign.utilityFunctions as utilityFunctions
+try:
+    import CIAlign.utilityFunctions as utilityFunctions
+except ModuleNotFoundError:
+    import utilityFunctions
 
 def getAxisUnits(subplot):
     '''

@@ -4,11 +4,18 @@ import logging
 import configargparse
 import numpy as np
 import copy
-import CIAlign.utilityFunctions as utilityFunctions
-import CIAlign.parsingFunctions as parsingFunctions
-import CIAlign.miniAlignments as miniAlignments
-import CIAlign.similarityMatrix as similarityMatrix
-import CIAlign.consensusSeq as consensusSeq
+try:
+    import CIAlign.utilityFunctions as utilityFunctions
+    import CIAlign.parsingFunctions as parsingFunctions
+    import CIAlign.miniAlignments as miniAlignments
+    import CIAlign.similarityMatrix as similarityMatrix
+    import CIAlign.consensusSeq as consensusSeq
+except ModuleNotFoundError:
+    import utilityFunctions
+    import parsingFunctions
+    import miniAlignments
+    import similarityMatrix
+    import consensusSeq
 
 
 def main():

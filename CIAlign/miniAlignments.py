@@ -3,7 +3,10 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import CIAlign.utilityFunctions as utilityFunctions
+try:
+    import CIAlign.utilityFunctions as utilityFunctions
+except ModuleNotFoundError:
+    import utilityFunctions
 import math
 
 
