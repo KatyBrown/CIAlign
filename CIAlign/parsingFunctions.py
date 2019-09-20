@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use('Agg')
 try:
     import CIAlign.cropSeq as cropSeq
-except ModuleNotFoundError:
+except ImportError:
     import cropSeq
 
 

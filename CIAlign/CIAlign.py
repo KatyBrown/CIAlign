@@ -10,7 +10,7 @@ try:
     import CIAlign.miniAlignments as miniAlignments
     import CIAlign.similarityMatrix as similarityMatrix
     import CIAlign.consensusSeq as consensusSeq
-except ModuleNotFoundError:
+except ImportError:
     import utilityFunctions
     import parsingFunctions
     import miniAlignments
@@ -36,6 +36,11 @@ def main():
     optional.add("--outfile_stem", dest='outfile_stem', type=str,
                  default="CIAlign",
                  help="Stem for output files (including path). Default: %(default)s")
+
+    # parameter to run all options without having to type them in
+    optional.add("--all", dest="all_options",
+                 action="store_true",
+                 help="Use all available options with default parameters.")
 
     # Runtime
     optional.add("--silent", dest='silent',
@@ -80,7 +85,8 @@ def main():
                  type=int, default=50,
                  help="Minimum length sequence to remove. Default: %(default)s")
 
-    optional.add("--remove_gaponly", dest="remove_gaponly",
+    # keep gap only
+    optional.add("--keep_gaponly", dest="remove_gaponly",
                  action="store_false",
                  help="Remove gap only columns from the alignment. Default: %(default)s")
 
@@ -249,7 +255,7 @@ def main():
     reset_rmfile.close()
     utilityFunctions.checkArrLength(arr, log)
 
-    if args.crop_ends:
+    if args.crop_ends or args.all_options:
         # doesn't remove any whole columns or rows
         log.info("Cropping ends")
         if not args.silent:
@@ -260,7 +266,7 @@ def main():
         removed_positions.update(r)
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.remove_badlyaligned:
+    if args.remove_badlyaligned or args.all_options:
         log.info("Removing badly aligned sequences")
         if not args.silent:
             print("Removing badly aligned sequences")
@@ -273,7 +279,7 @@ def main():
         nams = utilityFunctions.updateNams(nams, r)
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.remove_insertions:
+    if args.remove_insertions or args.all_options:
         log.info("Removing insertions")
         if not args.silent:
             print("Removing insertions")
@@ -289,7 +295,7 @@ def main():
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.remove_short:
+    if args.remove_short or args.all_options:
         log.info("Removing short sequences")
         if not args.silent:
             print("Removing short sequences")
@@ -301,7 +307,7 @@ def main():
         nams = utilityFunctions.updateNams(nams, r)
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.remove_gaponly:
+    if args.remove_gaponly or args.all_options:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -313,7 +319,7 @@ def main():
         markupdict['remove_gaponly'] = r
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.make_simmatrix_input:
+    if args.make_simmatrix_input or args.all_options:
         log.info("Building similarity matrix for input alignment")
         if not args.silent:
             print("Building similarity matrix for input alignment")
@@ -324,7 +330,7 @@ def main():
                                                    keepgaps=args.make_simmatrix_keepgaps,
                                                    outfile=outf, dp=args.make_simmatrix_dp)
 
-    if args.make_simmatrix_output:
+    if args.make_simmatrix_output or args.all_options:
         log.info("Building similarity matrix for output alignment")
         if not args.silent:
             print("Building similarity matrix for output alignment")
@@ -335,7 +341,7 @@ def main():
                                                    keepgaps=args.make_simmatrix_keepgaps,
                                                    outfile=outf, dp=args.make_simmatrix_dp)
 
-    if args.plot_input:
+    if args.plot_input or args.all_options:
         log.info("Plotting mini alignment for input")
         if not args.silent:
             print("Building similarity matrix for output alignment")
@@ -345,7 +351,7 @@ def main():
                                          False, args.plot_width,
                                          args.plot_height)
 
-    if args.plot_output:
+    if args.plot_output or args.all_options:
         log.info("Plotting mini alignment for output")
         if not args.silent:
             print("Plotting mini alignment for output")
@@ -357,7 +363,7 @@ def main():
                                          args.plot_width,
                                          args.plot_height)
 
-    if args.plot_markup:
+    if args.plot_markup or args.all_options:
         log.info("Plotting mini alignment with markup")
         if not args.silent:
             print("Plotting mini alignment with markup")
@@ -369,7 +375,7 @@ def main():
                                          args.plot_width, args.plot_height,
                                          markup=True, markupdict=markupdict)
 
-    if args.make_consensus:
+    if args.make_consensus or args.all_options:
         log.info("Building consensus sequence")
         if not args.silent:
             print("Building consensus sequence")
@@ -389,7 +395,7 @@ def main():
                                       nams + [args.consensus_name],
                                       removed_seqs)
 
-    if args.plot_coverage_input:
+    if args.plot_coverage_input or args.all_options:
         log.info("Plotting coverage for input")
         if not args.silent:
             print("Plotting coverage for input")
@@ -399,7 +405,7 @@ def main():
                                                      args.consensus_type)
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
 
-    if args.plot_coverage_output:
+    if args.plot_coverage_output or args.all_options:
         log.info("Plotting coverage for output")
         if not args.silent:
             print("Plotting coverage for output")
@@ -408,7 +414,7 @@ def main():
         consx, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
 
-    if args.make_sequence_logo:
+    if args.make_sequence_logo or args.all_options:
         if args.sequence_logo_type == 'bar':
             log.info("Generating sequence logo bar chart")
             if not args.silent:

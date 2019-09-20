@@ -5,7 +5,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 try:
     import CIAlign.utilityFunctions as utilityFunctions
-except ModuleNotFoundError:
+except ImportError:
     import utilityFunctions
 import math
 
