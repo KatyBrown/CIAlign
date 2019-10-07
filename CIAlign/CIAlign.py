@@ -52,15 +52,15 @@ def main():
                  action="store_true",
                  help="Crop badly aligned ends. Default: %(default)s")
     optional.add("--crop_ends_mingap", dest='crop_ends_mingap',
-                 type=int, default=10,
+                 type=int, default=30,
                  help="Minimum gap size to crop from ends. Default: %(default)s")
 
-    # Remove Badly Aligned
-    optional.add("--remove_badlyaligned", dest="remove_badlyaligned",
+    # Remove divergent sequences
+    optional.add("--remove_divergent", dest="remove_divergent",
                  action="store_true",
                  help="Remove badly aligned sequences. Default: %(default)s")
-    optional.add("--remove_badlyaligned_minperc", dest="remove_badlyaligned_minperc",
-                 type=float, default=0.9,
+    optional.add("--remove_divergent_minperc", dest="remove_divergent_minperc",
+                 type=float, default=0.75,
                  help="Minimum percentage identity to majority to not be removed. Default: %(default)s")
 
     # Remove Insertions
@@ -266,15 +266,15 @@ def main():
         removed_positions.update(r)
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.remove_badlyaligned or args.all_options:
-        log.info("Removing badly aligned sequences")
+    if args.remove_divergent or args.all_options:
+        log.info("Removing divergent sequences")
         if not args.silent:
-            print("Removing badly aligned sequences")
-        arr, r = parsingFunctions.removeBadlyAligned(arr, nams,
+            print("Removing divergent sequences")
+        arr, r = parsingFunctions.removeDivergent(arr, nams,
                                                      rmfile, log,
-                                                     args.remove_badlyaligned_minperc)
+                                                     args.remove_divergent_minperc)
 
-        markupdict['remove_badlyaligned'] = r
+        markupdict['remove_divergent'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
         utilityFunctions.checkArrLength(arr, log)

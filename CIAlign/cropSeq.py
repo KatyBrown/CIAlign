@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-def determineStartEnd(sequence, mingap=10):
+def determineStartEnd(sequence, mingap=30):
     '''
     Determines the start and the end of a sequence by calling a subroutine
 
@@ -34,7 +34,7 @@ def determineStartEnd(sequence, mingap=10):
         return (0, 0)
     return(start, end)
 
-def findValue(sequence, mingap=10):
+def findValue(sequence, mingap=30):
     '''
     Determines the start of the given sequence
 
@@ -44,7 +44,7 @@ def findValue(sequence, mingap=10):
         sequence
 
     mingap: int
-        minimal gap number (default: 10)
+        minimal gap number (default: 30)
 
     Returns
     -------

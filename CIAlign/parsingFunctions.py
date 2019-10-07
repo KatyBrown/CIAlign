@@ -72,7 +72,7 @@ def cropEnds(arr, nams, rmfile, log, mingap):
     return (np.array(newarr), r)
 
 
-def removeBadlyAligned(arr, nams, rmfile, log, percidentity=0.9):
+def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     '''
     Remove sequences which don't have the most common non-gap residue at
     > percidentity non-gap positions

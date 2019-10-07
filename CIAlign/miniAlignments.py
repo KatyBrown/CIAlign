@@ -116,9 +116,9 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                                 1, color='black', lw=0, zorder=50))
 
     # removes whole rows
-    if "remove_badlyaligned" in markupdict:
+    if "remove_divergent" in markupdict:
         colour = '#f434c5'
-        for row in markupdict['remove_badlyaligned']:
+        for row in markupdict['remove_divergent']:
             y = len(nams) - nams.index(row) - 1.5
             a.add_patch(matplotlib.patches.Rectangle(
                     (-0.5, y), ali_width, 1,
