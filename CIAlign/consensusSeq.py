@@ -150,7 +150,7 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
         f.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, wspace=None, hspace=None)
         a.set_frame_on(False)
         # temporarily safe plot in working directory
-        f.savefig("%s_temp.tiff" % base, dpi=500,
+        f.savefig("%s_temp.png" % base, dpi=500,
                   pad_inches=0)
         plt.close()
 
@@ -321,7 +321,6 @@ def sequence_logo(alignment,
     -------
     none
     '''
-
     alignment_width = len(alignment[0,:])
     if alignment_width < figrowlength:
         figrowlength = alignment_width
@@ -332,35 +331,34 @@ def sequence_logo(alignment,
     rstart = 0
     rend = rstart + figrowlength
     for n in range(nsegs):
+
         if rend > alignment_width:
             rend = alignment_width
         a = plt.subplot(gs[n])
         a.set_xlim(rstart, rstart+figrowlength)
-        a.set_ylim(0, 3.1)
+        a.set_ylim(0, 2.1)
         limits = a.axis()
 
         # for each column calculate heights via entropy
         # and scale letters accordlingly
         for i in range(rstart, rend):
-
             unique, counts = np.unique(alignment[:,i],
                                        return_counts=True)
             count = dict(zip(unique, counts))
             height_per_base, info_per_base = calc_entropy(count,
                                                           len(alignment[:,0]),
                                                           typ=typ)
-
             height_sum_higher = 0
             for base, height in height_per_base.items():
                 if height > 0:
-                    L = plt.imread("%s_temp.tiff" % base)
+                    L = plt.imread("%s_temp.png" % base)
                     a.imshow(L, extent=(i, i+1, height_sum_higher, height_sum_higher+height),
                              filternorm=False)
                     height_sum_higher += height
         a.axis(limits)
         a.set_xticks([rstart, rend])
         a.set_xticklabels([rstart, rend])
-        a.set_yticks(np.arange(0, 3.1, 1))
+        a.set_yticks(np.arange(0, 2.1, 1))
         a.spines['right'].set_visible(False)
         a.spines['top'].set_visible(False)
         if n == (nsegs - 1):
@@ -373,8 +371,8 @@ def sequence_logo(alignment,
         allbases = utilityFunctions.getNtColours()
     elif typ == 'aa':
         allbases = utilityFunctions.getAAColours()
-    for base in allbases:
-        os.unlink("%s_temp.tiff" % base)
+    #for base in allbases:
+    #    os.unlink("%s_temp.png" % base)
     # save plot using figname
     f.savefig(figname, dpi=figdpi, bbox_inches='tight')
     plt.close()
@@ -431,7 +429,7 @@ def sequence_bar_logo(alignment,
             rend = alignment_width
         axes = f.add_subplot(gs[n])
         axes.set_xlim(rstart-0.5, rend-0.5)
-        axes.set_ylim(0, 3.1)
+        axes.set_ylim(0, 2.1)
         seq_count = len(alignment[:,0])
         width = 0.75
         ind = np.arange(rstart, rend)
@@ -467,7 +465,7 @@ def sequence_bar_logo(alignment,
 
 
         plt.xticks([rstart, rend-1], [rstart+1, rend])
-        plt.yticks(np.arange(0, 3.1, 1))
+        plt.yticks(np.arange(0, 2.1, 1))
         plt.xlabel("Position")
         plt.ylabel("Bit Score")
 
