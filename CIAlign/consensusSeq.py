@@ -16,7 +16,7 @@ import math
 from matplotlib import gridspec
 try:
     import CIAlign.utilityFunctions as utilityFunctions
-except ModuleNotFoundError:
+except ImportError:
     import utilityFunctions
 
 def getAxisUnits(subplot):
