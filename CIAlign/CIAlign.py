@@ -185,6 +185,11 @@ def main():
                  type=bool, default=False,
                  help="Include positions with gaps in either or both sequences in the similarity matrix calculation. Default: %(default)s")
 
+    optional.add("--unalign_input", dest="unalign_input", action="store_true",
+                 help="generate a copy of the input alignment with no gaps")
+    optional.add("--unalign_output", dest="unalign_output", action="store_true",
+                 help="generate a copy of the parsed alignment with no gaps")
+
     optional.add('-h', '--help', action='help', default=configargparse.SUPPRESS,
                  help='Show this help message and exit')
     args = parser.parse_args()
@@ -338,7 +343,7 @@ def main():
     if args.plot_input:
         log.info("Plotting mini alignment for input")
         if not args.silent:
-            print("Building similarity matrix for output alignment")
+            print("Plotting mini alignment for input")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
         miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
                                          outf, typ, args.plot_dpi,
@@ -447,6 +452,26 @@ def main():
                                        figfontname=args.sequence_logo_font,
                                        figrowlength=args.sequence_logo_nt_per_row)
 
+    if args.unalign_input:
+        log.info("Generating a gap free version of the input alignment")
+        if not args.silent:
+            print ("Generating a gap free version of the input alignment")
+        outf = "%s_unaligned_input.fasta" % (args.outfile_stem)
+        unaligned_arr = utilityFunctions.unAlign(orig_arr)
+        utilityFunctions.writeOutfile(outf, unaligned_arr,
+                                      orig_nams,
+                                      removed_seqs)
+    if args.unalign_output:
+        log.info("Generating a gap free version of the output alignment")
+        if not args.silent:
+            print ("Generating a gap free version of the output alignment")
+        outf = "%s_unaligned_output.fasta" % (args.outfile_stem)
+        unaligned_arr = utilityFunctions.unAlign(arr)
+        utilityFunctions.writeOutfile(outf, unaligned_arr,
+                                      nams,
+                                      removed_seqs)
+
+        
     utilityFunctions.writeOutfile(outfile, arr, orig_nams,
                                   removed_seqs, rmfile)
 

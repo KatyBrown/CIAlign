@@ -6,6 +6,10 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
+def unAlign(arr):
+    arr = np.where(arr == "-", "", arr)
+    return (arr)
+
 def FastaToArray(infile):
     '''
     Convert an alignment into a numpy array.
@@ -34,13 +38,13 @@ def FastaToArray(infile):
         for line in input:
             line = line.strip()
             if line[0] == ">":
-                    seqs.append(seq)
+                    seqs.append([s.upper() for s in seq])
                     nams.append(nam)
                     seq = []
                     nam = line.replace(">", "")
             else:
                 seq += list(line)
-    seqs.append(seq)
+    seqs.append([s.upper() for s in seq])
     nams.append(nam)
     arr = np.array(seqs[1:])
     return (arr, nams[1:])
@@ -107,7 +111,18 @@ def getNtColours():
             'C': '#315af4',
             'N': '#b2b2b2',
             "-": '#FFFFFF',
-            "U": '#f43131'}
+            "U": '#f43131',
+            "R": '#b2b2b2',
+            "Y": '#b2b2b2',
+            "S": '#b2b2b2',
+            "W": '#b2b2b2',
+            "K": '#b2b2b2',
+            "M": '#b2b2b2',
+            "B": '#b2b2b2',
+            "D": '#b2b2b2',
+            "H": '#b2b2b2',
+            "V": '#b2b2b2',
+            "X": '#b2b2b2',}
 
 
 def writeOutfile(outfile, arr, nams, removed, rmfile=None):

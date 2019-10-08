@@ -44,20 +44,27 @@ def arrNumeric(arr, typ):
 
     # retrieve the colours for the colour map
     keys = list(D.keys())
-    colours = list(D.values())
-
     ali_height, ali_width = np.shape(arr)
 
     # make a dictionary where each integer corresponds to a base or nt
-    D = {x: i for i, x in enumerate(keys)}
+    i = 0
+    nD = dict()
+    colours = []
+    for key in keys:
+        if key in arr:
+            nD[key] = i
+            colours.append(D[key])
+            i += 1
 
     arr2 = np.empty([ali_height, ali_width])
+
     for x in range(ali_width):
         for y in range(ali_height):
             # numeric version of the alignment array
-            arr2[y, x] = D[arr[y, x]]
-    cmap = matplotlib.colors.ListedColormap(colours)
+            arr2[y, x] = nD[arr[y, x]]
+ 
 
+    cmap = matplotlib.colors.ListedColormap(colours)
     return (arr2, cmap)
 
 
@@ -247,7 +254,6 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
 
     # generate the numeric version of the arry
     arr2, cm = arrNumeric(arr, typ)
-
     # display it on the axis
     a.imshow(arr2, cmap=cm, aspect='auto')
 
