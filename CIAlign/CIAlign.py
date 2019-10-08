@@ -58,7 +58,7 @@ def main():
     # Remove divergent sequences
     optional.add("--remove_divergent", dest="remove_divergent",
                  action="store_true",
-                 help="Remove badly aligned sequences. Default: %(default)s")
+                 help="Remove divergent sequences. Default: %(default)s")
     optional.add("--remove_divergent_minperc", dest="remove_divergent_minperc",
                  type=float, default=0.75,
                  help="Minimum percentage identity to majority to not be removed. Default: %(default)s")
