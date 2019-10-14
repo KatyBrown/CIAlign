@@ -271,6 +271,22 @@ def main():
         removed_positions.update(r)
         utilityFunctions.checkArrLength(arr, log)
 
+    if args.remove_gaponly or args.all_options:
+        log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
+
+        arr, r, relativePositions = parsingFunctions.removeGapOnly(arr,
+                                                                   relativePositions,
+                                                                   rmfile,
+                                                                   log)
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
+        utilityFunctions.checkArrLength(arr, log)
+
     if args.remove_divergent or args.all_options:
         log.info("Removing divergent sequences")
         if not args.silent:
@@ -282,6 +298,22 @@ def main():
         markupdict['remove_divergent'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
+        utilityFunctions.checkArrLength(arr, log)
+
+    if args.remove_gaponly or args.all_options:
+        log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
+
+        arr, r, relativePositions = parsingFunctions.removeGapOnly(arr,
+                                                                   relativePositions,
+                                                                   rmfile,
+                                                                   log)
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_insertions or args.all_options:
@@ -297,6 +329,22 @@ def main():
                                                                       args.insertion_min_flank)
 
         markupdict['remove_insertions'] = r
+        removed_cols = removed_cols | r
+        utilityFunctions.checkArrLength(arr, log)
+
+    if args.remove_gaponly or args.all_options:
+        log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
+
+        arr, r, relativePositions = parsingFunctions.removeGapOnly(arr,
+                                                                   relativePositions,
+                                                                   rmfile,
+                                                                   log)
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
@@ -321,7 +369,11 @@ def main():
                                                                    relativePositions,
                                                                    rmfile,
                                                                    log)
-        markupdict['remove_gaponly'] = r
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
     if args.make_simmatrix_input or args.all_options:
@@ -477,7 +529,7 @@ def main():
                                       nams,
                                       removed_seqs)
 
-        
+
     utilityFunctions.writeOutfile(outfile, arr, orig_nams,
                                   removed_seqs, rmfile)
 
