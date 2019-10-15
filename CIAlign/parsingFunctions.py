@@ -127,6 +127,8 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     keep = np.array(keep)
     newarr = arr[keep, :]
     r = set(np.array(nams)[np.invert(keep)])
+    log.info("Removing divergent sequences %s" % (", ".join(list(r))))
+
     return (newarr, r)
 
 

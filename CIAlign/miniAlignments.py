@@ -62,7 +62,7 @@ def arrNumeric(arr, typ):
         for y in range(ali_height):
             # numeric version of the alignment array
             arr2[y, x] = nD[arr[y, x]]
- 
+
 
     cmap = matplotlib.colors.ListedColormap(colours)
     return (arr2, cmap)
@@ -178,7 +178,7 @@ def drawMarkUpLegend(outfile):
     legend = plt.figure(figsize=(2, 2), dpi=100)
     l = legend.add_subplot(111)
     colours = ['black', '#f434c5', "#7bc5ff", '#fff6b3', "#f57700"]
-    functions = ['Cropped Ends', 'Badly Aligned', 'Insertions',
+    functions = ['Cropped Ends', 'Divergent', 'Insertions',
                  'Too Short', 'Gap Only']
     for i, c in enumerate(colours):
         l.plot(1, 5-i, marker='.', color=c, markersize=20)
