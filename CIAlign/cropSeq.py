@@ -27,7 +27,8 @@ def determineStartEnd(sequence, mingap=30):
 
     start = findValue(sequence, mingap)
     # put in reverse for end
-    end = len(sequence) - findValue(sequence[::-1])
+    end = len(sequence) - findValue(sequence[::-1], mingap)
+    print(start, end)
 
 
     if start > end:
@@ -57,7 +58,7 @@ def findValue(sequence, mingap=30):
     boundary2 = 80
     boundary3 = 20
 
-    # todo: make boundarys parameters!
+    # todo: make boundarys parameters or at least somewhat better
 
     gaps = countGaps(sequence)
 
@@ -68,6 +69,7 @@ def findValue(sequence, mingap=30):
         boundary1 = 10
         boundary2 = 19
         boundary3 = 10
+        #mingap = 10
 
 
     # this pattern doesn't indicate an incomplete sequence, set start to 0
@@ -76,13 +78,14 @@ def findValue(sequence, mingap=30):
 
     # for more fluctuation within the sequence, meaning we observe a few nt within many gaps -> indicates incomplete sequence
     for n in range(0, boundary2):
-        if gaps[n+1] - gaps[n] > mingap:
+        if gaps[n+1] - gaps[n] >= mingap:
             position = n + 1 + gaps[n+1]
     if position > 0:
         return position
 
     # if none of above, take the first nt/aa as start of the sequence
     return(gaps[0] + 1)
+
 
 def countGaps(sequence):
     '''

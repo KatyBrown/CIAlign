@@ -127,6 +127,8 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     keep = np.array(keep)
     newarr = arr[keep, :]
     r = set(np.array(nams)[np.invert(keep)])
+    log.info("Removing divergent sequences %s" % (", ".join(list(r))))
+
     return (newarr, r)
 
 
@@ -208,8 +210,10 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     # make a list of positions to remove
     for n in absolutePositions:
         rmpos.add(relativePositions[n])
-    for n in absolutePositions:
+    for n in rmpos:
         relativePositions.remove(n)
+    #for n in absolutePositions:
+    #    relativePositions.remove(n)
     rmpos = np.array(list(rmpos))
 
     keeppos = np.arange(0, len(sums))
@@ -289,7 +293,6 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
     out = open(rmfile, "a")
     if out.closed:
         print('file is closed')
-
     if len(arr) != 0:
         sums = sum(arr == "-")
         absolutePositions = set(np.where(sums == len(arr[:, 0]))[0])
@@ -306,8 +309,10 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
         out.write("Removing gap only sites %s" % (
                 ", ".join([str(x) for x in rmpos])))
         out.write('\n')
+
     else:
         rmpos = set()
+
 
     out.close()
     return (arr, rmpos, relativePositions)
