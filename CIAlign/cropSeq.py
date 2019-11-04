@@ -62,7 +62,7 @@ def findValue(sequence, mingap=30):
 
     gaps = countGaps(sequence)
 
-    if len(gaps) < 11:
+    if len(gaps) < 21:
         return(gaps[0] + 1)
 
     if len(gaps) <= 80:
