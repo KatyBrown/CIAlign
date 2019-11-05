@@ -194,7 +194,7 @@ def drawMarkUpLegend(outfile):
 
 def drawMiniAlignment(arr, nams, log, outfile, typ,
                       dpi=300, title=None, width=5, height=3, markup=False,
-                      markupdict=None):
+                      markupdict=None, ret=False):
     '''
     Draws a "mini alignment" image showing a small representation of the
     whole alignment so that gaps and poorly aligned regions are visible.
@@ -285,5 +285,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     if markup:
         a = drawMarkUp(a, markupdict, nams, ali_width, ali_height)
         drawMarkUpLegend(outfile.replace(".png", ""))
-
-    f.savefig(outfile, dpi=dpi)
+    f.tight_layout()
+    f.savefig(outfile, dpi=dpi, bbox_inches='tight')
+    if ret:
+        return (f)
