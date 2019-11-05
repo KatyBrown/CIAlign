@@ -135,7 +135,7 @@ Output files:
 
 
 ### Sequence logos
-These functions draw sequence logos representing your output (cleaned) alignment.  If no parsing functions are specified, the logo will be based on your input alignment.
+These functions draw sequence logos representing your output (cleaned) alignment.  If no cleaning functions are specified, the logo will be based on your input alignment.
 
 Output_files:
 
