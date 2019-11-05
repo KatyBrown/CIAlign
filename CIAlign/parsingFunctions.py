@@ -29,7 +29,7 @@ def cropEnds(arr, nams, rmfile, log, mingap):
     Returns
     -------
     arr: np.array
-        The parsed alignment stored as a numpy array
+        The cleaned alignment stored as a numpy array
     r: dict
         A dictionary with sequence names as keys and tuples as values,
         where tuple[0] is a list of positions which have been removed at the
@@ -93,7 +93,7 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     Returns
     -------
     arr: np.array
-        The parsed alignment stored as a numpy array
+        The cleaned alignment stored as a numpy array
     r: set
         A set of names of sequences which have been removed
     '''
@@ -156,7 +156,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     Returns
     -------
     arr: np.array
-        The parsed alignment stored as a numpy array
+        The cleaned alignment stored as a numpy array
     r: set
         A set of column numbers of sequences which have been removed
     relativePositions: list
@@ -247,7 +247,7 @@ def removeTooShort(arr, nams, rmfile, log, min_length):
     Returns
     -------
     arr: np.array
-        The parsed alignment stored as a numpy array
+        The cleaned alignment stored as a numpy array
     rmnames: set
          A set of names of sequences which have been removed
 
@@ -282,7 +282,7 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
     Returns
     -------
     arr: np.array
-        The parsed alignment stored as a numpy array
+        The cleaned alignment stored as a numpy array
     r: set
         A set of column numbers of sequences which have been removed
     relativePositions: list

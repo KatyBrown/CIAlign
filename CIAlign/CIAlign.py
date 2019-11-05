@@ -37,10 +37,10 @@ def main():
                  default="CIAlign",
                  help="Stem for output files (including path). Default: %(default)s")
 
-    # parameter to run all options without having to type them in
+    # parameter to run all functions without having to type them in
     optional.add("--all", dest="all_options",
                  action="store_true",
-                 help="Use all available options with default parameters.")
+                 help="Use all available functions with default parameters.")
 
     # Runtime
     optional.add("--silent", dest='silent',
@@ -191,13 +191,17 @@ def main():
                  type=bool, default=False,
                  help="Include positions with gaps in either or both sequences in the similarity matrix calculation. Default: %(default)s")
 
+    # Unalign function
     optional.add("--unalign_input", dest="unalign_input", action="store_true",
-                 help="generate a copy of the input alignment with no gaps")
+                 help="Generate a copy of the input alignment with no gaps")
     optional.add("--unalign_output", dest="unalign_output", action="store_true",
-                 help="generate a copy of the parsed alignment with no gaps")
+                 help="Generate a copy of the cleaned alignment with no gaps")
 
+
+    # Help function
     optional.add('-h', '--help', action='help', default=configargparse.SUPPRESS,
                  help='Show this help message and exit')
+
     args = parser.parse_args()
 
     log = logging.getLogger(__name__)
@@ -211,7 +215,7 @@ def main():
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     rmfile = "%s_removed.txt" % args.outfile_stem
-    outfile = "%s_parsed.fasta" % (args.outfile_stem)
+    outfile = "%s_cleaned.fasta" % (args.outfile_stem)
 
     # add the handlers to the logger
     log.addHandler(handler)
@@ -255,7 +259,7 @@ def main():
         log.info("Nucleotide alignment detected")
 
     rmfile = "%s_removed.txt" % args.outfile_stem
-    outfile = "%s_parsed.fasta" % (args.outfile_stem)
+    outfile = "%s_cleaned.fasta" % (args.outfile_stem)
     reset_rmfile = open(rmfile, "w")
     reset_rmfile.close()
     utilityFunctions.checkArrLength(arr, log)

@@ -7,6 +7,20 @@ import matplotlib.pyplot as plt
 
 
 def unAlign(arr):
+    '''
+    Removes all gaps from the alignment.
+
+    Parameters
+    ----------
+    arr: np.array
+        2D numpu array with the alignment.
+
+    Returns
+    -------
+    arr: np.array
+        2D numpy array of sequences without any gaps.
+    '''
+
     arr = np.where(arr == "-", "", arr)
     return (arr)
 
@@ -134,7 +148,7 @@ def writeOutfile(outfile, arr, nams, removed, rmfile=None):
     outfile: str
         Path to FASTA file where the output should be stored
     arr: np.array
-        Numpy array containing the parsed alignment
+        Numpy array containing the cleaned alignment
     nams: list
         List of nams of sequences in the input alignment
     removed: set

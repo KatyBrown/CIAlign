@@ -16,7 +16,7 @@ def main():
     arguments = bigstring.split("--")[1:-1]
     out = open(outfile, "w")
     out.write("# CIAlign Parameters\n")
-    
+
     for argument in arguments:
         nam = argument.split(" ")[0]
         parts = argument.split(" ")[1:]

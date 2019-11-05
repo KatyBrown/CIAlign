@@ -11,7 +11,7 @@ outfile_stem = CIAlign
 silent = False
 
 [crop_ends]
-# Crop badly aligned ends. 
+# Crop ends. 
 crop_ends = False
 # Minimum gap size to crop from ends. 
 crop_ends_mingap = 10

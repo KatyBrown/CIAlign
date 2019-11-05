@@ -178,7 +178,7 @@ def drawMarkUpLegend(outfile):
     legend = plt.figure(figsize=(2, 2), dpi=100)
     l = legend.add_subplot(111)
     colours = ['black', '#f434c5', "#7bc5ff", '#fff6b3', "#f57700"]
-    functions = ['Cropped Ends', 'Divergent', 'Insertions',
+    functions = ['Cropped Ends', 'Too Divergent', 'Insertions',
                  'Too Short', 'Gap Only']
     for i, c in enumerate(colours):
         l.plot(1, 5-i, marker='.', color=c, markersize=20)

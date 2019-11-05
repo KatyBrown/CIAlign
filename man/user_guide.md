@@ -1,33 +1,37 @@
 ---
-title: CIAlign
+title: CIAlign - Clean and Interpret Alignments
+author: Charlotte Tumescheit, Dr. Katherine Brown, Dr. Andrew E. Firth
 documentclass: article
 fontsize: 10pt
 mainfont: FreeSans
 geometry: [top=2cm, bottom=1.5cm, left=1cm, right=1cm]
 ---
 
-CIAlign is a command line tool which performs various functions to parse and analyse a multiple sequence alignment (MSA).
+CIAlign is a command line tool which performs various functions to clean and analyse a multiple sequence alignment (MSA).
 
-The tool is designed to be highly customisable, allowing users to specify exactly which functions to run and which settings to use.  It is also transparent, generating a clear log file and diagram showing exactly how the alignment has changed.
+The tool is designed to be highly customisable, allowing users to specify exactly which functions to run and which settings to use. It is also transparent, generating a clear log file and alignment markup showing exactly how the alignment has changed and what has been removed by which function.
 
 This allows the user to:
+
 * Remove sources of noise from their MSA
-  * Crop of poorly aligned sequence ends
-  * Remove of insertions which are not present in the majority of sequences
-  * Remove of sequences below a threshold number of bases or amino acids
+  * Crop poorly aligned sequence ends
+  * Remove insertions which are not present in the majority of sequences
+  * Remove sequences below a threshold number of bases or amino acids
   * Remove columns containing only gaps
   * Remove sequences above a threshold level percentage of divergence from the majority
 
 * Generate consensus sequences
 
 * Visualise alignments
-  * Generate image files showing the alignment before and after parsing and showing which columns and rows have been removed
+  * Generate image files showing the alignment before and after using CIAlign cleaning functions and showing which columns and rows have been removed
   * Draw sequence logos
-  * Visualise coverage at each postiion in the alignment
+  * Visualise coverage at each position in the alignment
 
 * Analyse alignment statistics
   * Generate a similarity matrix showing the percentage identity between each sequence pair
-  
+
+* Unalign the alignment
+
 ## Requirements
 * python >= 3.6
 * matplotlib >= 2.1.1
@@ -35,13 +39,13 @@ This allows the user to:
 * scipy >= 1.3.0
 
 ## Installation
-The easiest way to install CIAlign is using pip3
+The easiest way to install CIAlign is using pip3:
 
 `pip3 install cialign`
 
 The current release of CIAlign can also be downloaded directly using [this link](https://github.com/KatyBrown/CIAlign/archive/v0.1.1.tar.gz)
 
-If you download the package direcly, you will also need to add the CIAlign directory to your PATH environment variable as described [here](https://gist.github.com/nex3/c395b2f8fd4b02068be37c961301caa7)
+If you download the package directly, you will also need to add the CIAlign directory to your PATH environment variable as described [here](https://gist.github.com/nex3/c395b2f8fd4b02068be37c961301caa7)
 
 ## Usage
 ### Basic Usage
@@ -63,44 +67,55 @@ Command help can be accessed by typing `CIAlign --help`
 | `--outfile_stem` | Prefix for output files, including the path to the output directory | CIAlign |
 | `--silent` | Do not print progress to the screen | False |
 
+Beside these main parameters, the use of every function and corresponding thresholds can be specified by the user by adding parameters to the command line or by setting them in the configuration file. Available functions and their parameters will be specified in the following section.
 
-### Functions
-Specify which functions to run by adding the following optional arguments to the command
-
-## Parsing an MSA
+## Cleaning an MSA
 Each of these steps will be performed sequentially in the order specified in the table below.
 
-The parsed alignment after all steps have been performed will be saved as **`OUTFILE_STEM_parsed.fasta`**
+The "cleaned" alignment after all steps have been performed will be saved as **`OUTFILE_STEM_cleaned.fasta`**
 
 | Parameter | Description | Default Value |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
-| *`--crop_ends_mingap`* |  minimum gap size to consider when classifying a sequence as poorly aligned| 10 |
-| **`--remove_badlyaligned`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False |
-| *`--remove_badlyaligned_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.9 |
+| *`--crop_ends_mingap`* |  minimum gap size to consider when classifying a sequence as poorly aligned| 30 |
+| **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False |
+| *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.75 |
 | **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 |
 | *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 300 |
-| *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5 
+| *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5
 | **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False |
 | *`--remove_minlength`* | Minimum number of non-gap residues in a sequence to be preserved | 50 |
 | **`--remove_gaponly`** | Remove gap only columns from the alignment | True |
-
+| **`--all`** | Use all available functions with default parameters | False |
 
 ## Generating a Consensus Sequence
-This step generates a consensus sequence based on the parsed alignment.  If no parsing functions are performed, the consensus will be based on the input alignment.
+This step generates a consensus sequence based on the cleaned alignment.  If no cleaning functions are performed, the consensus will be based on the input alignment.
 
 Output files:
 
 * **`OUTFILE_STEM_consensus.fasta`** - the consensus sequence only
-* **`OUTFILE_STEM_with_consensus.fasta`** - the parsed alignment plus the consensus
+* **`OUTFILE_STEM_with_consensus.fasta`** - the cleaned alignment plus the consensus
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--make_consensus`** | Make a consensus sequence based on the parsed alignment | False |
+| **`--make_consensus`** | Make a consensus sequence based on the cleaned alignment | False |
 | *`--consensus_type`* | Type of consensus sequence to make - can be majority, to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position | majority |
 | *`--consensus_keepgaps`* | If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False) | False |
 | *`--consensus_name`* | Name to use for the consensus sequence in the output fasta file | consensus |
+
+## Unalign Alignment
+This function simply removes the gaps from the input or output alignment and creates and unaligned file of the sequences.
+
+Output files:
+
+* **`OUTFILE_STEM_unaligned_input.fasta`** - unaligned sequences of input alignment
+* **`OUTFILE_STEM_unaligned_output.fasta`** - unaligned sequences of output alignment
+
+| Parameter | Description | Default |
+| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
+| **`--unalign_input`** | Generates a copy of the input alignment with no gaps | False |
+| **`--unalign_output`** | Generates a copy of the output alignment with no gaps | False |
 
 ## Visualising Alignments
 Each of these functions produces some kind of visualisation of your alignment.
@@ -111,14 +126,14 @@ These functions produce "mini alignments" - images showing a small representatio
 Output files:
 
 * **`OUTFILE_STEM_input.png (or svg, tiff, jpg)`** - the input alignment
-* **`OUTFILE_STEM_output.png (or svg, tiff, jpg)`** - the parsed output alignment
+* **`OUTFILE_STEM_output.png (or svg, tiff, jpg)`** - the cleaned output alignment
 * **`OUTFILE_STEM_markup.png (or svg, tiff, jpg)`** - the input alignment with deleted rows and columns marked
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--plot_input`** | Draws a mini alignment for the input FASTA file | False |
 | **`--plot_output`** | Draws a mini alignment for the output FASTA file | False |
-| **`--plot_markup`** | Draws the input alignment but with the columns and rows which have been removed by each function marked | False |
+| **`--plot_markup`** | Draws the input alignment but with the columns and rows which have been removed by each function marked up in corresponding colours | False |
 | *`--plot_dpi`* | DPI for mini alignments | 300 |
 | *`--plot_format`* | Image format for mini alignments - can be png, svg, tiff or jpg | png |
 | *`--plot_width`* | Mini alignment width in inches | 5 |
@@ -126,7 +141,7 @@ Output files:
 
 
 ### Sequence logos
-These functions draw sequence logos representing your output (parsed) alignment.  If no parsing functions are specified, the logo will be based on your input alignment.
+These functions draw sequence logos representing your output (cleaned) alignment.  If no parsing functions are specified, the logo will be based on your input alignment.
 
 Output_files:
 
@@ -145,12 +160,12 @@ Output_files:
 NB: to see available fonts on your system, run CIAlign --list_fonts_only and view CIAlign_fonts.png
 
 ### Coverage Plots
-This function plots the number of non-gap residues at each postion in the alignment.
+This function plots the number of non-gap residues at each position in the alignment.
 
 Output file:
 
 * **`OUTFILE_STEM_input_coverage.png (or svg, tiff, jpg) `** - image showing the input alignment coverage
-* **`OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) `** - image showing the parsed alignment coverage
+* **`OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) `** - image showing the output alignment coverage
 
 | Parameter | Description | Default |
 | ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |
@@ -172,7 +187,7 @@ Generates a matrix showing the proportion of identical bases / amino acids betwe
 Output file:
 
 * **`OUTFILE_STEM_input_similarity.tsv`** - similarity matrix for the input file
-* **`OUTFILE_STEM_output_similarity.tsv`** - similarity matrix for the ouput file
+* **`OUTFILE_STEM_output_similarity.tsv`** - similarity matrix for the output file
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
