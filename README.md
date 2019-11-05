@@ -56,12 +56,21 @@ Command help can be accessed by typing `CIAlign --help`
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| `--infile` | Path to input alignment FASTA file | None |
-| `--inifile` | Path to ini file | None |
+| `--infile` | Path to input alignment file in FASTA format | None |
+| `--inifile` | Path to config file | None |
 | `--outfile_stem` | Prefix for output files, including the path to the output directory | CIAlign |
 | `--silent` | Do not print progress to the screen | False |
+| `--all` | Use all available functions with default parameters | False |
+| `--help` | Show all available parameters with an explanation | None |
 
 Beside these main parameters, the use of every function and corresponding thresholds can be specified by the user by adding parameters to the command line or by setting them in the configuration file. Available functions and their parameters will be specified in the following section.
+
+CIAlign always produces a log file, specifying which functions have been run with witch parameters and what has been removed. It also outputs a file that only specifies what has been removed with the original column positions and the sequence names.
+
+Output files:
+
+* **`OUTFILE_STEM_log.txt`** - general log file
+* **`OUTFILE_STEM_removed.txt`** - removed columns positions and sequence names text file
 
 ## Cleaning an MSA
 Each of these steps will be performed sequentially in the order specified in the table below.
@@ -71,7 +80,7 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 | Parameter | Description | Default Value |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
-| *`--crop_ends_mingap`* |  minimum gap size to consider when classifying a sequence as poorly aligned| 30 |
+| *`--crop_ends_mingap`* |  Minimum number of gaps to consider when classifying a sequence as poorly aligned | 30 |
 | **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False |
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.75 |
 | **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False |
@@ -79,9 +88,8 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 | *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 300 |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5
 | **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False |
-| *`--remove_minlength`* | Minimum number of non-gap residues in a sequence to be preserved | 50 |
-| **`--remove_gaponly`** | Remove gap only columns from the alignment | True |
-| **`--all`** | Use all available functions with default parameters | False |
+| *`--remove_min_length`* | Minimum number of non-gap residues in a sequence to be preserved | 50 |
+| **`--keep_gaponly`** | Keep gap only columns in the alignment | True |
 
 ## Generating a Consensus Sequence
 This step generates a consensus sequence based on the cleaned alignment.  If no cleaning functions are performed, the consensus will be based on the input alignment.
@@ -95,7 +103,7 @@ Output files:
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--make_consensus`** | Make a consensus sequence based on the cleaned alignment | False |
 | *`--consensus_type`* | Type of consensus sequence to make - can be majority, to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position | majority |
-| *`--consensus_keepgaps`* | If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False) | False |
+| *`--consensus_keep_gaps`* | If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False) | False |
 | *`--consensus_name`* | Name to use for the consensus sequence in the output fasta file | consensus |
 
 ## Unalign Alignment
@@ -108,8 +116,8 @@ Output files:
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--unalign_input`** | Generates a copy of the input alignment with no gaps | False |
-| **`--unalign_output`** | Generates a copy of the output alignment with no gaps | False |
+| `--unalign_input` | Generates a copy of the input alignment with no gaps | False |
+| `--unalign_output` | Generates a copy of the output alignment with no gaps | False |
 
 ## Visualising Alignments
 Each of these functions produces some kind of visualisation of your alignment.
@@ -125,8 +133,8 @@ Output files:
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--plot_input`** | Draws a mini alignment for the input FASTA file | False |
-| **`--plot_output`** | Draws a mini alignment for the output FASTA file | False |
+| **`--plot_input`** | Plot a mini alignment - an image representing the input alignment | False |
+| **`--plot_output`** | Plot a mini alignment - an image representing the output alignment | False |
 | **`--plot_markup`** | Draws the input alignment but with the columns and rows which have been removed by each function marked up in corresponding colours | False |
 | *`--plot_dpi`* | DPI for mini alignments | 300 |
 | *`--plot_format`* | Image format for mini alignments - can be png, svg, tiff or jpg | png |
@@ -145,10 +153,10 @@ Output_files:
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--make_sequence_logo`** | Draw a sequence logo | False |
-| *`--sequence_logo_type`* | Can be bar, to draw the logo as a bar chart, text, to draw a standard sequence logo using text, or both, to draw both | bar |
+| *`--sequence_logo_type`* | Type of sequence logo - bar/text/both | bar |
 | *`--sequence_logo_dpi`* | DPI for sequence logo | 300 |
-| *`--sequence_logo_font`* | font (see NB below) for bases / amino acids in a text based sequence logo | monospace |
-| *`--sequence_logo_nt_per_row`* | number of bases / amino acids to show per row in the sequence logo, where the logo is too large to show on a single line | 50 |
+| *`--sequence_logo_font`* | Font (see NB below) for bases / amino acids in a text based sequence logo | monospace |
+| *`--sequence_logo_nt_per_row`* | Number of bases / amino acids to show per row in the sequence logo, where the logo is too large to show on a single line | 50 |
 | *`--sequence_logo_filetype`* | Image file type to use for the sequence logo - can be png, svg, tiff or jpg | png |
 
 NB: to see available fonts on your system, run CIAlign --list_fonts_only and view CIAlign_fonts.png
@@ -163,13 +171,13 @@ Output file:
 
 | Parameter | Description | Default |
 | ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--plot_coverage_input`** | Plot the coverage of the multiple sequence alignment | False |
-| **`--plot_coverage_output`** | Plot the coverage of the multiple sequence alignment | False |
+| **`--plot_coverage_input`** | Plot the coverage of the input MSA | False |
+| **`--plot_coverage_output`** | Plot the coverage of the output MSA | False |
 | *`--plot_coverage_dpi`* | DPI for coverage plot | 300 |
 | *`--plot_coverage_height`* | Height for coverage plot (inches) | 3 |
 | *`--plot_coverage_width`* | Width for coverage plot (inches) | 5 |
 | *`--plot_coverage_colour`* | Colour for coverage plot (hex code or name) | #007bf5 |
-| *`--plot_coverage_filetype`* | File type for coverage plot (can be png, svg, tiff, jpg) | png |
+| *`--plot_coverage_filetype`* | File type for coverage plot (png, svg, tiff, jpg) | png |
 
 
 ## Analysing Alignment Statistics
@@ -185,8 +193,8 @@ Output file:
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--make_similarity_matrix_input`** | make a similarity matrix for the input alignment | False |
-| **`--make_similarity_matrix_output`** | make a similarity matrix for the output alignment | False |
+| **`--make_similarity_matrix_input`** | Make a similarity matrix for the input alignment | False |
+| **`--make_similarity_matrix_output`** | Make a similarity matrix for the output alignment | False |
 | *`--make_simmatrix_keepgaps`* | Include positions with gaps in either or both sequences in the similarity calculation | False |
 | *`--make_simmatrix_dp`* | Number of decimal places to display in the similarity matrix output file | 4 |
 | *`--make_simmatrix_minoverlap`* | Minimum overlap between two sequences to have non-zero similarity in the similarity matrix | 1 |
