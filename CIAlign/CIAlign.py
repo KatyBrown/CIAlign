@@ -27,7 +27,7 @@ def main():
 
     # Files
     # not to confuse with inifile
-    required.add("--infile", dest='infile', type=str, required=True,
+    required.add("--infile", dest='infile', type=str,
                  help='Path to input alignment file in FASTA format')
     optional.add("--inifile", dest='inifile', type=str,
                  default=None,
