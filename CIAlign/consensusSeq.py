@@ -259,12 +259,12 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     a = f.add_subplot('211')
     a.plot(x, y, color=colour)
     a.set_xlabel('Position', fontsize=fontsize)
-    a.set_ylabel('Coverage (Raw)', fontsize=fontsize)
+    a.set_ylabel('Coverage', fontsize=fontsize)
     a.set_xticks([0, xmax])
     a.set_xticklabels([0, xmax], fontsize=fontsize)
     a.set_yticks(np.arange(0, 1.1, 0.5))
     a.set_yticklabels(np.arange(0, 1.1, 0.5), fontsize=fontsize)
-    b = f.add_subplot('212')
+    #b = f.add_subplot('212')
 
     # polynomial interpolation leaving this in just in case
     #c = f.add_subplot('313')
@@ -274,15 +274,15 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     #xnew = np.linspace(x.min(),x.max(),300) #300 represents number of points to make between T.min and T.max
 
     # interpolating the coverage function to make it smooth
-    t, c, k = interpolate.splrep(x, y, s=0, k=4)
-    spline = interpolate.BSpline(t, c, k, extrapolate=False)
-    b.plot(xx, spline(xx), color=colour)
-    b.set_xlabel('Position', fontsize=fontsize)
-    b.set_ylabel('Coverage (Smoothed)', fontsize=fontsize)
-    b.set_xticks([0, xmax])
-    b.set_xticklabels([0, xmax], fontsize=fontsize)
-    b.set_yticks(np.arange(0, 1.1, 0.5))
-    b.set_yticklabels(np.arange(0, 1.1, 0.5), fontsize=fontsize)
+    # t, c, k = interpolate.splrep(x, y, s=0, k=4)
+    # spline = interpolate.BSpline(t, c, k, extrapolate=False)
+    # b.plot(xx, spline(xx), color=colour)
+    # b.set_xlabel('Position', fontsize=fontsize)
+    # b.set_ylabel('Coverage (Smoothed)', fontsize=fontsize)
+    # b.set_xticks([0, xmax])
+    # b.set_xticklabels([0, xmax], fontsize=fontsize)
+    # b.set_yticks(np.arange(0, 1.1, 0.5))
+    # b.set_yticklabels(np.arange(0, 1.1, 0.5), fontsize=fontsize)
     f.savefig(dest, dpi=dpi, bbox_inches='tight')
 
 
