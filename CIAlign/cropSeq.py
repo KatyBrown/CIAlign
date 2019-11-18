@@ -24,11 +24,11 @@ def determineStartEnd(sequence, mingap=30):
 
     start = 0
     end = 0
-
+    print("start")
     start = findValue(sequence, mingap)
     # put in reverse for end
+    print("end")
     end = len(sequence) - findValue(sequence[::-1], mingap)
-    print(start, end)
 
 
     if start > end:
@@ -60,22 +60,24 @@ def findValue(sequence, mingap=30):
 
     gaps = countGaps(sequence)
 
-    ali_length = len(gaps)
-    boundary1 = int(0.5*ali_length)
+    seq_length = len(gaps)
+    boundary1 = int(0.5*seq_length)
     # threshold for how many non-gap positions we look at
-    boundary2 = int(0.1*ali_length)
-    boundary3 = int(0.1*ali_length)
+    boundary2 = int(0.1*seq_length)
+    boundary3 = int(0.1*seq_length)
     # the threshold for the change in gap numbers
-    mingap = int(0.05*ali_length)
+    mingap = int(0.1*seq_length)
 
-    if ali_length < 21:
+    print(boundary1, boundary3, boundary2, mingap)
+
+    if seq_length < 21:
         return(gaps[0] + 1)
 
     # if len(gaps) <= 80:
     #     boundary1 = 10
     #     boundary2 = 19
     #     boundary3 = 10
-    #     #mingap = 10
+    #     mingap = 10
 
 
     # this pattern doesn't indicate an incomplete sequence, set start to 0
@@ -83,7 +85,6 @@ def findValue(sequence, mingap=30):
         return 0
 
     # for more fluctuation within the sequence, meaning we observe a few nt within many gaps -> indicates incomplete sequence
-    print(mingap)
     for n in range(0, boundary2):
         if gaps[n+1] - gaps[n] >= mingap:
             position = n + 1 + gaps[n+1]

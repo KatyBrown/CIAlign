@@ -313,6 +313,7 @@ def main():
                                                                    relativePositions,
                                                                    rmfile,
                                                                    log)
+
         if 'remove_gaponly' in markupdict:
             markupdict['remove_gaponly'].update(r)
         else:
@@ -335,6 +336,7 @@ def main():
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
+
 
     if args.remove_gaponly or args.all_options:
         log.info("Removing gap only columns")

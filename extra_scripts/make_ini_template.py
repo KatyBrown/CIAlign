@@ -7,8 +7,8 @@ import sys
 
 def main():
 
-    infile = sys.argv[1]
-    outfile = sys.argv[2]
+    infile = sys.argv[1] # python3 CIAlign --help > temp.txt
+    outfile = sys.argv[2] # ini file
 
     lines = [line.strip() for line in open(infile).readlines()]
     bigstring = " ".join(lines)

@@ -99,6 +99,7 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 
 ## Generating a Consensus Sequence
 This step generates a consensus sequence based on the cleaned alignment.  If no cleaning functions are performed, the consensus will be based on the input alignment.
+For the "majority" based consensus sequences, where the two most frequent characters are equally common a random character is selected.
 
 Output files:
 

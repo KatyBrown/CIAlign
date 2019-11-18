@@ -208,13 +208,14 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         if lacks_region > covers_region:
             absolutePositions.add(p)
     # make a list of positions to remove
+    rm_relative = set()
     for n in absolutePositions:
-        rmpos.add(relativePositions[n])
-    for n in rmpos:
+        rm_relative.add(relativePositions[n])
+    for n in rm_relative:
         relativePositions.remove(n)
     #for n in absolutePositions:
     #    relativePositions.remove(n)
-    rmpos = np.array(list(rmpos))
+    rmpos = np.array(list(absolutePositions))
 
     keeppos = np.arange(0, len(sums))
     keeppos = np.invert(np.in1d(keeppos, rmpos))
@@ -223,7 +224,8 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     out.write('\n')
     out.close()
     arr = arr[:, keeppos]
-    return (arr, set(rmpos), relativePositions)
+    #return (arr, set(rmpos), relativePositions)
+    return (arr, set(rm_relative), relativePositions)
 
 
 def removeTooShort(arr, nams, rmfile, log, min_length):
