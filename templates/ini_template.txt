@@ -1,113 +1,130 @@
 # CIAlign Parameters
 
 [files]
-# Path to input alignment. 
+# Path to input alignment file in FASTA format. Default: None
 infile = XXXXX
-# Stem for output files (including path). 
+# Stem for output files (including path). Default: CIAlign
 outfile_stem = CIAlign
+# Path to config file.
+inifile =    
 
 [runtime]
-# Do not show progress on screen. 
+# Do not print progress to the screen.
 silent = False
 
-[crop_ends]
-# Crop ends. 
-crop_ends = False
-# Minimum gap size to crop from ends. 
-crop_ends_mingap = 10
+[all]
+# Use all available functions with default parameters.
+All = False
 
-[remove_badlyaligned]
-# Remove badly aligned sequences. 
-remove_badlyaligned = False
-# Minimum percentage identity to majority to not be removed. 
-remove_badlyaligned_minperc = 0.9
+[crop_ends]
+# Crop the ends of sequences if they are poorly aligned. Default: False 
+crop_ends = False
+# Minimum number of gaps to consider when classifying a sequence as poorly aligned. 
+# Default: 30
+crop_ends_mingap = 30
+
+[remove_divergent]
+# Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present. 
+# Default: False
+remove_divergent = False
+# Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved. 
+# Default: 0.75
+remove_divergent_minperc = 0.75
 
 [remove_insertions]
-# Remove insertions. 
+# Remove insertions found in <= 50 percent of sequences from the alignment. Default: False
 remove_insertions = False
-# Minimum size insertion to remove. 
+# Only remove insertions >= this number of residues. Default: 3
 insertion_min_size = 3
-# Maximum size insertion to remove. 
+# Only remove insertions <= this number of residues. Default: 300
 insertion_max_size = 300
-# Minimum number of bases on either side of deleted insertions. 
+#  Minimum number of bases on either side of an insertion to classify it as an insertion. Default: 5
 insertion_min_flank = 5
 
 [remove_short]
-# Remove sequences with less than n non-gap positions. 
+# Remove sequences <= N bases / amino acids from the alignment. Default: False
 remove_short = False
-# Minimum length sequence to remove. 
+# Sequences are removed if they are shorter than this minimum length, excluding gaps. Default: 50
 remove_min_length = 50
 
 [remove_gaponly]
-# Remove gap only columns from the alignment. 
+# Keep gap only columns in the alignment. Default: True
 remove_gaponly = True
 
 [consensus]
-# Make a consensus sequence. 
+# Make a consensus sequence based on the cleaned alignment. Default: False
 make_consensus = False
-# Type of consensus sequence to make. 
+# Type of consensus sequence to make - can be majority,to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position. 
+# Default: majority
 consensus_type = majority
-# Keep gaps in consensus at positions where a gap is the consensus. 
+# If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False). 
+# Default: False
 consensus_keep_gaps = False
-# Name of consensus sequence. 
+# Name to use for the consensus sequence in the output fasta file. Default: consensus
 consensus_name = consensus
 
 [mini_alignments]
-# Plot a mini alignmeRun the calculateSimilarityMatrix function to mnt - an image representing the input alignment. 
+# Plot a mini alignment - an image representing the input alignment. Default: False
 plot_input = False
-# Plot a mini alignment, an image reprsenting the output alignment. 
+# Plot a mini alignment, an image representing the output alignment. Default: False
 plot_output = False
-# Plot the changes made to the alignment. 
+# Draws the input alignment but with the columns and rows which have been removed by each function marked up in corresponding colours. Default: False
 plot_markup = False
-# DPI for mini alignments. 
+# DPI for mini alignments. Default: 300
 plot_dpi = 300
-# Mini alignment plot format (png or svg). 
+# Image format for mini alignments - can be png, svg, tiff or jpg. Default: png
 plot_format = png
-# Width for mini alignments (inches). 
+# Mini alignment width in inches. Default: 5
 plot_width = 5
-# Height for mini alignments (inches). 
+# Mini alignment height in inches. Default: 3
 plot_height = 3
 
 [sequence_logos]
-# Draw a sequence logo. 
+# Draw a sequence logo. Default: False
 make_sequence_logo = False
-# Type of sequence logo - bar/text/both. 
+# Type of sequence logo - bar/text/both. Default: bar 
 sequence_logo_type = bar
-# dpi for sequence logo image. 
+# DPI for sequence logo image. Default: 300
 sequence_logo_dpi = 300
-# Font for text sequence logo. 
+# Font for text sequence logo. Default: monospace
 sequence_logo_font = monospace
-# Number of nucleotides or aas to show per row in the sequence logo. 
+# Number of bases / amino acids to show per row in the sequence logo, where the logo is too large to show on a single line. Default: 50
 sequence_logo_nt_per_row = 50
-# Output file type for sequence logo - png/jpg/svg. 
+# Image file type to use for the sequence logo - can be png, svg, tiff or jpg. Default: png
 sequence_logo_filetype = png
-# Make a swatch showing available fonts. 
+#  Make a swatch showing available fonts. Default: False
 list_fonts_only = False
 
 [coverage]
-# Plot the coverage of the input file as an interpolated function. 
+# Plot the coverage of the input MSA. Default: False
 plot_coverage_input = False
-# Plot the coverage of the output file as an interpolated function. 
+# Plot the coverage of the output MSA. Default: False
 plot_coverage_output = False
-# DPI for coverage plot. 
+# DPI for coverage plot. Default: 300 
 plot_coverage_dpi = 300
-# Height for coverage plot. 
+# Height for coverage plot (inches). Default: 3 
 plot_coverage_height = 3
-# Width for coverage plot. 
+# Width for coverage plot (inches). Default: 5
 plot_coverage_width = 5
-# Colour for coverage plot. 
+# Colour for coverage plot (hex code or name). Default: #007bf5
 plot_coverage_colour = #007bf5
-# File type for coverage plot - can be png, jpg, tiff, svg. 
+# File type for coverage plot (png, svg, tiff, jpg). Default: png
 plot_coverage_filetype = png
 
 [similarity_matrix]
-# Make a similarity matrix for the input alignment. 
+# Make a similarity matrix for the input alignment. Default: False
 make_similarity_matrix_input = False
-# Make a similarity matrix for the output alignment. 
+# Make a similarity matrix for the output alignment. Default: False
 make_similarity_matrix_output = False
-# N decimal places for the similarity matrix (output file only). 
+# Number of decimal places to display in the similarity matrix output file. Default: 4 
 make_simmatrix_dp = 4
-# Minimum overlap between two sequences to have non-zero similarity in the similarity matrix. 
+# Minimum overlap between two sequences to have non-zero similarity in the similarity matrix. Default: 1
 make_simmatrix_minoverlap = 1
-# Include positions with gaps in either or both sequences in the similarity matrix calculation. 
+# Include positions with gaps in either or both sequences in the similarity matrix calculation. Default: False
 make_simmatrix_keepgaps = False
+
+[unalign]
+# Generate a copy of the input alignment with no gaps. Default: false
+unalign_input = False
+# Generate a copy of the output alignment with no gaps. Default: false
+unalign_output = False

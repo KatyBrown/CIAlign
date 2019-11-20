@@ -51,9 +51,9 @@ def main():
     optional.add("--crop_ends", dest="crop_ends",
                  action="store_true",
                  help="Crop the ends of sequences if they are poorly aligned. Default: %(default)s")
-    optional.add("--crop_ends_mingap", dest='crop_ends_mingap',
-                 type=int, default=30,
-                 help="Minimum number of gaps to consider when classifying a sequence as poorly aligned. Default: %(default)s")
+    optional.add("--crop_ends_mingap_perc", dest='crop_ends_mingap_perc',
+                 type=float, default=0.05,
+                 help="Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. Default: %(default)s")
 
     # Remove divergent sequences
     optional.add("--remove_divergent", dest="remove_divergent",
@@ -83,7 +83,7 @@ def main():
                  action="store_true")
     optional.add("--remove_min_length", dest="remove_min_length",
                  type=int, default=50,
-                 help="Minimum number of non-gap residues in a sequence to be preserved. Default: %(default)s")
+                 help="Sequences are removed if they are shorter than this minimum length, excluding gaps. Default: %(default)s")
 
     # keep gap only
     optional.add("--keep_gaponly", dest="remove_gaponly",
@@ -110,7 +110,7 @@ def main():
                  help="Plot a mini alignment - an image representing the input alignment. Default: %(default)s")
     optional.add("--plot_output", dest="plot_output",
                  action="store_true",
-                 help="Plot a mini alignment, an image reprsenting the output alignment. Default: %(default)s")
+                 help="Plot a mini alignment, an image representing the output alignment. Default: %(default)s")
     optional.add("--plot_markup", dest="plot_markup",
                  action="store_true",
                  help="Draws the input alignment but with the columns and rows which have been removed by each function marked up in corresponding colours. Default: %(default)s")
@@ -136,7 +136,7 @@ def main():
                  help="Type of sequence logo - bar/text/both. Default: %(default)s")
     optional.add("--sequence_logo_dpi", dest="sequence_logo_dpi",
                  type=int, default=300,
-                 help="dpi for sequence logo image. Default: %(default)s")
+                 help="DPI for sequence logo image. Default: %(default)s")
     optional.add("--sequence_logo_font", dest="sequence_logo_font",
                  type=str, default='monospace',
                  help="Font for text sequence logo. Default: %(default)s")
@@ -153,10 +153,10 @@ def main():
     # Coverage
     optional.add("--plot_coverage_input", dest="plot_coverage_input",
                  action="store_true",
-                 help="Plot the coverage of the input MSA . Default: %(default)s")
+                 help="Plot the coverage of the input MSA. Default: %(default)s")
     optional.add("--plot_coverage_output", dest="plot_coverage_output",
                  action="store_true",
-                 help="Plot the coverage of the output MSA . Default: %(default)s")
+                 help="Plot the coverage of the output MSA. Default: %(default)s")
     optional.add("--plot_coverage_dpi", dest="plot_coverage_dpi",
                  type=int, default=300,
                  help="DPI for coverage plot. Default: %(default)s")
@@ -192,10 +192,10 @@ def main():
                  help="Include positions with gaps in either or both sequences in the similarity matrix calculation. Default: %(default)s")
 
     # Unalign function
-    optional.add("--unalign_input", dest="unalign_input", action="store_true",
-                 help="Generate a copy of the input alignment with no gaps")
-    optional.add("--unalign_output", dest="unalign_output", action="store_true",
-                 help="Generate a copy of the cleaned alignment with no gaps")
+    optional.add("--unalign_input", dest="unalign_input", action="store_true", default=False,
+                 help="Generate a copy of the input alignment with no gaps. Default: %(default)s")
+    optional.add("--unalign_output", dest="unalign_output", action="store_true", default=False,
+                 help="Generate a copy of the cleaned alignment with no gaps. Default: %(default)s")
 
 
     # Help function
@@ -264,32 +264,6 @@ def main():
     reset_rmfile.close()
     utilityFunctions.checkArrLength(arr, log)
 
-    if args.crop_ends or args.all_options:
-        # doesn't remove any whole columns or rows
-        log.info("Cropping ends")
-        if not args.silent:
-            print("Cropping ends")
-        arr, r = parsingFunctions.cropEnds(arr, nams, rmfile,
-                                           log, args.crop_ends_mingap)
-        markupdict['crop_ends'] = r
-        removed_positions.update(r)
-        utilityFunctions.checkArrLength(arr, log)
-
-    if args.remove_gaponly or args.all_options:
-        log.info("Removing gap only columns")
-        if not args.silent:
-            print("Removing gap only columns")
-
-        arr, r, relativePositions = parsingFunctions.removeGapOnly(arr,
-                                                                   relativePositions,
-                                                                   rmfile,
-                                                                   log)
-        if 'remove_gaponly' in markupdict:
-            markupdict['remove_gaponly'].update(r)
-        else:
-            markupdict['remove_gaponly'] = r
-        removed_cols = removed_cols | r
-        utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_divergent or args.all_options:
         log.info("Removing divergent sequences")
@@ -337,6 +311,34 @@ def main():
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
+
+    if args.remove_gaponly or args.all_options:
+        log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
+
+        arr, r, relativePositions = parsingFunctions.removeGapOnly(arr,
+                                                                   relativePositions,
+                                                                   rmfile,
+                                                                   log)
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
+        utilityFunctions.checkArrLength(arr, log)
+
+    if args.crop_ends or args.all_options:
+        # doesn't remove any whole columns or rows
+        log.info("Cropping ends")
+        if not args.silent:
+            print("Cropping ends")
+        arr, r = parsingFunctions.cropEnds(arr, nams, relativePositions, rmfile,
+                                           log, args.crop_ends_mingap_perc)
+
+        markupdict['crop_ends'] = r
+        removed_positions.update(r)
+        utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_gaponly or args.all_options:
         log.info("Removing gap only columns")

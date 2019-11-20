@@ -80,7 +80,7 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 | Parameter | Description | Default Value |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
-| *`--crop_ends_mingap`* |  Minimum number of gaps to consider when classifying a sequence as poorly aligned | 30 |
+| *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 |
 | **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False |
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.75 |
 | **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False |
@@ -88,7 +88,7 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 | *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 300 |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5
 | **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False |
-| *`--remove_min_length`* | Minimum number of non-gap residues in a sequence to be preserved | 50 |
+| *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | 50 |
 | **`--keep_gaponly`** | Keep gap only columns in the alignment | True |
 
 ## Generating a Consensus Sequence

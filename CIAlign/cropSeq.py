@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-def determineStartEnd(sequence, mingap=30):
+def determineStartEnd(sequence, mingap_perc=0.05):
     '''
     Determines the start and the end of a sequence by calling a subroutine
 
@@ -9,8 +9,10 @@ def determineStartEnd(sequence, mingap=30):
     sequence: numpy array
         sequence
 
-    mingap: int
-        minimal gap number (default: 10)
+    mingap_perc: float
+        proportion of the sequence length (excluding gaps) that is the threshold
+        for change in gap numbers within the first 10% of non-gap positions of the sequence
+        (default: 0.05)
 
     Returns
     -------
@@ -24,18 +26,16 @@ def determineStartEnd(sequence, mingap=30):
 
     start = 0
     end = 0
-    print("start")
-    start = findValue(sequence, mingap)
+    start = findValue(sequence, mingap_perc)
     # put in reverse for end
-    print("end")
-    end = len(sequence) - findValue(sequence[::-1], mingap)
+    end = len(sequence) - findValue(sequence[::-1], mingap_perc)
 
 
     if start > end:
         return (0, 0)
     return(start, end)
 
-def findValue(sequence, mingap=30):
+def findValue(sequence, mingap_perc=0.05):
     '''
     Determines the start of the given sequence
 
@@ -44,8 +44,10 @@ def findValue(sequence, mingap=30):
     sequence: numpy array
         sequence
 
-    mingap: int
-        minimal gap number (default: 30)
+    mingap_perc: float
+        proportion of the sequence length (excluding gaps) that is the threshold
+        for change in gap numbers within the first 10% of non-gap positions of the sequence
+        (default: 0.05)
 
     Returns
     -------
@@ -61,14 +63,12 @@ def findValue(sequence, mingap=30):
     gaps = countGaps(sequence)
 
     seq_length = len(gaps)
-    boundary1 = int(0.5*seq_length)
+    boundary1 = int(0.1*seq_length)
     # threshold for how many non-gap positions we look at
     boundary2 = int(0.1*seq_length)
-    boundary3 = int(0.1*seq_length)
+    boundary3 = int(0.01*seq_length)
     # the threshold for the change in gap numbers
-    mingap = int(0.1*seq_length)
-
-    print(boundary1, boundary3, boundary2, mingap)
+    mingap = int(mingap_perc*seq_length)
 
     if seq_length < 21:
         return(gaps[0] + 1)
@@ -78,7 +78,6 @@ def findValue(sequence, mingap=30):
     #     boundary2 = 19
     #     boundary3 = 10
     #     mingap = 10
-
 
     # this pattern doesn't indicate an incomplete sequence, set start to 0
     if gaps[boundary1] < boundary3:

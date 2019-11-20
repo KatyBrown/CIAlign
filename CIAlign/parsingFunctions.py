@@ -9,7 +9,7 @@ except ImportError:
     import cropSeq
 
 
-def cropEnds(arr, nams, rmfile, log, mingap):
+def cropEnds(arr, nams, relativePositions, rmfile, log, mingap):
     '''
     Removes poorly aligned ends from a multiple sequence alignment.
 
@@ -40,6 +40,7 @@ def cropEnds(arr, nams, rmfile, log, mingap):
     newarr = []
     r = dict()
     for i, row in enumerate(arr):
+        print(nams[i])
         start, end = cropSeq.determineStartEnd(row, mingap)
         start = max(start - 1, 0)
         end = end + 1
@@ -64,9 +65,14 @@ def cropEnds(arr, nams, rmfile, log, mingap):
                 out.write("Removed %i bases from end of %s" % (
                         non_gap_end, nam))
                 out.write('\n')
+            # list of positions between 0 and start which are not gaps
             startpos = np.where(row[0:start] != "-")[0]
+            # list of positions from end to end of the sequences which are not gaps
             endpos = np.where(row[end:] != "-")[0] + end
-            r[nam] = ((startpos, endpos))
+            rel_startpos = np.array(relativePositions)[startpos]
+            rel_endpos = np.array(relativePositions)[endpos]
+            r[nam] = ((rel_startpos, rel_endpos))
+            #r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
     out.close()
     return (np.array(newarr), r)
