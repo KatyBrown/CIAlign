@@ -288,20 +288,29 @@ def listFonts(outfile):
     -------
     None
     '''
+    matplotlib.font_manager._rebuild()
     flist = matplotlib.font_manager.get_fontconfig_fonts()
-    flist2 = []
+    flist2 = set()
     for fname in flist:
         try:
-            g = matplotlib.font_manager.FontProperties(fname=fname).get_name()
-            flist2.append(g)
+            F = matplotlib.font_manager.FontProperties(fname=fname)
+            g = F.get_name()
+            flist2.add(g)
         except:
             # Some of the fonts seem not to have a name? Ignore these.
             pass
-    f = plt.figure(figsize=(3, len(flist2) / 4), dpi=200)
+    flist2 = sorted(list(flist2))[::-1]
+    f = plt.figure(figsize=(5, len(flist2) / 4), dpi=200)
     a = f.add_subplot(111)
     a.set_ylim(0, len(flist2))
     a.set_xlim(0, 1)
+    a.text(-0.1, -1, "*Fonts shown as [] cannot be displayed with CIAlign")
     for i, fname in enumerate(flist2):
-        a.text(0, i, fname, fontdict={'name': fname})
+        a.text(0.7, i, "ACTG", fontdict={'name': fname, 'size': 14})
+        a.text(0, i, fname, fontsize=10)
+    a.text(0.7, i+1, "Sample", fontsize=10, fontweight='bold')
+    a.text(0, i+1, "Font Name", fontsize=10, fontweight='bold')
     a.set_axis_off()
+    f.tight_layout()
     f.savefig(outfile, dpi=200, bbox_inches='tight')
+
