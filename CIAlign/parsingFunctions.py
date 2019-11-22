@@ -40,7 +40,6 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap):
     newarr = []
     r = dict()
     for i, row in enumerate(arr):
-        print(nams[i])
         start, end = cropSeq.determineStartEnd(row, mingap)
         start = max(start - 1, 0)
         end = end + 1

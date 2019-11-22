@@ -8,9 +8,9 @@ The tool is designed to be highly customisable, allowing users to specify exactl
 This allows the user to:
 
 * Remove sources of noise from their MSA
-  * Crop poorly aligned sequence ends
   * Remove insertions which are not present in the majority of sequences
   * Remove sequences below a threshold number of bases or amino acids
+  * Crop poorly aligned sequence ends
   * Remove columns containing only gaps
   * Remove sequences above a threshold level percentage of divergence from the majority
 
@@ -79,14 +79,14 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 
 | Parameter | Description | Default Value |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
-| *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 |
 | **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False |
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.75 |
 | **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 |
 | *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 300 |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5
+| **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
+| *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 |
 | **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False |
 | *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | 50 |
 | **`--keep_gaponly`** | Keep gap only columns in the alignment | True |
