@@ -10,30 +10,30 @@ inifile =
 
 [runtime]
 # Do not print progress to the screen.
-silent = False
+silent = 0
 
 [all]
 # Use all available functions with default parameters.
-All = False
+All = 0
 
 [crop_ends]
 # Crop the ends of sequences if they are poorly aligned. Default: False 
-crop_ends = False
-# Minimum number of gaps to consider when classifying a sequence as poorly aligned. 
-# Default: 30
-crop_ends_mingap = 30
+crop_ends = 0
+# Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. 
+# Default: 0.05
+crop_ends_mingap = 0.05
 
 [remove_divergent]
 # Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present. 
 # Default: False
-remove_divergent = False
+remove_divergent = 0
 # Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved. 
 # Default: 0.75
 remove_divergent_minperc = 0.75
 
 [remove_insertions]
 # Remove insertions found in <= 50 percent of sequences from the alignment. Default: False
-remove_insertions = False
+remove_insertions = 0
 # Only remove insertions >= this number of residues. Default: 3
 insertion_min_size = 3
 # Only remove insertions <= this number of residues. Default: 300
@@ -43,33 +43,33 @@ insertion_min_flank = 5
 
 [remove_short]
 # Remove sequences <= N bases / amino acids from the alignment. Default: False
-remove_short = False
+remove_short = 0
 # Sequences are removed if they are shorter than this minimum length, excluding gaps. Default: 50
 remove_min_length = 50
 
-[remove_gaponly]
+[keep_gaponly]
 # Keep gap only columns in the alignment. Default: True
-remove_gaponly = True
+keep_gaponly = 1
 
 [consensus]
 # Make a consensus sequence based on the cleaned alignment. Default: False
-make_consensus = False
+make_consensus = 0
 # Type of consensus sequence to make - can be majority,to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position. 
 # Default: majority
 consensus_type = majority
 # If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False). 
 # Default: False
-consensus_keep_gaps = False
+consensus_keep_gaps = 0
 # Name to use for the consensus sequence in the output fasta file. Default: consensus
 consensus_name = consensus
 
 [mini_alignments]
 # Plot a mini alignment - an image representing the input alignment. Default: False
-plot_input = False
+plot_input = 0
 # Plot a mini alignment, an image representing the output alignment. Default: False
-plot_output = False
+plot_output = 0
 # Draws the input alignment but with the columns and rows which have been removed by each function marked up in corresponding colours. Default: False
-plot_markup = False
+plot_markup = 0
 # DPI for mini alignments. Default: 300
 plot_dpi = 300
 # Image format for mini alignments - can be png, svg, tiff or jpg. Default: png
@@ -81,7 +81,7 @@ plot_height = 3
 
 [sequence_logos]
 # Draw a sequence logo. Default: False
-make_sequence_logo = False
+make_sequence_logo = 0
 # Type of sequence logo - bar/text/both. Default: bar 
 sequence_logo_type = bar
 # DPI for sequence logo image. Default: 300
@@ -93,13 +93,13 @@ sequence_logo_nt_per_row = 50
 # Image file type to use for the sequence logo - can be png, svg, tiff or jpg. Default: png
 sequence_logo_filetype = png
 #  Make a swatch showing available fonts. Default: False
-list_fonts_only = False
+list_fonts_only = 0
 
 [coverage]
 # Plot the coverage of the input MSA. Default: False
-plot_coverage_input = False
+plot_coverage_input = 0
 # Plot the coverage of the output MSA. Default: False
-plot_coverage_output = False
+plot_coverage_output = 0
 # DPI for coverage plot. Default: 300 
 plot_coverage_dpi = 300
 # Height for coverage plot (inches). Default: 3 
@@ -113,18 +113,18 @@ plot_coverage_filetype = png
 
 [similarity_matrix]
 # Make a similarity matrix for the input alignment. Default: False
-make_similarity_matrix_input = False
+make_similarity_matrix_input = 0
 # Make a similarity matrix for the output alignment. Default: False
-make_similarity_matrix_output = False
+make_similarity_matrix_output = 0
 # Number of decimal places to display in the similarity matrix output file. Default: 4 
 make_simmatrix_dp = 4
 # Minimum overlap between two sequences to have non-zero similarity in the similarity matrix. Default: 1
 make_simmatrix_minoverlap = 1
 # Include positions with gaps in either or both sequences in the similarity matrix calculation. Default: False
-make_simmatrix_keepgaps = False
+make_simmatrix_keepgaps = 0
 
 [unalign]
 # Generate a copy of the input alignment with no gaps. Default: false
-unalign_input = False
+unalign_input = 0
 # Generate a copy of the output alignment with no gaps. Default: false
-unalign_output = False
+unalign_output = 0
