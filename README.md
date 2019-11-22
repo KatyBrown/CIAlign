@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/179534677.svg)](https://zenodo.org/badge/latestdoi/179534677)
+
 # CIAlign
 ---
 
