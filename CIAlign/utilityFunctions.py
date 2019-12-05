@@ -6,6 +6,24 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
+def replaceUbyT(arr):
+    '''
+    Replaces all Us by Ts in the alignment.
+
+    Parameters
+    ----------
+    arr: np.array
+        2D numpu array with the alignment.
+
+    Returns
+    -------
+    arr: np.array
+        2D numpy array of sequences with Ts instead of Us.
+    '''
+
+    arr = np.where(arr == "U", "T", arr)
+    return (arr)
+
 def unAlign(arr):
     '''
     Removes all gaps from the alignment.
@@ -313,4 +331,3 @@ def listFonts(outfile):
     a.set_axis_off()
     f.tight_layout()
     f.savefig(outfile, dpi=200, bbox_inches='tight')
-

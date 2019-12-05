@@ -197,6 +197,11 @@ def main():
     optional.add("--unalign_output", dest="unalign_output", action="store_true", default=False,
                  help="Generate a copy of the cleaned alignment with no gaps. Default: %(default)s")
 
+    # Replace Us by Ts function
+    optional.add("--replace_input", dest="replace_input", action="store_true", default=False,
+                 help="Replaces all Us by Ts in input alignment. Default: %(default)s")
+    optional.add("--replace_output", dest="replace_output", action="store_true", default=False,
+                 help="Replaces all Us by Ts in output alignment. Default: %(default)s")
 
     # Help function
     optional.add('-h', '--help', action='help', default=configargparse.SUPPRESS,
@@ -527,6 +532,26 @@ def main():
         utilityFunctions.writeOutfile(outf, unaligned_arr,
                                       orig_nams,
                                       removed_seqs)
+    if args.replace_input:
+        log.info("Generating a T instead of U version of the input alignment")
+        if not args.silent:
+            print ("Generating a T instead of U version of the input alignment")
+        outf = "%s_T_input.fasta" % (args.outfile_stem)
+        T_arr = utilityFunctions.replaceUbyT(orig_arr)
+        utilityFunctions.writeOutfile(outf, T_arr,
+                                      orig_nams,
+                                      removed_seqs)
+
+    if args.replace_output:
+        log.info("Generating a T instead of U version of the output alignment")
+        if not args.silent:
+            print ("Generating a T instead of U version of the output alignment")
+        outf = "%s_T_input.fasta" % (args.outfile_stem)
+        T_arr = utilityFunctions.replaceUbyT(arr)
+        utilityFunctions.writeOutfile(outf, T_arr,
+                                      orig_nams,
+                                      removed_seqs)
+
     if args.unalign_output:
         log.info("Generating a gap free version of the output alignment")
         if not args.silent:
