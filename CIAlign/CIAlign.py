@@ -241,6 +241,12 @@ def main():
 
     arr, nams = utilityFunctions.FastaToArray(args.infile)
 
+    # check numbers of sequences first
+    if len(arr) < 3:
+        # when less than three sequences, stop
+        print("You need at least three sequences in your MSA.")
+        exit()
+
     # store a copy of the original array
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
