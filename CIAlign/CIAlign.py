@@ -54,6 +54,9 @@ def main():
     optional.add("--crop_ends_mingap_perc", dest='crop_ends_mingap_perc',
                  type=float, default=0.05,
                  help="Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. Default: %(default)s")
+    optional.add("--crop_ends_redefine_perc", dest='crop_ends_redefine_perc',
+                 type=float, default=0.1,
+                 help="Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. Default: %(default)s")
 
     # Remove divergent sequences
     optional.add("--remove_divergent", dest="remove_divergent",
@@ -345,7 +348,8 @@ def main():
         if not args.silent:
             print("Cropping ends")
         arr, r = parsingFunctions.cropEnds(arr, nams, relativePositions, rmfile,
-                                           log, args.crop_ends_mingap_perc)
+                                           log, args.crop_ends_mingap_perc,
+                                           args.crop_ends_redefine_perc)
 
         markupdict['crop_ends'] = r
         removed_positions.update(r)

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-def determineStartEnd(sequence, mingap_perc=0.05):
+def determineStartEnd(sequence, mingap_perc=0.05, redefine_perc=0.1):
     '''
     Determines the start and the end of a sequence by calling a subroutine
 
@@ -13,6 +13,11 @@ def determineStartEnd(sequence, mingap_perc=0.05):
         proportion of the sequence length (excluding gaps) that is the threshold
         for change in gap numbers within the first 10% of non-gap positions of the sequence
         (default: 0.05)
+
+    redefine_perc: float
+        proportion of the sequence length (excluding gaps) that we check for
+        change in gap numbers to redefine start/end
+        (default: 0.1)
 
     Returns
     -------
@@ -28,14 +33,14 @@ def determineStartEnd(sequence, mingap_perc=0.05):
     end = 0
     start = findValue(sequence, mingap_perc)
     # put in reverse for end
-    end = len(sequence) - findValue(sequence[::-1], mingap_perc)
+    end = len(sequence) - findValue(sequence[::-1], mingap_perc, redefine_perc)
 
 
     if start > end:
         return (0, 0)
     return(start, end)
 
-def findValue(sequence, mingap_perc=0.05):
+def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
     '''
     Determines the start of the given sequence
 
@@ -46,8 +51,13 @@ def findValue(sequence, mingap_perc=0.05):
 
     mingap_perc: float
         proportion of the sequence length (excluding gaps) that is the threshold
-        for change in gap numbers within the first 10% of non-gap positions of the sequence
+        for change in gap numbers within the first checkfor_perc% of non-gap positions of the sequence
         (default: 0.05)
+
+    redefine_perc: float
+        proportion of the sequence length (excluding gaps) that we check for
+        change in gap numbers to redefine start/end
+        (default: 0.1)
 
     Returns
     -------
@@ -56,28 +66,20 @@ def findValue(sequence, mingap_perc=0.05):
     '''
 
     position = 0
-    # boundary1 = 50
-    # boundary2 = 80 # look at these many non-gap positions
-    # boundary3 = 20
 
     gaps = countGaps(sequence)
 
     seq_length = len(gaps)
     boundary1 = int(0.1*seq_length)
     # threshold for how many non-gap positions we look at
-    boundary2 = int(0.1*seq_length)
+    boundary2 = int(redefine_perc*seq_length)
     boundary3 = int(0.01*seq_length)
     # the threshold for the change in gap numbers
     mingap = int(mingap_perc*seq_length)
 
+    # for very short sequences it is not desirable to redefine
     if seq_length < 21:
         return(gaps[0] + 1)
-
-    # if len(gaps) <= 80:
-    #     boundary1 = 10
-    #     boundary2 = 19
-    #     boundary3 = 10
-    #     mingap = 10
 
     # this pattern doesn't indicate an incomplete sequence, set start to 0
     if gaps[boundary1] < boundary3:

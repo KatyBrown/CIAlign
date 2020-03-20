@@ -1,5 +1,3 @@
-[![DOI](https://zenodo.org/badge/179534677.svg)](https://zenodo.org/badge/latestdoi/179534677)
-
 # CIAlign
 ---
 
@@ -89,6 +87,7 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
 | *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 |
+| *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. | 0.1 |
 | **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False |
 | *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | 50 |
 | **`--keep_gaponly`** | Keep gap only columns in the alignment | True |

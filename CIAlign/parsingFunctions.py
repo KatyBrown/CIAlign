@@ -9,7 +9,7 @@ except ImportError:
     import cropSeq
 
 
-def cropEnds(arr, nams, relativePositions, rmfile, log, mingap):
+def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
     '''
     Removes poorly aligned ends from a multiple sequence alignment.
 
@@ -40,7 +40,7 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap):
     newarr = []
     r = dict()
     for i, row in enumerate(arr):
-        start, end = cropSeq.determineStartEnd(row, mingap)
+        start, end = cropSeq.determineStartEnd(row, mingap, redefine_perc)
         start = max(start - 1, 0)
         end = end + 1
         newseq = "-" * start + "".join(

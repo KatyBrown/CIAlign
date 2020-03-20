@@ -6,7 +6,7 @@ infile = XXXXX
 # Stem for output files (including path). Default: CIAlign
 outfile_stem = CIAlign
 # Path to config file.
-inifile =    
+inifile =
 
 [runtime]
 # Do not print progress to the screen.
@@ -17,17 +17,20 @@ silent = 0
 All = 0
 
 [crop_ends]
-# Crop the ends of sequences if they are poorly aligned. Default: False 
+# Crop the ends of sequences if they are poorly aligned. Default: False
 crop_ends = 0
-# Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. 
+# Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers.
 # Default: 0.05
-crop_ends_mingap = 0.05
+crop_ends_mingap_perc = 0.05
+# Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end..
+# Default: 0.05
+crop_ends_redefine_perc = 0.1
 
 [remove_divergent]
-# Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present. 
+# Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present.
 # Default: False
 remove_divergent = 0
-# Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved. 
+# Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved.
 # Default: 0.75
 remove_divergent_minperc = 0.75
 
@@ -54,10 +57,10 @@ keep_gaponly = 1
 [consensus]
 # Make a consensus sequence based on the cleaned alignment. Default: False
 make_consensus = 0
-# Type of consensus sequence to make - can be majority,to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position. 
+# Type of consensus sequence to make - can be majority,to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position.
 # Default: majority
 consensus_type = majority
-# If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False). 
+# If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False).
 # Default: False
 consensus_keep_gaps = 0
 # Name to use for the consensus sequence in the output fasta file. Default: consensus
@@ -82,7 +85,7 @@ plot_height = 3
 [sequence_logos]
 # Draw a sequence logo. Default: False
 make_sequence_logo = 0
-# Type of sequence logo - bar/text/both. Default: bar 
+# Type of sequence logo - bar/text/both. Default: bar
 sequence_logo_type = bar
 # DPI for sequence logo image. Default: 300
 sequence_logo_dpi = 300
@@ -100,9 +103,9 @@ list_fonts_only = 0
 plot_coverage_input = 0
 # Plot the coverage of the output MSA. Default: False
 plot_coverage_output = 0
-# DPI for coverage plot. Default: 300 
+# DPI for coverage plot. Default: 300
 plot_coverage_dpi = 300
-# Height for coverage plot (inches). Default: 3 
+# Height for coverage plot (inches). Default: 3
 plot_coverage_height = 3
 # Width for coverage plot (inches). Default: 5
 plot_coverage_width = 5
@@ -116,7 +119,7 @@ plot_coverage_filetype = png
 make_similarity_matrix_input = 0
 # Make a similarity matrix for the output alignment. Default: False
 make_similarity_matrix_output = 0
-# Number of decimal places to display in the similarity matrix output file. Default: 4 
+# Number of decimal places to display in the similarity matrix output file. Default: 4
 make_simmatrix_dp = 4
 # Minimum overlap between two sequences to have non-zero similarity in the similarity matrix. Default: 1
 make_simmatrix_minoverlap = 1
