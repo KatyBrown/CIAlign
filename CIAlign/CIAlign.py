@@ -16,9 +16,13 @@ except ImportError:
     import miniAlignments
     import similarityMatrix
     import consensusSeq
+# for testing
+import checkMemoryAndTime as CMT
 
 
 def main():
+    main_cmt = CMT.start_mem_time("main")
+
     parser = configargparse.ArgumentParser(
                 description='''Clean and interpret a multiple sequence alignment''',
                 add_help=False)
@@ -242,7 +246,9 @@ def main():
     if not args.infile or args.infile == 'XXXXX':
         raise RuntimeError("Input alignment must be provided")
 
-    arr, nams = utilityFunctions.FastaToArray(args.infile)
+    fastatoarray_cmt = CMT.start_mem_time("FastaToArrayOutside")
+    arr, nams = utilityFunctions.FastaToArray(args.infile, args.outfile_stem)
+    CMT.end_mem_time(fastatoarray_cmt, args.outfile_stem + "_cmt")
 
     # check numbers of sequences first
     if len(arr) < 3:
@@ -283,10 +289,13 @@ def main():
         log.info("Removing divergent sequences")
         if not args.silent:
             print("Removing divergent sequences")
+        remdivergent_cmt = CMT.start_mem_time("remove divergent")
         arr, r = parsingFunctions.removeDivergent(arr, nams,
                                                      rmfile, log,
                                                      args.remove_divergent_minperc)
 
+
+        CMT.end_mem_time(remdivergent_cmt, args.outfile_stem + "_cmt")
         markupdict['remove_divergent'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
@@ -296,12 +305,14 @@ def main():
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
-
+        gap_cmt = CMT.start_mem_time("remove gap only first")
         arr, r, relativePositions = parsingFunctions.removeGapOnly(arr,
                                                                    relativePositions,
                                                                    rmfile,
                                                                    log)
 
+
+        CMT.end_mem_time(gap_cmt, args.outfile_stem + "_cmt")
         if 'remove_gaponly' in markupdict:
             markupdict['remove_gaponly'].update(r)
         else:
@@ -313,6 +324,7 @@ def main():
         log.info("Removing insertions")
         if not args.silent:
             print("Removing insertions")
+        removeins_cmt = CMT.start_mem_time("remove insterions")
         arr, r, relativePositions = parsingFunctions.removeInsertions(arr,
                                                                       relativePositions,
                                                                       rmfile,
@@ -321,6 +333,8 @@ def main():
                                                                       args.insertion_max_size,
                                                                       args.insertion_min_flank)
 
+
+        CMT.end_mem_time(removeins_cmt, args.outfile_stem + "_cmt")
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
@@ -347,10 +361,12 @@ def main():
         log.info("Cropping ends")
         if not args.silent:
             print("Cropping ends")
+        cropends_cmt = CMT.start_mem_time("crop ends")
         arr, r = parsingFunctions.cropEnds(arr, nams, relativePositions, rmfile,
                                            log, args.crop_ends_mingap_perc,
                                            args.crop_ends_redefine_perc)
 
+        CMT.end_mem_time(cropends_cmt, args.outfile_stem + "_cmt")
         markupdict['crop_ends'] = r
         removed_positions.update(r)
         utilityFunctions.checkArrLength(arr, log)
@@ -375,9 +391,12 @@ def main():
         log.info("Removing short sequences")
         if not args.silent:
             print("Removing short sequences")
+        removeshort_cmt = CMT.start_mem_time("remove short")
         arr, r = parsingFunctions.removeTooShort(arr, nams, rmfile, log,
                                                  args.remove_min_length)
 
+
+        CMT.end_mem_time(removeshort_cmt, args.outfile_stem + "_cmt")
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
@@ -404,58 +423,69 @@ def main():
         if not args.silent:
             print("Building similarity matrix for input alignment")
         outf = "%s_input_similarity.tsv" % (args.outfile_stem)
+        sim_cmt = CMT.start_mem_time("sim matrix input")
         similarityMatrix.calculateSimilarityMatrix(orig_arr,
                                                    orig_nams,
                                                    minoverlap=args.make_simmatrix_minoverlap,
                                                    keepgaps=args.make_simmatrix_keepgaps,
                                                    outfile=outf, dp=args.make_simmatrix_dp)
+        CMT.end_mem_time(sim_cmt, args.outfile_stem + "_cmt")
 
     if args.make_simmatrix_output or args.all_options:
         log.info("Building similarity matrix for output alignment")
         if not args.silent:
             print("Building similarity matrix for output alignment")
         outf = "%s_output_similarity.tsv" % (args.outfile_stem)
+        sim_out_cmt = CMT.start_mem_time("sim matrix output")
         similarityMatrix.calculateSimilarityMatrix(arr,
                                                    nams,
                                                    minoverlap=args.make_simmatrix_minoverlap,
                                                    keepgaps=args.make_simmatrix_keepgaps,
                                                    outfile=outf, dp=args.make_simmatrix_dp)
+        CMT.end_mem_time(sim_out_cmt, args.outfile_stem + "_cmt")
 
     if args.plot_input or args.all_options:
         log.info("Plotting mini alignment for input")
         if not args.silent:
             print("Plotting mini alignment for input")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
+        plot_in_cmt = CMT.start_mem_time("plot input")
         miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
                                          outf, typ, args.plot_dpi,
                                          False, args.plot_width,
                                          args.plot_height)
+        CMT.end_mem_time(plot_in_cmt, args.outfile_stem + "_cmt")
 
     if args.plot_output or args.all_options:
         log.info("Plotting mini alignment for output")
         if not args.silent:
             print("Plotting mini alignment for output")
         outf = "%s_output.%s" % (args.outfile_stem, args.plot_format)
+        plot_out_cmt = CMT.start_mem_time("plot output")
         miniAlignments.drawMiniAlignment(arr, nams, log,
                                          outf, typ,
                                          args.plot_dpi,
                                          False,
                                          args.plot_width,
                                          args.plot_height)
+        CMT.end_mem_time(plot_out_cmt, args.outfile_stem + "_cmt")
 
     if args.plot_markup or args.all_options:
         log.info("Plotting mini alignment with markup")
         if not args.silent:
             print("Plotting mini alignment with markup")
         outf = "%s_markup.%s" % (args.outfile_stem, args.plot_format)
+        plot_markup_cmt = CMT.start_mem_time("plot markup")
         miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
                                          outf, typ,
                                          args.plot_dpi,
                                          False,
                                          args.plot_width, args.plot_height,
                                          markup=True, markupdict=markupdict)
+        CMT.end_mem_time(plot_markup_cmt, args.outfile_stem + "_cmt")
 
     if args.make_consensus or args.all_options:
+        cons_cmt = CMT.start_mem_time("consensus")
         log.info("Building consensus sequence")
         if not args.silent:
             print("Building consensus sequence")
@@ -474,8 +504,10 @@ def main():
         utilityFunctions.writeOutfile(outf, arr_plus_cons,
                                       nams + [args.consensus_name],
                                       removed_seqs)
+        CMT.end_mem_time(cons_cmt, args.outfile_stem + "_cmt")
 
     if args.plot_coverage_input or args.all_options:
+        cov_cmt = CMT.start_mem_time("coverage input")
         log.info("Plotting coverage for input")
         if not args.silent:
             print("Plotting coverage for input")
@@ -484,6 +516,7 @@ def main():
         consx, coverage = consensusSeq.findConsensus(orig_arr,
                                                      args.consensus_type)
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
+        CMT.end_mem_time(cov_cmt, args.outfile_stem + "_cmt")
 
     if args.plot_coverage_output or args.all_options:
         log.info("Plotting coverage for output")
@@ -496,6 +529,7 @@ def main():
 
     if args.make_sequence_logo or args.all_options:
         if args.sequence_logo_type == 'bar':
+            seqbar_cmt = CMT.start_mem_time("seq logo bar")
             log.info("Generating sequence logo bar chart")
             if not args.silent:
                 print("Generating sequence logo bar chart")
@@ -504,7 +538,9 @@ def main():
                 consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                                figdpi=args.sequence_logo_dpi,
                                                figrowlength=args.sequence_logo_nt_per_row)
+            CMT.end_mem_time(seqbar_cmt, args.outfile_stem + "_cmt")
         elif args.sequence_logo_type == 'text':
+            seqtxt_cmt = CMT.start_mem_time("seq logo text")
             log.info("Generating text sequence logo")
             if not args.silent:
                 print("Generating text sequence logo")
@@ -514,7 +550,9 @@ def main():
                                        figdpi=args.sequence_logo_dpi,
                                        figfontname=args.sequence_logo_font,
                                        figrowlength=args.sequence_logo_nt_per_row)
+            CMT.end_mem_time(seqtxt_cmt, args.outfile_stem + "_cmt")
         elif args.sequence_logo_type == 'both':
+            seqbar_cmt = CMT.start_mem_time("seq logo bar")
             log.info("Generating sequence logo bar chart")
             if not args.silent:
                 print("Generating sequence logo bar chart")
@@ -523,6 +561,8 @@ def main():
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=args.sequence_logo_dpi,
                                            figrowlength=args.sequence_logo_nt_per_row)
+            CMT.end_mem_time(seqbar_cmt, args.outfile_stem + "_cmt")
+            seqtxt_cmt = CMT.start_mem_time("seq logo text")
             log.info("Generating text sequence logo")
             if not args.silent:
                 print("Generating text sequence logo")
@@ -532,6 +572,7 @@ def main():
                                        figdpi=args.sequence_logo_dpi,
                                        figfontname=args.sequence_logo_font,
                                        figrowlength=args.sequence_logo_nt_per_row)
+            CMT.end_mem_time(seqtxt_cmt, args.outfile_stem + "_cmt")
 
     if args.unalign_input:
         log.info("Generating a gap free version of the input alignment")
@@ -575,6 +616,8 @@ def main():
 
     utilityFunctions.writeOutfile(outfile, arr, orig_nams,
                                   removed_seqs, rmfile)
+
+    CMT.end_mem_time(main_cmt, args.outfile_stem + "_cmt")
 
 if __name__ == "__main__":
     main()
