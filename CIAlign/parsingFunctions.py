@@ -7,9 +7,9 @@ try:
     import CIAlign.cropSeq as cropSeq
 except ImportError:
     import cropSeq
+import checkMemoryAndTime as CMT
 
-
-def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
+def cropEnds(arr, nams, relativePositions, rmfile, log, cmt_file, mingap, redefine_perc):
     '''
     Removes poorly aligned ends from a multiple sequence alignment.
 
@@ -36,6 +36,7 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
         beginning of the sequence and tuple[1] is a list of positions which
         have been removed at the end of the sequence
     '''
+    cropends_cmt = CMT.start_mem_time("crop ends inside")
     out = open(rmfile, "a")
     newarr = []
     r = dict()
@@ -74,10 +75,11 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
             #r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
     out.close()
+    CMT.end_mem_time(cropends_cmt, cmt_file)
     return (np.array(newarr), r)
 
 
-def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
+def removeDivergent(arr, nams, rmfile, log, cmt_file, percidentity=0.75):
     '''
     Remove sequences which don't have the most common non-gap residue at
     > percidentity non-gap positions
@@ -102,6 +104,7 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     r: set
         A set of names of sequences which have been removed
     '''
+    remdivergent_cmt = CMT.start_mem_time("remove divergent inside")
     j = 0
     keep = []
     for a in arr:
@@ -134,10 +137,12 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     r = set(np.array(nams)[np.invert(keep)])
     log.info("Removing divergent sequences %s" % (", ".join(list(r))))
 
+    CMT.end_mem_time(remdivergent_cmt, cmt_file)
+
     return (newarr, r)
 
 
-def removeInsertions(arr, relativePositions, rmfile, log,
+def removeInsertions(arr, relativePositions, rmfile, log, cmt_file,
                      min_size, max_size, min_flank):
     '''
     Removes insertions which are not present in the majority of sequences.
@@ -169,6 +174,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         values are removed as columns are removed from the alignment, minus
         the columns removed using this function.
     '''
+    removeins_cmt = CMT.start_mem_time("remove insterions inside")
     log.info("Removing insertions\n")
     out = open(rmfile, "a")
     # record which sites are not "-"
@@ -230,10 +236,11 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     out.close()
     arr = arr[:, keeppos]
     #return (arr, set(rmpos), relativePositions)
+    CMT.end_mem_time(removeins_cmt, cmt_file)
     return (arr, set(rm_relative), relativePositions)
 
 
-def removeTooShort(arr, nams, rmfile, log, min_length):
+def removeTooShort(arr, nams, rmfile, log, cmt_file, min_length):
     '''
     Removes sequences (rows) with fewer than min_length non-gap positions from
     the alignment.
@@ -259,6 +266,7 @@ def removeTooShort(arr, nams, rmfile, log, min_length):
          A set of names of sequences which have been removed
 
     '''
+    removeshort_cmt = CMT.start_mem_time("remove short inside")
     if len(arr) != 0:
         arrT = arr.transpose()
         sums = sum(arrT != "-")
@@ -267,6 +275,7 @@ def removeTooShort(arr, nams, rmfile, log, min_length):
         log.info("Removing sequences %s" % (", ".join(list(rmnames))))
     else:
         rmnames = set()
+    CMT.end_mem_time(removeshort_cmt, cmt_file)
     return (arr, rmnames)
 
 

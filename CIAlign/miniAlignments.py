@@ -8,6 +8,7 @@ try:
 except ImportError:
     import utilityFunctions
 import math
+import checkMemoryAndTime as CMT
 
 
 def arrNumeric(arr, typ):
@@ -192,7 +193,7 @@ def drawMarkUpLegend(outfile):
                    dpi=100, bbox_inches='tight')
 
 
-def drawMiniAlignment(arr, nams, log, outfile, typ,
+def drawMiniAlignment(arr, nams, log, cmt_file, outfile, typ,
                       dpi=300, title=None, width=5, height=3, markup=False,
                       markupdict=None, ret=False):
     '''
@@ -224,12 +225,18 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     markupdict: dict
         dictionary where the keys are function names and the values are
         lists of columns, rows or positions which have been removed
+    ret: bool
+        return the subplot as a matplotlib object, used to make plots when using this function directly
+        rather than the CIAlign workflow
+    cmt_file: string
+        saves the memory and time to this file
 
     Returns
     -------
     None
 
     '''
+    plot_in_cmt = CMT.start_mem_time("plot inside")
     ali_height, ali_width = np.shape(arr)
 
     # font size needs to scale with DPI
@@ -287,5 +294,6 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
         drawMarkUpLegend(outfile.replace(".png", ""))
     f.tight_layout()
     f.savefig(outfile, dpi=dpi, bbox_inches='tight')
+    CMT.end_mem_time(plot_in_cmt, cmt_file)
     if ret:
         return (f)

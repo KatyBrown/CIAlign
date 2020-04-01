@@ -18,6 +18,7 @@ try:
     import CIAlign.utilityFunctions as utilityFunctions
 except ImportError:
     import utilityFunctions
+import checkMemoryAndTime as CMT
 
 def getAxisUnits(subplot):
     '''
@@ -288,6 +289,7 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
 
 def sequence_logo(alignment,
                   figname,
+                  cmt_file,
                   typ='nt',
                   figfontname='Arial',
                   figdpi=300,
@@ -321,6 +323,7 @@ def sequence_logo(alignment,
     -------
     none
     '''
+    seqtxt_cmt = CMT.start_mem_time("seq logo text inside")
     alignment_width = len(alignment[0,:])
     if alignment_width < figrowlength:
         figrowlength = alignment_width
@@ -330,6 +333,7 @@ def sequence_logo(alignment,
     getLetters(typ=typ, fontname=figfontname, dpi=figdpi)
     rstart = 0
     rend = rstart + figrowlength
+    entropy_cmt = CMT.start_mem_time("calc entropy outside")
     for n in range(nsegs):
 
         if rend > alignment_width:
@@ -366,6 +370,7 @@ def sequence_logo(alignment,
         a.set_ylabel("Bit Score")
         rstart += figrowlength
         rend += figrowlength
+    CMT.end_mem_time(entropy_cmt, cmt_file)
     # obtain colours
     if typ == 'nt':
         allbases = utilityFunctions.getNtColours()
@@ -376,10 +381,12 @@ def sequence_logo(alignment,
     # save plot using figname
     f.savefig(figname, dpi=figdpi, bbox_inches='tight')
     plt.close()
+    CMT.end_mem_time(seqtxt_cmt, cmt_file)
 
 
 def sequence_bar_logo(alignment,
                       figname,
+                      cmt_file,
                       typ='nt',
                       figdpi=500,
                       figrowlength=50):
@@ -413,7 +420,7 @@ def sequence_bar_logo(alignment,
     -------
     none
     '''
-
+    seqbar_cmt = CMT.start_mem_time("seq logo bar inside")
     alignment_width = len(alignment[0,:])
     if alignment_width < figrowlength:
         figrowlength = alignment_width
@@ -476,7 +483,7 @@ def sequence_bar_logo(alignment,
     # save plot as figname
     plt.savefig(figname, bbox_inches='tight', dpi=figdpi)
     plt.close()
-
+    CMT.end_mem_time(seqbar_cmt, cmt_file)
 
 
 def calc_entropy(count, seq_count, typ):
