@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import checkMemoryAndTime as CMT
 
 
 def replaceUbyT(arr):
@@ -62,7 +61,6 @@ def FastaToArray(infile, outfile_stem):
     nams: list
         List of sequence names in the same order as in the input file
     '''
-    fastatoarray_cmt = CMT.start_mem_time("FastaToArrayInside")
 
     nams = []
     seqs = []
@@ -81,8 +79,6 @@ def FastaToArray(infile, outfile_stem):
     seqs.append([s.upper() for s in seq])
     nams.append(nam)
     arr = np.array(seqs[1:])
-
-    CMT.end_mem_time(fastatoarray_cmt, outfile_stem + "_cmt")
 
     return (arr, nams[1:])
 

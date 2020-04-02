@@ -3,9 +3,8 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import itertools
-import checkMemoryAndTime as CMT
 
-def calculateSimilarityMatrix(arr, nams, cmt_file, minoverlap=1,
+def calculateSimilarityMatrix(arr, nams, minoverlap=1,
                               keepgaps=False, outfile=None, dp=4):
     '''
     Calculates a pairwise similarity matrix for the alignment - for each pair
@@ -34,7 +33,6 @@ def calculateSimilarityMatrix(arr, nams, cmt_file, minoverlap=1,
     ident: np.array
         The identity matrix as a numpy array
     '''
-    sim_cmt = CMT.start_mem_time("sim matrix inside")
     ident = np.empty((len(arr), len(arr)))
     for i, j in itertools.combinations_with_replacement(range(len(arr)), 2):
         p1 = arr[i]
@@ -61,5 +59,4 @@ def calculateSimilarityMatrix(arr, nams, cmt_file, minoverlap=1,
             out.write("%s\t%s\n" % (
                     nams[i], "\t".join([str(round(L, dp)) for L in line])))
         out.close()
-    CMT.end_mem_time(sim_cmt, cmt_file)
     return(ident)

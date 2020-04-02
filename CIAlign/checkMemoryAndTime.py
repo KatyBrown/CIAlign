@@ -17,7 +17,7 @@ def start_mem_time(name):
 
     return start_values
 
-def end_mem_time(start_values, file):
+def end_mem_time(start_values, file, seqnumber, msalength):
     # start_values is a dict
 
     # Div ist damit automatisch bestimmt
@@ -26,12 +26,20 @@ def end_mem_time(start_values, file):
     new_mem = memory_usage_psutil()
     alloc_mem = new_mem - start_values["base_mem"]
 
+    file1 = file + ".txt"
+    file2 = file + "_raw.txt"
+
     # write to file
-    out = open(file, "a")
+    out = open(file1, "a")
     out.write("Function: " + start_values["name"] + "\n")
     out.write("time: " + str(total_time) + " s\n")
     out.write("memory: " + str(alloc_mem) + " MB\n\n")
     out.close()
+
+    # write to another file
+    out2 = open(file2, "a")
+    out2.write(start_values["name"] + ", " + str(total_time) + ", " + str(alloc_mem) + ", " + str(seqnumber) + ", " + str(msalength) + "\n")
+    out2.close()
 
 
 def memory_usage_psutil():
