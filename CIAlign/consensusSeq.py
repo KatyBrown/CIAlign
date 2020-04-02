@@ -381,7 +381,7 @@ def sequence_logo(alignment,
 def sequence_bar_logo(alignment,
                       figname,
                       typ='nt',
-                      figdpi=500,
+                      figdpi=300,
                       figrowlength=50):
 
     '''
