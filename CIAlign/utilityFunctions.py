@@ -42,7 +42,7 @@ def unAlign(arr):
     arr = np.where(arr == "-", "", arr)
     return (arr)
 
-def FastaToArray(infile):
+def FastaToArray(infile, outfile_stem):
     '''
     Convert an alignment into a numpy array.
 
@@ -79,6 +79,7 @@ def FastaToArray(infile):
     seqs.append([s.upper() for s in seq])
     nams.append(nam)
     arr = np.array(seqs[1:])
+
     return (arr, nams[1:])
 
 

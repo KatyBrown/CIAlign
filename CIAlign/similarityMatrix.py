@@ -4,7 +4,6 @@ import matplotlib
 matplotlib.use('Agg')
 import itertools
 
-
 def calculateSimilarityMatrix(arr, nams, minoverlap=1,
                               keepgaps=False, outfile=None, dp=4):
     '''

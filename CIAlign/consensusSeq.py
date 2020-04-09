@@ -381,7 +381,7 @@ def sequence_logo(alignment,
 def sequence_bar_logo(alignment,
                       figname,
                       typ='nt',
-                      figdpi=500,
+                      figdpi=300,
                       figrowlength=50):
 
     '''
@@ -413,7 +413,6 @@ def sequence_bar_logo(alignment,
     -------
     none
     '''
-
     alignment_width = len(alignment[0,:])
     if alignment_width < figrowlength:
         figrowlength = alignment_width
@@ -476,7 +475,6 @@ def sequence_bar_logo(alignment,
     # save plot as figname
     plt.savefig(figname, bbox_inches='tight', dpi=figdpi)
     plt.close()
-
 
 
 def calc_entropy(count, seq_count, typ):

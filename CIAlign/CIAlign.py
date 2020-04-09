@@ -2,6 +2,7 @@
 
 import logging
 import configargparse
+import os.path
 import numpy as np
 import copy
 try:
@@ -19,6 +20,7 @@ except ImportError:
 
 
 def main():
+
     parser = configargparse.ArgumentParser(
                 description='''Clean and interpret a multiple sequence alignment''',
                 add_help=False)
@@ -242,7 +244,21 @@ def main():
     if not args.infile or args.infile == 'XXXXX':
         raise RuntimeError("Input alignment must be provided")
 
-    arr, nams = utilityFunctions.FastaToArray(args.infile)
+    # check if input file exists and is a file
+    if not os.path.isfile(args.infile):
+        print("Error! Your input alignmnent path could not be found.")
+        exit()
+
+    arr, nams = utilityFunctions.FastaToArray(args.infile, args.outfile_stem)
+
+    # check if at least names are unique
+    if len(nams) > len(set(nams)):
+        print("Error! Your input alignmnent has duplicate names!")
+        exit()
+
+    cmt_file = args.outfile_stem + "_cmt" # output file to store memory and time
+    seqnumber = len(arr)
+    msalength = len(arr[0])
 
     # check numbers of sequences first
     if len(arr) < 3:
@@ -287,6 +303,7 @@ def main():
                                                      rmfile, log,
                                                      args.remove_divergent_minperc)
 
+
         markupdict['remove_divergent'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
@@ -296,11 +313,11 @@ def main():
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
-
         arr, r, relativePositions = parsingFunctions.removeGapOnly(arr,
                                                                    relativePositions,
                                                                    rmfile,
                                                                    log)
+
 
         if 'remove_gaponly' in markupdict:
             markupdict['remove_gaponly'].update(r)
@@ -320,6 +337,7 @@ def main():
                                                                       args.insertion_min_size,
                                                                       args.insertion_max_size,
                                                                       args.insertion_min_flank)
+
 
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
@@ -378,6 +396,7 @@ def main():
         arr, r = parsingFunctions.removeTooShort(arr, nams, rmfile, log,
                                                  args.remove_min_length)
 
+
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
@@ -426,7 +445,7 @@ def main():
         if not args.silent:
             print("Plotting mini alignment for input")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
-        miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
+        miniAlignments.drawMiniAlignment(orig_arr, log, cmt_file,
                                          outf, typ, args.plot_dpi,
                                          False, args.plot_width,
                                          args.plot_height)
@@ -486,9 +505,9 @@ def main():
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
 
     if args.plot_coverage_output or args.all_options:
-        log.info("Plotting coverage for output")
         if not args.silent:
             print("Plotting coverage for output")
+        log.info("Plotting coverage for output")
         coverage_file = "%s_output_coverage.%s" % (args.outfile_stem,
                                                    args.plot_coverage_filetype)
         consx, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
@@ -499,11 +518,11 @@ def main():
             log.info("Generating sequence logo bar chart")
             if not args.silent:
                 print("Generating sequence logo bar chart")
-                out = "%s_logo_bar.%s" % (args.outfile_stem,
-                                          args.sequence_logo_filetype)
-                consensusSeq.sequence_bar_logo(arr, out, typ=typ,
-                                               figdpi=args.sequence_logo_dpi,
-                                               figrowlength=args.sequence_logo_nt_per_row)
+            out = "%s_logo_bar.%s" % (args.outfile_stem,
+                                      args.sequence_logo_filetype)
+            consensusSeq.sequence_bar_logo(arr, out, typ=typ,
+                                           figdpi=args.sequence_logo_dpi,
+                                           figrowlength=args.sequence_logo_nt_per_row)
         elif args.sequence_logo_type == 'text':
             log.info("Generating text sequence logo")
             if not args.silent:

@@ -8,7 +8,6 @@ try:
 except ImportError:
     import cropSeq
 
-
 def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
     '''
     Removes poorly aligned ends from a multiple sequence alignment.
@@ -133,6 +132,7 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     newarr = arr[keep, :]
     r = set(np.array(nams)[np.invert(keep)])
     log.info("Removing divergent sequences %s" % (", ".join(list(r))))
+
 
     return (newarr, r)
 
@@ -267,6 +267,7 @@ def removeTooShort(arr, nams, rmfile, log, min_length):
         log.info("Removing sequences %s" % (", ".join(list(rmnames))))
     else:
         rmnames = set()
+
     return (arr, rmnames)
 
 

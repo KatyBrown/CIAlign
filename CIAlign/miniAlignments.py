@@ -224,6 +224,9 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     markupdict: dict
         dictionary where the keys are function names and the values are
         lists of columns, rows or positions which have been removed
+    ret: bool
+        return the subplot as a matplotlib object, used to make plots when using this function directly
+        rather than the CIAlign workflow
 
     Returns
     -------
