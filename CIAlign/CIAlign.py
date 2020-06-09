@@ -247,7 +247,8 @@ def main():
     # sequence names so the order can be maintained
     # XXXXX comes from the ini file
     if not args.infile or args.infile == 'XXXXX':
-        raise RuntimeError("Input alignment must be provided")
+        print("Input alignment must be provided.")
+        exit()
 
     # check if input file exists and is a file
     if not os.path.isfile(args.infile):
