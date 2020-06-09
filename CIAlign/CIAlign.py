@@ -5,6 +5,7 @@ import configargparse
 import os.path
 import numpy as np
 import copy
+from _version import __version__
 try:
     import CIAlign.utilityFunctions as utilityFunctions
     import CIAlign.parsingFunctions as parsingFunctions
@@ -212,6 +213,10 @@ def main():
     optional.add('-h', '--help', action='help', default=configargparse.SUPPRESS,
                  help='Show all available parameters with an explanation.')
 
+    # Version function
+    optional.add('-v', '--version', action='version', version = __version__, default=configargparse.SUPPRESS,
+                     help='Show the current version.')
+
     args = parser.parse_args()
 
     log = logging.getLogger(__name__)
@@ -242,7 +247,8 @@ def main():
     # sequence names so the order can be maintained
     # XXXXX comes from the ini file
     if not args.infile or args.infile == 'XXXXX':
-        raise RuntimeError("Input alignment must be provided")
+        print("Input alignment must be provided.")
+        exit()
 
     # check if input file exists and is a file
     if not os.path.isfile(args.infile):
