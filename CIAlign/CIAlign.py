@@ -5,6 +5,7 @@ import configargparse
 import os.path
 import numpy as np
 import copy
+from _version import __version__
 try:
     import CIAlign.utilityFunctions as utilityFunctions
     import CIAlign.parsingFunctions as parsingFunctions
@@ -211,6 +212,10 @@ def main():
     # Help function
     optional.add('-h', '--help', action='help', default=configargparse.SUPPRESS,
                  help='Show all available parameters with an explanation.')
+
+    # Version function
+    optional.add('-v', '--version', action='version', version = __version__, default=configargparse.SUPPRESS,
+                     help='Show the current version.')
 
     args = parser.parse_args()
 
