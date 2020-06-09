@@ -1,6 +1,3 @@
-[![DOI](https://zenodo.org/badge/179534677.svg)](https://zenodo.org/badge/latestdoi/179534677)
-
-
 # CIAlign
 ---
 
@@ -65,6 +62,7 @@ Command help can be accessed by typing `CIAlign --help`
 | `--silent` | Do not print progress to the screen | False |
 | `--all` | Use all available functions with default parameters | False |
 | `--help` | Show all available parameters with an explanation | None |
+| `--version` | Show the version | None |
 
 Beside these main parameters, the use of every function and corresponding thresholds can be specified by the user by adding parameters to the command line or by setting them in the configuration file. Available functions and their parameters will be specified in the following section.
 

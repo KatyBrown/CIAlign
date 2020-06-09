@@ -234,8 +234,8 @@ def seqType(arr):
     elif a == max(counts):
         return "aa"
     else:
-        raise RuntimeError("Majority of positions are not known \
-                            nucleotides or amino acids")
+        print("Majority of positions are not known nucleotides or amino acids")
+        exit()
 
 
 def updateNams(nams, removed_seqs):
@@ -279,16 +279,16 @@ def checkArrLength(arr, log):
     -------
     None
     '''
-    emptyAlignmentMessage = """Error: Parsing your alignment with these \
-    settings has removed all of the sequences."""
-    differentLengthsMessage = """Error: The sequences in your alignment \
-    are not all the same length."""
+    emptyAlignmentMessage = """Error: Parsing your alignment with these settings has removed all of the sequences."""
+    differentLengthsMessage = """Error: The sequences in your alignment are not all the same length."""
     if 0 in np.shape(arr):
         log.error(emptyAlignmentMessage)
-        raise RuntimeError(emptyAlignmentMessage)
+        print(emptyAlignmentMessage)
+        exit()
     if len(np.shape(arr)) == 1:
         log.error(differentLengthsMessage)
-        raise RuntimeError(differentLengthsMessage)
+        print(differentLengthsMessage)
+        exit()
 
 
 def listFonts(outfile):
