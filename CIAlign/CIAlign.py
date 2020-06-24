@@ -265,7 +265,14 @@ def main():
     cmt_file = args.outfile_stem + "_cmt" # output file to store memory and time
     seqnumber = len(arr)
     msalength = len(arr[0])
-
+    cleaningArgs = [args.remove_insertions,
+                    args.crop_ends,
+                    args.remove_divergent]
+    if len(arr) < 3 and any(cleaningArgs):
+        # when less than three sequences, stop
+        print("You need at least three sequences in your MSA to run \
+               remove_insertions, crop_ends or remove_divergent")
+        exit()
     # check numbers of sequences first
     if len(arr) < 3:
         # when less than three sequences, stop
