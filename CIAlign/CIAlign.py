@@ -268,15 +268,12 @@ def main():
     cleaningArgs = [args.remove_insertions,
                     args.crop_ends,
                     args.remove_divergent]
+    # check numbers of sequences first
+
     if len(arr) < 3 and any(cleaningArgs):
         # when less than three sequences, stop
         print("You need at least three sequences in your MSA to run \
                remove_insertions, crop_ends or remove_divergent")
-        exit()
-    # check numbers of sequences first
-    if len(arr) < 3:
-        # when less than three sequences, stop
-        print("You need at least three sequences in your MSA.")
         exit()
 
     # store a copy of the original array
