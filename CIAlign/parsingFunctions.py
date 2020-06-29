@@ -133,7 +133,6 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     r = set(np.array(nams)[np.invert(keep)])
     log.info("Removing divergent sequences %s" % (", ".join(list(r))))
 
-
     return (newarr, r)
 
 
@@ -191,7 +190,8 @@ def removeInsertions(arr, relativePositions, rmfile, log,
             # and less than mincov total coverage
             x = set(ns[(these_sums < left) &
                        (these_sums < right)])
-            put_indels = put_indels | x
+            if len(x) >= min_size:
+                put_indels = put_indels | x
     put_indels = np.array(sorted(list(put_indels)))
     # for the putative indels, check if there are more sequences
     # with a gap at this position (but with sequence on either side)
@@ -212,6 +212,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
                 leftsum >= min_flank) & (rightsum >= min_flank)))
         if lacks_region > covers_region:
             absolutePositions.add(p)
+            print (absolutePositions)
     # make a list of positions to remove
     rm_relative = set()
     for n in absolutePositions:
