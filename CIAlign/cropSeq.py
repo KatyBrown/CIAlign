@@ -1,17 +1,19 @@
 #! /usr/bin/env python
 
+
 def determineStartEnd(sequence, mingap_perc=0.05, redefine_perc=0.1):
     '''
     Determines the start and the end of a sequence by calling a subroutine
 
     Parameters
     ----------
-    sequence: numpy array
+    sequence: np.array
         sequence
 
     mingap_perc: float
-        proportion of the sequence length (excluding gaps) that is the threshold
-        for change in gap numbers within the first 10% of non-gap positions of the sequence
+        proportion of the sequence length (excluding gaps) that is the
+        threshold for change in gap numbers within the first 10% of non-gap
+        positions of the sequence \
         (default: 0.05)
 
     redefine_perc: float
@@ -35,10 +37,10 @@ def determineStartEnd(sequence, mingap_perc=0.05, redefine_perc=0.1):
     # put in reverse for end
     end = len(sequence) - findValue(sequence[::-1], mingap_perc, redefine_perc)
 
-
     if start > end:
         return (0, 0)
     return(start, end)
+
 
 def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
     '''
@@ -50,8 +52,9 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
         sequence
 
     mingap_perc: float
-        proportion of the sequence length (excluding gaps) that is the threshold
-        for change in gap numbers within the first checkfor_perc% of non-gap positions of the sequence
+        proportion of the sequence length (excluding gaps) that is the
+        threshold for change in gap numbers within the first checkfor_perc %
+        of non-gap positions of the sequence
         (default: 0.05)
 
     redefine_perc: float
@@ -85,7 +88,8 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
     if gaps[boundary1] < boundary3:
         return 0
 
-    # for more fluctuation within the sequence, meaning we observe a few nt within many gaps -> indicates incomplete sequence
+    # for more fluctuation within the sequence, meaning we observe a few nt
+    # within many gaps -> indicates incomplete sequence
     for n in range(0, boundary2):
         if gaps[n+1] - gaps[n] >= mingap:
             position = n + 1 + gaps[n+1]

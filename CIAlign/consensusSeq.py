@@ -1,16 +1,11 @@
 #! /usr/bin/env python
 
 import matplotlib
-matplotlib.use('Agg')
 from math import log
-import logging
-import argparse
 import numpy as np
-import scipy.interpolate as interpolate
+# import scipy.interpolate as interpolate
 import matplotlib.pyplot as plt
 import operator
-import os
-#from scipy.interpolate import spline #this one is obsolete
 import matplotlib.patheffects
 import math
 from matplotlib import gridspec
@@ -18,6 +13,8 @@ try:
     import CIAlign.utilityFunctions as utilityFunctions
 except ImportError:
     import utilityFunctions
+matplotlib.use('Agg')
+
 
 def getAxisUnits(subplot):
     '''
@@ -33,10 +30,14 @@ def getAxisUnits(subplot):
 
     Returns
     -------
-    D: Dictionary
-        keys are names of axis heights and widths, the values are in units or pixels
+    D: dict
+        Keys are names of axis heights and widths, the values are in units
+        or pixels
     '''
-    axis_dimensions = subplot.transData.transform([(subplot.get_xlim()[1], subplot.get_ylim()[1]),(0, 0)])- subplot.transData.transform((0,0))
+    axis_dimensions = subplot.transData.transform(
+        [(subplot.get_xlim()[1],
+          subplot.get_ylim()[1]), (0, 0)]) - subplot.transData.transform((
+              0, 0))
     D = dict()
     # height of y in pixels
     D['axis_height_px'] = axis_dimensions[0][1]
@@ -51,7 +52,7 @@ def getAxisUnits(subplot):
     # height of one y axis unit in pixels
     D['u_height_px'] = D['axis_height_px'] / D['axis_height_u']
     # width of one x axis unit in pixels
-    D['u_width_px'] =  D['axis_width_px'] / D['axis_width_u']
+    D['u_width_px'] = D['axis_width_px'] / D['axis_width_u']
 
     return (D)
 
@@ -143,11 +144,12 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
         a.set_ylim(0, 1)
         fs = getFontSize(f, a, 1)
         a.text(0.5, 0, base, fontsize=fs, fontdict={'family': 'monospace',
-                                                  'name': fontname},
+                                                    'name': fontname},
                color=colours[base], va='baseline', ha='center')
         plt.gca().set_axis_off()
         a.margins(0, 0)
-        f.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, wspace=None, hspace=None)
+        f.subplots_adjust(top=1, bottom=0, right=1, left=0,
+                          wspace=None, hspace=None)
         a.set_frame_on(False)
         # temporarily safe plot in working directory
         f.savefig("%s_temp.png" % base, dpi=500,
@@ -182,17 +184,17 @@ def findConsensus(alignment, log, consensus_type="majority"):
 
     consensus = []
     coverage = []
-    numberOfSequences = len(alignment[:,0])
+    numberOfSequences = len(alignment[:, 0])
 
     # need the reverse of array to access every column
-    for i in range(0,len(alignment[0,:])):
-        unique, counts = np.unique(alignment[:,i], return_counts=True)
+    for i in range(0, len(alignment[0, :])):
+        unique, counts = np.unique(alignment[:, i], return_counts=True)
         count = dict(zip(unique, counts))
         unique_ng = unique[unique != "-"]
         counts_ng = counts[unique != "-"]
         # deal with gap only columns
         if counts_ng.size == 0:
-            count_ng = {"N": len(alignment[:,i])}
+            count_ng = {"N": len(alignment[:, i])}
             nonGapContent = 0
         else:
             count_ng = dict(zip(unique_ng, counts_ng))
@@ -203,7 +205,8 @@ def findConsensus(alignment, log, consensus_type="majority"):
 
         # dealing with gap only collumns
         maxChar, maxCount = max(count.items(), key=operator.itemgetter(1))
-        maxChar_ng, maxCount_ng = max(count_ng.items(), key=operator.itemgetter(1))
+        maxChar_ng, maxCount_ng = max(count_ng.items(),
+                                      key=operator.itemgetter(1))
 
         # if there is an equal number of gap and non-gap characters at the
         # site, keep the non-gap character
@@ -226,7 +229,7 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     coverage: list of strings
         Coverage for alignment
 
-    dest: string
+    dest: str
         folder to store file
 
     dpi: int
@@ -238,7 +241,7 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     width: int
             height of plot, default: 5
 
-    colour: string
+    colour: str
             coverage colour (default: #007bf5)
 
     Returns
@@ -247,12 +250,14 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     '''
 
     fontsize = 1500 / dpi
-    x = np.arange(0, len(coverage), 1);
+    x = np.arange(0, len(coverage), 1)
     y = coverage
-    xmin, xmax = x.min(), x.max()
-    N = 100
 
-    xx = np.linspace(xmin, xmax, N)
+    xmax = x.max()
+    # used for polynomial interpolation
+    # xmin = x.min()
+    # N = 100
+    # xx = np.linspace(xmin, xmax, N)
 
     # plain plotting of the coverage
     f = plt.figure(figsize=(width, height), dpi=dpi)
@@ -264,14 +269,16 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     a.set_xticklabels([0, xmax], fontsize=fontsize)
     a.set_yticks(np.arange(0, 1.1, 0.5))
     a.set_yticklabels(np.arange(0, 1.1, 0.5), fontsize=fontsize)
-    #b = f.add_subplot('212')
+
+    # b = f.add_subplot('212')
 
     # polynomial interpolation leaving this in just in case
-    #c = f.add_subplot('313')
-    #z = np.polyfit(x, bla, 30)
-    #p = np.poly1d(z)
-    #c.plot(xx, p(xx))
-    #xnew = np.linspace(x.min(),x.max(),300) #300 represents number of points to make between T.min and T.max
+    # c = f.add_subplot('313')
+    # z = np.polyfit(x, bla, 30)
+    # p = np.poly1d(z)
+    # c.plot(xx, p(xx))
+    # xnew = np.linspace(x.min(),x.max(),300)
+    # 300 represents number of points to make between T.min and T.max
 
     # interpolating the coverage function to make it smooth
     # t, c, k = interpolate.splrep(x, y, s=0, k=4)
@@ -302,7 +309,7 @@ def sequence_logo(alignment,
     alignment: np.array
         The alignment stored as a numpy array
 
-    figname: string
+    figname: str
         name of figure
 
     typ: str
@@ -321,7 +328,7 @@ def sequence_logo(alignment,
     -------
     none
     '''
-    alignment_width = len(alignment[0,:])
+    alignment_width = len(alignment[0, :])
     if alignment_width < figrowlength:
         figrowlength = alignment_width
     nsegs = math.ceil(alignment_width / figrowlength)
@@ -342,17 +349,18 @@ def sequence_logo(alignment,
         # for each column calculate heights via entropy
         # and scale letters accordlingly
         for i in range(rstart, rend):
-            unique, counts = np.unique(alignment[:,i],
+            unique, counts = np.unique(alignment[:, i],
                                        return_counts=True)
             count = dict(zip(unique, counts))
             height_per_base, info_per_base = calc_entropy(count,
-                                                          len(alignment[:,0]),
+                                                          len(alignment[:, 0]),
                                                           typ=typ)
             height_sum_higher = 0
             for base, height in height_per_base.items():
                 if height > 0:
                     L = plt.imread("%s_temp.png" % base)
-                    a.imshow(L, extent=(i, i+1, height_sum_higher, height_sum_higher+height),
+                    a.imshow(L, extent=(i, i+1, height_sum_higher,
+                                        height_sum_higher+height),
                              filternorm=False)
                     height_sum_higher += height
         a.axis(limits)
@@ -367,11 +375,11 @@ def sequence_logo(alignment,
         rstart += figrowlength
         rend += figrowlength
     # obtain colours
-    if typ == 'nt':
-        allbases = utilityFunctions.getNtColours()
-    elif typ == 'aa':
-        allbases = utilityFunctions.getAAColours()
-    #for base in allbases:
+    #  if typ == 'nt':
+    #    allbases = utilityFunctions.getNtColours()
+    # elif typ == 'aa':
+    #    allbases = utilityFunctions.getAAColours()
+    # for base in allbases:
     #    os.unlink("%s_temp.png" % base)
     # save plot using figname
     f.savefig(figname, dpi=figdpi, bbox_inches='tight')
@@ -383,7 +391,6 @@ def sequence_bar_logo(alignment,
                       typ='nt',
                       figdpi=300,
                       figrowlength=50):
-
     '''
     Creates a sequence logo based on an entropy calculation using bars
     Scales the bars according to the information content of the alignment
@@ -394,7 +401,7 @@ def sequence_bar_logo(alignment,
     alignment: np.array
         The alignment stored as a numpy array
 
-    figname: string
+    figname: str
         name of figure
 
     typ: str
@@ -413,7 +420,7 @@ def sequence_bar_logo(alignment,
     -------
     none
     '''
-    alignment_width = len(alignment[0,:])
+    alignment_width = len(alignment[0, :])
     if alignment_width < figrowlength:
         figrowlength = alignment_width
     nsegs = math.ceil(alignment_width / figrowlength)
@@ -422,14 +429,13 @@ def sequence_bar_logo(alignment,
     rstart = 0
     rend = rstart + figrowlength
 
-
     for n in range(nsegs):
         if rend > alignment_width:
             rend = alignment_width
         axes = f.add_subplot(gs[n])
         axes.set_xlim(rstart-0.5, rend-0.5)
         axes.set_ylim(0, 2.1)
-        seq_count = len(alignment[:,0])
+        seq_count = len(alignment[:, 0])
         width = 0.75
         ind = np.arange(rstart, rend)
 
@@ -448,9 +454,10 @@ def sequence_bar_logo(alignment,
         # for each column calculate heights via entropy
         # and scale letters accordlingly
         for i in range(rstart, rend):
-            unique, counts = np.unique(alignment[:,i], return_counts=True)
+            unique, counts = np.unique(alignment[:, i], return_counts=True)
             count = dict(zip(unique, counts))
-            height_per_base, info_per_base = calc_entropy(count, seq_count, typ)
+            height_per_base, info_per_base = calc_entropy(count, seq_count,
+                                                          typ)
             bottom_height.append(0)
 
             # need a list of each nt/aa separately to plot them as bars
@@ -459,9 +466,9 @@ def sequence_bar_logo(alignment,
 
         # stag bars on top of each other
         for base, height in height_list.items():
-                plt.bar(ind, height, width, bottom=bottom_height, color=colours[base])
-                bottom_height = [i+j for i,j in zip(bottom_height,height)]
-
+            plt.bar(ind, height, width, bottom=bottom_height,
+                    color=colours[base])
+            bottom_height = [i+j for i, j in zip(bottom_height, height)]
 
         plt.xticks([rstart, rend-1], [rstart+1, rend])
         plt.yticks(np.arange(0, 2.1, 1))
@@ -485,7 +492,7 @@ def calc_entropy(count, seq_count, typ):
 
     Parameters
     ----------
-    count: dictonary
+    count: dict
         of nt/aa with counts
 
     seq_count: int
@@ -508,11 +515,11 @@ def calc_entropy(count, seq_count, typ):
     if typ == "nt":
         element_list = utilityFunctions.getNtColours()
         s = 4
-        max_entropy = log(4,2)
+        max_entropy = log(4, 2)
     elif typ == "aa":
         element_list = utilityFunctions.getAAColours()
         s = 20
-        max_entropy = log(20,2)
+        max_entropy = log(20, 2)
 
     info_per_base = {}
     freq_per_base = {}
@@ -544,7 +551,7 @@ def calc_entropy(count, seq_count, typ):
             freq_per_base[base] = frequency
             entropy -= frequency*log(frequency, 2)
             info_per_base[base] = max_entropy + frequency*log(frequency, 2)
-            entropy_per_base[base] = -frequency*log(frequency,2)
+            entropy_per_base[base] = -frequency * log(frequency, 2)
     information_per_column = max_entropy-entropy-sample_size_correction
 
     # if the information content is constant throughout the column,
@@ -554,7 +561,9 @@ def calc_entropy(count, seq_count, typ):
         if freq_per_base[base]*information_per_column < 0:
             height_per_base[base] = 0
         else:
-            #scale to accomodate gaps
-            height_per_base[base] = gap_correction*freq_per_base[base]*information_per_column
+            # scale to accomodate gaps
+            height_per_base[base] = (gap_correction *
+                                     freq_per_base[base] *
+                                     information_per_column)
 
     return height_per_base, info_per_base

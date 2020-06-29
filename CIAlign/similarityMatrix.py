@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
 import itertools
+matplotlib.use('Agg')
+
 
 def calculateSimilarityMatrix(arr, nams, minoverlap=1,
                               keepgaps=False, outfile=None, dp=4):
