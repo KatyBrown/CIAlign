@@ -1,21 +1,20 @@
 #! /usr/bin/env python
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 try:
     import CIAlign.utilityFunctions as utilityFunctions
 except ImportError:
     import utilityFunctions
 import math
+matplotlib.use('Agg')
 
 
 def arrNumeric(arr, typ):
     '''
     Converts the sequence array into a numerical matrix and a colour map
     which matplotlib can interpret as an image (similar to
-    https://matplotlib.org/3.1.1/gallery/images_contours_and_fields/image_annotated_heatmap.html)
-
+                                                https://bit.ly/2CIKOEr)
     The rows in the array are inverted so that the output image has the rows
     in the same order as the input alignment.
 
@@ -62,7 +61,6 @@ def arrNumeric(arr, typ):
         for y in range(ali_height):
             # numeric version of the alignment array
             arr2[y, x] = nD[arr[y, x]]
-
 
     cmap = matplotlib.colors.ListedColormap(colours)
     return (arr2, cmap)
@@ -176,18 +174,18 @@ def drawMarkUpLegend(outfile):
     None
     '''
     legend = plt.figure(figsize=(2, 2), dpi=100)
-    l = legend.add_subplot(111)
+    leg = legend.add_subplot(111)
     colours = ['black', '#f434c5', "#7bc5ff", '#fff6b3', "#f57700"]
     functions = ['Cropped Ends', 'Too Divergent', 'Insertions',
                  'Too Short', 'Gap Only']
     for i, c in enumerate(colours):
-        l.plot(1, 5-i, marker='.', color=c, markersize=20)
-        l.text(2, 5-i, functions[i])
-    l.set_xlim(0.5, 3)
-    l.set_ylim(-1, 6)
-    l.set_axis_off()
+        leg.plot(1, 5-i, marker='.', color=c, markersize=20)
+        leg.text(2, 5-i, functions[i])
+    leg.set_xlim(0.5, 3)
+    leg.set_ylim(-1, 6)
+    leg.set_axis_off()
     legend.gca().set_axis_off()
-    l.margins(0, 0)
+    leg.margins(0, 0)
     legend.savefig("%s_legend.png" % (outfile),
                    dpi=100, bbox_inches='tight')
 
@@ -225,8 +223,8 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
         dictionary where the keys are function names and the values are
         lists of columns, rows or positions which have been removed
     ret: bool
-        return the subplot as a matplotlib object, used to make plots when using this function directly
-        rather than the CIAlign workflow
+        return the subplot as a matplotlib object, used to make plots when
+        using this function directly rather than the CIAlign workflow
 
     Returns
     -------

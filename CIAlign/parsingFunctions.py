@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
 try:
     import CIAlign.cropSeq as cropSeq
 except ImportError:
     import cropSeq
+matplotlib.use('Agg')
+
 
 def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
     '''
@@ -65,12 +65,13 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
                 out.write('\n')
             # list of positions between 0 and start which are not gaps
             startpos = np.where(row[0:start] != "-")[0]
-            # list of positions from end to end of the sequences which are not gaps
+            # list of positions from end to end of the sequences
+            # which are not gaps
             endpos = np.where(row[end:] != "-")[0] + end
             rel_startpos = np.array(relativePositions)[startpos]
             rel_endpos = np.array(relativePositions)[endpos]
             r[nam] = ((rel_startpos, rel_endpos))
-            #r[nam] = ((startpos, endpos))
+            # r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
     out.close()
     return (np.array(newarr), r)
@@ -218,8 +219,8 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         rm_relative.add(relativePositions[n])
     for n in rm_relative:
         relativePositions.remove(n)
-    #for n in absolutePositions:
-    #    relativePositions.remove(n)
+    # for n in absolutePositions:
+    #     relativePositions.remove(n)
     rmpos = np.array(list(absolutePositions))
 
     keeppos = np.arange(0, len(sums))
@@ -230,7 +231,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         out.write('\n')
     out.close()
     arr = arr[:, keeppos]
-    #return (arr, set(rmpos), relativePositions)
+    # return (arr, set(rmpos), relativePositions)
     return (arr, set(rm_relative), relativePositions)
 
 

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 
 
 def replaceUbyT(arr):
@@ -24,6 +23,7 @@ def replaceUbyT(arr):
     arr = np.where(arr == "U", "T", arr)
     return (arr)
 
+
 def unAlign(arr):
     '''
     Removes all gaps from the alignment.
@@ -41,6 +41,7 @@ def unAlign(arr):
 
     arr = np.where(arr == "-", "", arr)
     return (arr)
+
 
 def FastaToArray(infile, outfile_stem):
     '''
@@ -70,10 +71,10 @@ def FastaToArray(infile, outfile_stem):
         for line in input:
             line = line.strip()
             if line[0] == ">":
-                    seqs.append([s.upper() for s in seq])
-                    nams.append(nam)
-                    seq = []
-                    nam = line.replace(">", "")
+                seqs.append([s.upper() for s in seq])
+                nams.append(nam)
+                seq = []
+                nam = line.replace(">", "")
             else:
                 seq += list(line)
     seqs.append([s.upper() for s in seq])
@@ -155,7 +156,7 @@ def getNtColours():
             "D": '#b2b2b2',
             "H": '#b2b2b2',
             "V": '#b2b2b2',
-            "X": '#b2b2b2',}
+            "X": '#b2b2b2'}
 
 
 def writeOutfile(outfile, arr, nams, removed, rmfile=None):
@@ -279,8 +280,10 @@ def checkArrLength(arr, log):
     -------
     None
     '''
-    emptyAlignmentMessage = """Error: Parsing your alignment with these settings has removed all of the sequences."""
-    differentLengthsMessage = """Error: The sequences in your alignment are not all the same length."""
+    emptyAlignmentMessage = """Error: Parsing your alignment with these \
+settings has removed all of the sequences."""
+    differentLengthsMessage = """Error: The sequences in your alignment are \
+not all the same length."""
     if 0 in np.shape(arr):
         log.error(emptyAlignmentMessage)
         print(emptyAlignmentMessage)
@@ -313,11 +316,17 @@ def listFonts(outfile):
     for fname in flist:
         try:
             F = matplotlib.font_manager.FontProperties(fname=fname)
-            g = F.get_name()
-            flist2.add(g)
-        except:
+            font = matplotlib.font_manager.get_font(fname)
+            L = font.get_charmap()
+            # this tests if matplotlib can actually render "ACTG" in this
+            # font
+            if 108 in L:
+                g = F.get_name()
+                flist2.add(g)
+        except RuntimeError:
             # Some of the fonts seem not to have a name? Ignore these.
             pass
+
     flist2 = sorted(list(flist2))[::-1]
     f = plt.figure(figsize=(5, len(flist2) / 4), dpi=200)
     a = f.add_subplot(111)
@@ -327,6 +336,7 @@ def listFonts(outfile):
     for i, fname in enumerate(flist2):
         a.text(0.7, i, "ACTG", fontdict={'name': fname, 'size': 14})
         a.text(0, i, fname, fontsize=10)
+
     a.text(0.7, i+1, "Sample", fontsize=10, fontweight='bold')
     a.text(0, i+1, "Font Name", fontsize=10, fontweight='bold')
     a.set_axis_off()
