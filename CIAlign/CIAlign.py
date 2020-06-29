@@ -319,7 +319,7 @@ def main():
         nams = utilityFunctions.updateNams(nams, r)
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.remove_gaponly or args.all_options:
+    if (args.remove_divergent and args.remove_gaponly) or args.all_options:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -354,7 +354,7 @@ def main():
         utilityFunctions.checkArrLength(arr, log)
 
 
-    if args.remove_gaponly or args.all_options:
+    if (args.remove_insertions and args.remove_gaponly) or args.all_options:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -383,7 +383,7 @@ def main():
         removed_positions.update(r)
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.remove_gaponly or args.all_options:
+    if (args.crop_ends and args.remove_gaponly) or args.all_options:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -412,7 +412,7 @@ def main():
         nams = utilityFunctions.updateNams(nams, r)
         utilityFunctions.checkArrLength(arr, log)
 
-    if args.remove_gaponly or args.all_options:
+    if (args.remove_short and args.remove_gaponly) or args.all_options:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -428,6 +428,27 @@ def main():
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
+
+    if args.remove_gaponly and not (args.all_options or
+                                    args.remove_divergent or
+                                    args.remove_insertions or
+                                    args.crop_ends or
+                                    args.remove_short):
+        log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
+
+        arr, r, relativePositions = parsingFunctions.removeGapOnly(arr,
+                                                                   relativePositions,
+                                                                   rmfile,
+                                                                   log)
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
+        utilityFunctions.checkArrLength(arr, log)
+    
     if args.make_simmatrix_input or args.all_options:
         log.info("Building similarity matrix for input alignment")
         if not args.silent:
