@@ -131,8 +131,8 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     keep = np.array(keep)
     newarr = arr[keep, :]
     r = set(np.array(nams)[np.invert(keep)])
-    log.info("Removing divergent sequences %s" % (", ".join(list(r))))
-
+    if len(r) != 0:
+        log.info("Removing divergent sequences %s" % (", ".join(list(r))))
     return (newarr, r)
 
 
@@ -212,7 +212,6 @@ def removeInsertions(arr, relativePositions, rmfile, log,
                 leftsum >= min_flank) & (rightsum >= min_flank)))
         if lacks_region > covers_region:
             absolutePositions.add(p)
-            print (absolutePositions)
     # make a list of positions to remove
     rm_relative = set()
     for n in absolutePositions:
@@ -225,9 +224,10 @@ def removeInsertions(arr, relativePositions, rmfile, log,
 
     keeppos = np.arange(0, len(sums))
     keeppos = np.invert(np.in1d(keeppos, rmpos))
-    log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
-    out.write("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
-    out.write('\n')
+    if len(rmpos) != 0:
+        log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
+        out.write("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
+        out.write('\n')
     out.close()
     arr = arr[:, keeppos]
     #return (arr, set(rmpos), relativePositions)
@@ -265,7 +265,8 @@ def removeTooShort(arr, nams, rmfile, log, min_length):
         sums = sum(arrT != "-")
         arr = arr[sums > min_length]
         rmnames = set(np.array(nams)[sums <= min_length])
-        log.info("Removing sequences %s" % (", ".join(list(rmnames))))
+        if len(rmnames) != 0:
+            log.info("Removing sequences %s" % (", ".join(list(rmnames))))
     else:
         rmnames = set()
 
@@ -313,15 +314,15 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
             relativePositions.remove(n)
         rmpos = set(rmpos)
         arr = arr[:, sums != len(arr[:, 0])]
-        log.info("Removing gap only sites %s" % (
-                ", ".join([str(x) for x in rmpos])))
-        out.write("Removing gap only sites %s" % (
-                ", ".join([str(x) for x in rmpos])))
-        out.write('\n')
+        if len(rmpos) != 0:
+            log.info("Removing gap only sites %s" % (
+                    ", ".join([str(x) for x in rmpos])))
+            out.write("Removing gap only sites %s" % (
+                    ", ".join([str(x) for x in rmpos])))
+            out.write('\n')
 
     else:
         rmpos = set()
-
 
     out.close()
     return (arr, rmpos, relativePositions)
