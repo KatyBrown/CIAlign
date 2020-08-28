@@ -26,6 +26,8 @@ This allows the user to:
 
 * Unalign the alignment
 
+* Replace U's by T's
+
 ## Requirements
 * python >= 3.6
 * matplotlib >= 2.1.1
@@ -109,7 +111,7 @@ Output files:
 | *`--consensus_keep_gaps`* | If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False) | False |
 | *`--consensus_name`* | Name to use for the consensus sequence in the output fasta file | consensus |
 
-## Unalign Alignment
+## Unaligning the Alignment
 This function simply removes the gaps from the input or output alignment and creates and unaligned file of the sequences.
 
 Output files:
@@ -121,6 +123,19 @@ Output files:
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | `--unalign_input` | Generates a copy of the input alignment with no gaps | False |
 | `--unalign_output` | Generates a copy of the output alignment with no gaps | False |
+
+## Replacing U's by T's
+This function replaces the U nucleotides by T nucleotides without disturbing the sequence names.
+
+Output files:
+
+* **`OUTFILE_STEM_T_input.fasta`** - input alignment with T's instead of U's
+* **`OUTFILE_STEM_T_output.fasta`** - output alignment with T's instead of U's
+
+| Parameter | Description | Default |
+| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
+| `--replace_input` | Generates a copy of the input alignment with T's instead of U's | False |
+| `--replace_output` | Generates a copy of the output alignment with T's instead of U's | False |
 
 ## Visualising Alignments
 Each of these functions produces some kind of visualisation of your alignment.
