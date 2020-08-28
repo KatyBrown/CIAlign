@@ -683,9 +683,8 @@ def main():
     if args.replace_output:
         log.info("Generating a T instead of U version of the output alignment")
         if not args.silent:
-            print("Generating a T instead of U version of the output \
-alignment")
-        outf = "%s_T_input.fasta" % (args.outfile_stem)
+            print("Generating a T instead of U version of the output alignment")
+        outf = "%s_T_output.fasta" % (args.outfile_stem)
         T_arr = utilityFunctions.replaceUbyT(arr)
         utilityFunctions.writeOutfile(outf, T_arr,
                                       orig_nams,
