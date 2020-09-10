@@ -256,7 +256,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     # generate the numeric version of the arry
     arr2, cm = arrNumeric(arr, typ)
     # display it on the axis
-    a.imshow(arr2, cmap=cm, aspect='auto')
+    a.imshow(arr2, cmap=cm, aspect='auto', interpolation='nearest')
 
     # these are white lines between the bases in the alignment - as the
     # image is actually solid
