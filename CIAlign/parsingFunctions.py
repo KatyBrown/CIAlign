@@ -51,18 +51,20 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
             nam = nams[i]
             non_gap_start = sum(row[0:start] != "-")
             non_gap_end = sum(row[end:] != "-")
+            removed_start = np.arange(0, non_gap_start)
+            removed_end = np.arange(non_gap_end, len(newseq)+1)
+            removed_start = [str(x) for x in removed_start]
+            removed_end = [str(x) for x in removed_end]
             if non_gap_start != 0:
                 log.info("Removed %i bases from start of %s" % (
                         non_gap_start, nam))
-                out.write("Removed %i bases from start of %s" % (
-                        non_gap_start, nam))
-                out.write('\n')
+                out.write("crop_ends\t%s\t%s\n" % (nam,
+                                                   ",".join(removed_start)))
             if non_gap_end != 0:
                 log.info("Removed %i bases from end of %s" % (
                         non_gap_end, nam))
-                out.write("Removed %i bases from end of %s" % (
-                        non_gap_end, nam))
-                out.write('\n')
+                out.write("crop_ends\t%s\t%s\n" % (nam,
+                                                   ",".join(removed_end)))
             # list of positions between 0 and start which are not gaps
             startpos = np.where(row[0:start] != "-")[0]
             # list of positions from end to end of the sequences
@@ -102,6 +104,9 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     r: set
         A set of names of sequences which have been removed
     '''
+    out = open(rmfile, "a")
+    if out.closed:
+        print('file is closed')
     j = 0
     keep = []
     for a in arr:
@@ -134,6 +139,8 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
     r = set(np.array(nams)[np.invert(keep)])
     if len(r) != 0:
         log.info("Removing divergent sequences %s" % (", ".join(list(r))))
+        out.write("remove_divergent\t%s\n" % (",".join(list(r))))
+    out.close()
     return (newarr, r)
 
 
@@ -171,6 +178,8 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     '''
     log.info("Removing insertions\n")
     out = open(rmfile, "a")
+    if out.closed:
+        print('file is closed')
     # record which sites are not "-"
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
@@ -226,9 +235,9 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     keeppos = np.arange(0, len(sums))
     keeppos = np.invert(np.in1d(keeppos, rmpos))
     if len(rmpos) != 0:
-        log.info("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
-        out.write("Removing sites %s" % (", ".join([str(x) for x in rmpos])))
-        out.write('\n')
+        rmpos_str = [str(x) for x in rmpos]
+        log.info("Removing sites %s" % (", ".join(rmpos_str)))
+        out.write("remove_insertions\t%s\n" % (",".join(rmpos_str)))
     out.close()
     arr = arr[:, keeppos]
     # return (arr, set(rmpos), relativePositions)
@@ -261,16 +270,21 @@ def removeTooShort(arr, nams, rmfile, log, min_length):
          A set of names of sequences which have been removed
 
     '''
+    out = open(rmfile, "a")
+    if out.closed:
+        print('file is closed')
     if len(arr) != 0:
         arrT = arr.transpose()
         sums = sum(arrT != "-")
         arr = arr[sums > min_length]
         rmnames = set(np.array(nams)[sums <= min_length])
         if len(rmnames) != 0:
-            log.info("Removing sequences %s" % (", ".join(list(rmnames))))
+            log.info("Removing too short sequences %s" % (
+                ", ".join(list(rmnames))))
+            out.write("remove_too_short\t%s\n" % ",".join(list(rmnames)))
     else:
         rmnames = set()
-
+    out.close()
     return (arr, rmnames)
 
 
@@ -316,10 +330,10 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
         rmpos = set(rmpos)
         arr = arr[:, sums != len(arr[:, 0])]
         if len(rmpos) != 0:
+            rmpos_str = [str(x) for x in rmpos]
             log.info("Removing gap only sites %s" % (
-                    ", ".join([str(x) for x in rmpos])))
-            out.write("Removing gap only sites %s" % (
-                    ", ".join([str(x) for x in rmpos])))
+                    ", ".join(rmpos_str)))
+            out.write("remove_gap_only\t%s\n" % (",".join(rmpos_str)))
             out.write('\n')
 
     else:
