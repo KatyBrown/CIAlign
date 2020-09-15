@@ -43,7 +43,7 @@ def unAlign(arr):
     return (arr)
 
 
-def FastaToArray(infile, outfile_stem):
+def FastaToArray(infile, outfile_stem=None):
     '''
     Convert an alignment into a numpy array.
 
