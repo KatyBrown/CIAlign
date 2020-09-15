@@ -77,10 +77,9 @@ def FastaToArray(infile, outfile_stem=None):
                 nam = line.replace(">", "")
             else:
                 seq += list(line)
-    seqs.append([s.upper() for s in seq])
+    seqs.append(np.array([s.upper() for s in seq]))
     nams.append(nam)
     arr = np.array(seqs[1:])
-
     return (arr, nams[1:])
 
 
@@ -182,22 +181,12 @@ def writeOutfile(outfile, arr, nams, removed, rmfile=None):
 
     '''
     out = open(outfile, "w")
-    if rmfile is not None:
-        rm = open(rmfile, "a")
-        rm.write("Removed sequences:\n")
-    else:
-        rm = None
     i = 0
     for nam in nams:
         if nam not in removed:
             out.write(">%s\n%s\n" % (nam, "".join(list(arr[i]))))
             i += 1
-        else:
-            if rm is not None:
-                rm.write("%s\n" % nam)
     out.close()
-    if rm is not None:
-        rm.close()
 
 
 def seqType(arr):
