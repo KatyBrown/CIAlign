@@ -92,7 +92,7 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.75 |
 | **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 |
-| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 300 |
+| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 100 |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
 | *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 |
