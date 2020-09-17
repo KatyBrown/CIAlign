@@ -51,27 +51,28 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
             nam = nams[i]
             non_gap_start = sum(row[0:start] != "-")
             non_gap_end = sum(row[end:] != "-")
-            removed_start = np.arange(0, non_gap_start)
-            removed_end = np.arange(non_gap_end, len(newseq)+1)
-            removed_start = [str(x) for x in removed_start]
-            removed_end = [str(x) for x in removed_end]
-            if non_gap_start != 0:
-                log.info("Removed %i bases from start of %s" % (
-                        non_gap_start, nam))
-                out.write("crop_ends\t%s\t%s\n" % (nam,
-                                                   ",".join(removed_start)))
-            if non_gap_end != 0:
-                log.info("Removed %i bases from end of %s" % (
-                        non_gap_end, nam))
-                out.write("crop_ends\t%s\t%s\n" % (nam,
-                                                   ",".join(removed_end)))
             # list of positions between 0 and start which are not gaps
             startpos = np.where(row[0:start] != "-")[0]
             # list of positions from end to end of the sequences
             # which are not gaps
             endpos = np.where(row[end:] != "-")[0] + end
+
             rel_startpos = np.array(relativePositions)[startpos]
             rel_endpos = np.array(relativePositions)[endpos]
+
+            if non_gap_start != 0:
+                log.info("Removed %i bases from start of %s" % (
+                        non_gap_start, nam))
+                startpos_str = [str(x) for x in rel_startpos]
+                out.write("crop_ends\t%s\t%s\n" % (nam,
+                                                   ",".join(startpos_str)))
+            if non_gap_end != 0:
+                log.info("Removed %i bases from end of %s" % (
+                        non_gap_end, nam))
+                endpos_str = [str(x) for x in rel_endpos]
+                out.write("crop_ends\t%s\t%s\n" % (nam,
+                                                   ",".join(endpos_str)))
+
             r[nam] = ((rel_startpos, rel_endpos))
             # r[nam] = ((startpos, endpos))
         newarr.append(list(newseq))
@@ -187,13 +188,13 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     # run a sliding window along the alignment and check for regions
     # which have higher coverage at the ends of the window than in the
     # middle - store these in put_indels
-    put_indels = set()
+    put_indels = []
     for size in range(min_size, max_size, 1):
         for i in range(0, len(sums)+1 - size, 1):
             these_sums = sums[i:i+size]
             # take the number of non gap positions
             # for each column in this window
-            ns = np.array(range(i, i+size))
+            ns = np.arange(i, i+size)
             left = these_sums[0]
             right = these_sums[-1]
             # record sites with lower coverage than their flanking seqs
@@ -201,27 +202,32 @@ def removeInsertions(arr, relativePositions, rmfile, log,
             x = set(ns[(these_sums < left) &
                        (these_sums < right)])
             if len(x) >= min_size:
-                put_indels = put_indels | x
+                put_indels += list(x)
+    put_indels = set(put_indels)
     put_indels = np.array(sorted(list(put_indels)))
     # for the putative indels, check if there are more sequences
     # with a gap at this position (but with sequence on either side)
     # than with no gap (but with sequence on either side)
     rmpos = set()
     absolutePositions = set()
+    i = 0
+
     for p in put_indels:
-        left = arr[:, :p]
-        right = arr[:, p+1:]
-        pcol = arr[:, p]
-        pcol_nongaps = pcol != "-"
-        pcol_gaps = pcol == "-"
-        leftsum = sum(left.T != "-")
-        rightsum = sum(right.T != "-")
+        left = boolarr[:, :p]
+        right = boolarr[:, p+1:]
+        pcol = boolarr[:, p]
+        pcol_nongaps = pcol
+        pcol_gaps = np.invert(pcol)
+        leftsum = np.sum(left, 1)
+        rightsum = np.sum(right, 1)
         covers_region = (sum((pcol_nongaps) & (
                 leftsum >= min_flank) & (rightsum >= min_flank)))
         lacks_region = (sum((pcol_gaps) & (
                 leftsum >= min_flank) & (rightsum >= min_flank)))
         if lacks_region > covers_region:
             absolutePositions.add(p)
+        i += 1
+
     # make a list of positions to remove
     rm_relative = set()
     for n in absolutePositions:
@@ -235,7 +241,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     keeppos = np.arange(0, len(sums))
     keeppos = np.invert(np.in1d(keeppos, rmpos))
     if len(rmpos) != 0:
-        rmpos_str = [str(x) for x in rmpos]
+        rmpos_str = [str(x) for x in rm_relative]
         log.info("Removing sites %s" % (", ".join(rmpos_str)))
         out.write("remove_insertions\t%s\n" % (",".join(rmpos_str)))
     out.close()
@@ -334,8 +340,6 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
             log.info("Removing gap only sites %s" % (
                     ", ".join(rmpos_str)))
             out.write("remove_gap_only\t%s\n" % (",".join(rmpos_str)))
-            out.write('\n')
-
     else:
         rmpos = set()
 
