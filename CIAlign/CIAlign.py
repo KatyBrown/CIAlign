@@ -91,7 +91,7 @@ def main():
                  help="Only remove insertions >= this number of residues. \
                        Default: %(default)s")
     optional.add("--insertion_max_size", dest="insertion_max_size",
-                 type=int, default=30,
+                 type=int, default=100,
                  help="Only remove insertions <= this number of residues. \
                        Default: %(default)s")
     optional.add("--insertion_min_flank", dest="insertion_min_flank",
