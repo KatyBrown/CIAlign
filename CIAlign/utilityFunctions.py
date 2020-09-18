@@ -121,7 +121,12 @@ def getAAColours():
             'H': '#8282D2',
             'P': '#DC9682',
             'X': '#b2b2b2',
-            '-': '#FFFFFF00'}
+            '-': '#FFFFFF00',
+            'B': '#b2b2b2',
+            'Z': '#b2b2b2',
+            'J': '#b2b2b2',
+            '*': '#FFFFFF00'
+            }
 
 
 def getNtColours():
