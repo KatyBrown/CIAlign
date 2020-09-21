@@ -1,0 +1,16 @@
+//  INDELible V1.03 control file
+
+[TYPE] NUCLEOTIDE 1
+
+[MODEL]    GTRexample
+  [submodel]  GTR 0.2 0.4 0.6 0.8 1.2 //  GTR: a=0.2, b=0.4, c=0.6, d=0.8, e=1.2, f=1
+  [statefreq] 0.1 0.2 0.3 0.4 // pi_T=0.1, pi_C=0.2, pi_A=0.3, pi_G=0.4
+  [rates]     0.2 2 0      // pinv=0.2, alpha=2, continuous gamma
+  [indelmodel]   NB  0.4 1 // Geometric insertion length distribution, q=0.4, r=1
+  [indelrate]   0.02 // insertion rate = deletion rate = 0.02   
+
+[TREE] t1  (((A5:0.756700,A6:0.714300):0.393900,(A7:1.033800,A8:0.452800):0.291800):0.558400,(A1:0.698700,A2:0.593900):1.085700,(A3:0.447600,A4:0.669300):0.810400);
+
+[PARTITIONS] pGTR [t1 GTRexample 30]
+
+[EVOLVE] pGTR 8 currentOut

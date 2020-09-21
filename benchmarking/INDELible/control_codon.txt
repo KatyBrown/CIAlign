@@ -1,0 +1,19 @@
+//  INDELible V1.03 control file
+
+[TYPE] CODON 1
+
+[MODEL] M1example    
+    [submodel]  2.5 //  kappa=2.5
+                0.2 //  p0=0.2, p1=0.8
+                0.5  1 //  w0=0.5, w1=1
+
+  [insertmodel]  POW  1.7 50 //  Power law insertion length distribution (a=1.7, M=500)
+  [deletemodel]  POW  1.8 50 //  Power law deletion length distribution (a=1.8, M=500)
+  [indelrate]    0.01         //  insertion rate = deletion rate = 0.01
+
+
+[TREE] t1  (((A5:0.756700,A6:0.714300):0.393900,(A7:1.033800,A8:0.452800):0.291800):0.558400,(A1:0.698700,A2:0.593900):1.085700,(A3:0.447600,A4:0.669300):0.810400);
+
+[PARTITIONS] pM1 [t1 M1example 30]
+
+[EVOLVE] pM1 8 currentOut
