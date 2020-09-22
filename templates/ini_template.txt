@@ -14,7 +14,7 @@ silent = 0
 
 [all]
 # Use all available functions with default parameters.
-All = 0
+all = 0
 
 [crop_ends]
 # Crop the ends of sequences if they are poorly aligned. Default: False
