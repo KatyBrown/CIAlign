@@ -1,9 +1,8 @@
 #! /usr/bin/env python
 '''
-This script contains functions used to calculate various alignment statistics
-which were used to benchmark CIAlign.
+This module file contains functions used to calculate various alignment
+statistics which were used to benchmark CIAlign.
 '''
-import configargparse
 import numpy as np
 import copy
 import itertools
@@ -12,9 +11,9 @@ import sys
 sys.path.insert(0, "/home/katy/CIAlign/CIAlign")
 import utilityFunctions
 # put this back eventually
-#try:
+# try:
 #    import CIAlign.utilityFunctions as utilityFunctions
-#except ImportError:
+# except ImportError:
 #    import utilityFunctions
 
 
@@ -76,6 +75,9 @@ def find_removed_cialign(removed_file, arr, nams):
     ! characters are always counted as mismatches in comparisons between
     alignments.
 
+    Also counts how many total characters were removed by CIAlign and
+    how many non-gap characters.
+
     Parameters
     ----------
     removed_file: str
@@ -101,6 +103,8 @@ def find_removed_cialign(removed_file, arr, nams):
     # Read the CIAlign _removed.txt log file
     lines = [line.strip().split("\t")
              for line in open(removed_file).readlines()]
+    removed_count_total = 0
+    removed_count_nongap = 0
     # Make an empty dictionary
     D = {x: set() for x in nams}
     for line in lines:
@@ -137,6 +141,8 @@ def find_removed_cialign(removed_file, arr, nams):
         which_nam = np.where(cleannams == nam)[0][0]
         # remove the removed sequences from the array
         if val == "removed":
+            removed_count_total += len(cleanarr[which_nam])
+            removed_count_nongap += sum(cleanarr[which_nam] != "-")
             cleannams = np.append(cleannams[:which_nam],
                                   cleannams[which_nam + 1:])
             cleanarr = np.vstack([cleanarr[:which_nam],
@@ -149,10 +155,13 @@ def find_removed_cialign(removed_file, arr, nams):
             which_pos = np.array(sorted(list(val)))
             if len(which_pos) != 0:
                 cleanarr[which_nam, which_pos] = "!"
+
+    removed_count_total += np.sum(cleanarr == "!")
     # sometimes gaps are removed - make these gaps in the output rather than
     # !s
     cleanarr[arr == "-"] = "-"
-    return (cleanarr, cleannams)
+    removed_count_nongap += np.sum(cleanarr == "!")
+    return (cleanarr, cleannams, removed_count_total, removed_count_nongap)
 
 
 def get_POARS(arr, nams):
@@ -195,20 +204,25 @@ def get_POARS(arr, nams):
         index of the residue in sequence 2.
     '''
     nrows, ncols = np.shape(arr)
-    POARS = set()
+    POARS_1 = []
+    POARS_2 = []
+    POAR_nams_1 = []
+    POAR_nams_2 = []
     # take every rowise combination of sequences in the alignment
     for i, j in itertools.combinations(np.arange(nrows), 2):
         # find the sequence names
         nam1 = nams[i]
         nam2 = nams[j]
         # take every column of this pair of sequences
-        for k in np.arange(ncols):
-            # get the indicies of the residues at these positions
-            POAR = list(arr[[i, j], k])
-            # if they are not gaps and haven't been removed with CIAlign
-            if 0 not in POAR:
-                # store the POAR
-                POARS.add("%s_%s_%s_%s" % (nam1, nam2, POAR[0], POAR[1]))
+        rows = arr[[i, j], :]
+        # remove the columns containing a zero
+        rows = rows[:, np.product(rows, 0) != 0]
+        POARS_1 += list(rows[0, :])
+        POARS_2 += list(rows[1, :])
+        POAR_nams_1 += [nam1] * np.shape(rows)[1]
+        POAR_nams_2 += [nam2] * np.shape(rows)[1]
+    POARS = list(zip(POAR_nams_1, POAR_nams_2, POARS_1, POARS_2))
+    POARS = set(["%s_%s_%s_%s" % x for x in POARS])
     return (POARS)
 
 
@@ -380,20 +394,28 @@ def format_alignment(ali, cleaned=False, cialign_removed=None):
         List of sequence names in the same order as the rows of the sequence
         array.
     '''
+    removed_count_total = 0
+    removed_count_nongap = 0
     # Convert alignment into arrays
     arr, nams = utilityFunctions.FastaToArray(ali)
 
     # make everything upper case so this doesn't affect the score
     arr = np.char.upper(arr)
 
+    # make sure everything is in the right order
+    o = np.argsort(nams)
+    nams = np.array(nams)[o]
+    arr = arr[o, :]
+
     # if the alignment has been cleaned with CIAlign, update the array
     # to contain !s for positions which have been removed
     if cleaned:
-        arr, nams = find_removed_cialign(cialign_removed, arr, nams)
+        X = find_removed_cialign(cialign_removed, arr, nams)
+        arr, nams, removed_count_total, removed_count_nongap = X
 
     arr = alignment_to_matrix(arr)
 
-    return (arr, nams)
+    return (arr, nams, removed_count_total, removed_count_nongap)
 
 
 def calculate_alignment_scores(arr_1, arr_2, nams_1, nams_2):
@@ -439,44 +461,5 @@ def calculate_alignment_scores(arr_1, arr_2, nams_1, nams_2):
     this_column_score = column_score(arr_1, arr_2)
     this_sum_of_pairs, this_overlap = sum_of_pairs_overlap_score(POARS_1,
                                                                  POARS_2)
-    return (this_column_score, this_sum_of_pairs, this_overlap)
-
-
-def main():
-    parser = configargparse.ArgumentParser(
-                description='Calculate scores to compare two alignments',
-                add_help=False)
-
-    parser.add("--alignment_1", dest='alignment_1', type=str,
-               help='Path to first or benchmark alignment')
-
-    parser.add("--alignment_2", dest='alignment_2', type=str,
-               help='Path to second or test alignment')
-
-    parser.add("--cialign_1", dest="cialign_1", type=str,
-               default=None,
-               help="Path to CIAlign _removed.txt for first alignment")
-    parser.add("--cialign_2", dest="cialign_2", type=str,
-               default=None,
-               help="Path to CIAlign _removed.txt for second alignment")
-    parser.add("--outfile", dest="outfile", type=str,
-               default="scores.out",
-               help="Path to output file")
-
-    args = parser.parse_args()
-    if args.cialign_1 is None:
-        arr_1, nams_1 = format_alignment(args.alignment_1)
-    else:
-        arr_1, nams_1 = format_alignment(args.alignment_1,
-                                         True, args.cialign_1)
-    if args.cialign_2 is None:
-        arr_2, nams_2 = format_alignment(args.alignment_2)
-    else:
-        arr_2, nams_2 = format_alignment(args.alignment_2,
-                                         True, args.cialign_2)
-    scores = calculate_alignment_scores(arr_1, arr_2, nams_1, nams_2)
-    print(scores)
-
-
-if __name__ == "__main__":
-    main()
+    return (this_column_score, this_sum_of_pairs, this_overlap, POARS_1,
+            POARS_2)
