@@ -219,6 +219,6 @@ Output file:
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--make_similarity_matrix_input`** | Make a similarity matrix for the input alignment | False |
 | **`--make_similarity_matrix_output`** | Make a similarity matrix for the output alignment | False |
-| *`--make_simmatrix_keepgaps`* | Include positions with gaps in either or both sequences in the similarity calculation | False |
+| *`--make_simmatrix_keepgaps`* | 0 - exclude positions which are gaps in either or both sequences from similarity calculations, 1 - exclude positions which are gaps in both sequences, 2 - include all positions  | 0 |
 | *`--make_simmatrix_dp`* | Number of decimal places to display in the similarity matrix output file | 4 |
 | *`--make_simmatrix_minoverlap`* | Minimum overlap between two sequences to have non-zero similarity in the similarity matrix | 1 |

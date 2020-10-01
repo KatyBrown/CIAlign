@@ -244,10 +244,13 @@ def main():
                        similarity in the similarity matrix. \
                        Default: %(default)s")
     optional.add("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
-                 type=bool, default=False,
+                 type=int, default=0,
                  help="Include positions with gaps in either or both \
                        sequences in the similarity matrix calculation. \
-                       Default: %(default)s")
+                       Can be 0 - exclude positions which are gaps in either \
+                       or both sequences, 1 - exclude positions which are \
+                       gaps in both sequences, 2 - consider all positions \
+                       regardless of gaps. Default: %(default)s")
 
     # Unalign function
     optional.add("--unalign_input", dest="unalign_input",
@@ -293,6 +296,8 @@ def main():
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
+    log.addHandler(handler)
+
     rmfile = "%s_removed.txt" % args.outfile_stem
     outfile = "%s_cleaned.fasta" % (args.outfile_stem)
 
