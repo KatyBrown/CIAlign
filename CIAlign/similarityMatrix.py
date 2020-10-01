@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 
 
 def calculateSimilarityMatrix(arr, nams, minoverlap=1,
-                              keepgaps=False, outfile=None, dp=4):
+                              keepgaps=0, outfile=None, dp=4):
     '''
     Calculates a pairwise similarity matrix for the alignment - for each pair
     of sequences, number of matching bases / total number of bases.
@@ -21,9 +21,11 @@ def calculateSimilarityMatrix(arr, nams, minoverlap=1,
     minoverlap: int
         Minimum overlap between two sequences to have non-zero similarity
         in the similarity matrix.
-    keepgaps: bool
-        Include positions with gaps in either or both sequences in the
-        similarity matrix calculation.
+    keepgaps: int
+        Include positions with gaps in the
+        similarity matrix calculation. Can be 0 - exclude positions which
+        are gaps in either or both sequences, 1 - exclude positions which are
+        gaps in both sequences, 2 - consider all positions regardless of gaps
     outfile: str
         Path to output file.  Can be None (for no output)
     dp: int
@@ -38,9 +40,14 @@ def calculateSimilarityMatrix(arr, nams, minoverlap=1,
     for i, j in itertools.combinations_with_replacement(range(len(arr)), 2):
         p1 = arr[i]
         p2 = arr[j]
-        if not keepgaps:
+        if keepgaps == 0:
+            # exclude positions which are gaps in either or both seqs
             nongap = (p1 != "-") & (p2 != "-")
-        else:
+        elif keepgaps == 1:
+            # exclude positions which are gaps in both seqs
+            nongap = (p1 != "-") | (p2 != "-")
+        elif keepgaps == 2:
+            # don't exclude anything
             nongap = np.array([True] * len(p1))
         matches = sum(p1[nongap] == p2[nongap])
         length = sum(nongap)
