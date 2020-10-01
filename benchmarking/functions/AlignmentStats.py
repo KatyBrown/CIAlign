@@ -463,3 +463,31 @@ def calculate_alignment_scores(arr_1, arr_2, nams_1, nams_2):
                                                                  POARS_2)
     return (this_column_score, this_sum_of_pairs, this_overlap, POARS_1,
             POARS_2)
+
+
+def alignmentConsistency(alignments, all_nams):
+    poarD = dict()
+    all_poars = set()
+    for i, alignment in enumerate(alignments):
+        nams = all_nams[i]
+        POARs = get_POARS(alignment, nams)
+        poarD[i] = POARs
+        all_poars = all_poars | POARs
+    POAR_consistency = dict()
+    max_score = 0
+    for poar in all_poars:
+        x = 0
+        for poarset in poarD.values():
+            if poar in poarset:
+                x += 1
+        POAR_consistency[poar] = x - 1
+        if (x - 1) > max_score:
+            max_score = (x - 1)
+    alignment_scores = []
+    for i, alignment in enumerate(alignments):
+        score = 0
+        for poar in poarD[i]:
+            score += POAR_consistency[poar]
+        alignment_score = score / max_score
+        alignment_scores[i] = alignment_score
+    return (alignment_scores)
