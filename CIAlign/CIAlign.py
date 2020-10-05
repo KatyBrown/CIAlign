@@ -326,7 +326,7 @@ def main():
         print("Error! Your input alignmnent path could not be found.")
         exit()
 
-    arr, nams = utilityFunctions.FastaToArray(args.infile, args.outfile_stem)
+    arr, nams = utilityFunctions.FastaToArray(args.infile, log, args.outfile_stem)
 
     # check if at least names are unique
     if len(nams) > len(set(nams)):
