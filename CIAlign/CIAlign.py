@@ -12,12 +12,14 @@ try:
     import CIAlign.miniAlignments as miniAlignments
     import CIAlign.similarityMatrix as similarityMatrix
     import CIAlign.consensusSeq as consensusSeq
+    from CIAlign._version import __version__
 except ImportError:
     import utilityFunctions
     import parsingFunctions
     import miniAlignments
     import similarityMatrix
     import consensusSeq
+    from _version import __version__
 
 
 def main():
