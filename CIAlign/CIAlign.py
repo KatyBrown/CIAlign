@@ -5,7 +5,7 @@ import configargparse
 import os.path
 import numpy as np
 import copy
-from _version import __version__
+
 try:
     import CIAlign.utilityFunctions as utilityFunctions
     import CIAlign.parsingFunctions as parsingFunctions
