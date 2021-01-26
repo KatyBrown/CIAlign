@@ -5,19 +5,21 @@ import configargparse
 import os.path
 import numpy as np
 import copy
-from _version import __version__
+
 try:
     import CIAlign.utilityFunctions as utilityFunctions
     import CIAlign.parsingFunctions as parsingFunctions
     import CIAlign.miniAlignments as miniAlignments
     import CIAlign.similarityMatrix as similarityMatrix
     import CIAlign.consensusSeq as consensusSeq
+    from CIAlign._version import __version__
 except ImportError:
     import utilityFunctions
     import parsingFunctions
     import miniAlignments
     import similarityMatrix
     import consensusSeq
+    from _version import __version__
 
 
 def main():
@@ -324,7 +326,7 @@ def main():
         print("Error! Your input alignmnent path could not be found.")
         exit()
 
-    arr, nams = utilityFunctions.FastaToArray(args.infile, args.outfile_stem)
+    arr, nams = utilityFunctions.FastaToArray(args.infile, log, args.outfile_stem)
 
     # check if at least names are unique
     if len(nams) > len(set(nams)):

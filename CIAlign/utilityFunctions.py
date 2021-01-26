@@ -43,7 +43,7 @@ def unAlign(arr):
     return (arr)
 
 
-def FastaToArray(infile, outfile_stem=None):
+def FastaToArray(infile, log, outfile_stem=None):
     '''
     Convert an alignment into a numpy array.
 
@@ -63,6 +63,7 @@ def FastaToArray(infile, outfile_stem=None):
         List of sequence names in the same order as in the input file
     '''
 
+    formatErrorMessage = "The MSA file needs to be in FASTA format."
     nams = []
     seqs = []
     nam = ""
@@ -70,12 +71,18 @@ def FastaToArray(infile, outfile_stem=None):
     with open(infile) as input:
         for line in input:
             line = line.strip()
+            if len(line) == 0:
+                continue # todo: test!
             if line[0] == ">":
                 seqs.append([s.upper() for s in seq])
                 nams.append(nam)
                 seq = []
                 nam = line.replace(">", "")
             else:
+                if len(nams) == 0:
+                    log.error(formatErrorMessage)
+                    print(formatErrorMessage)
+                    exit()
                 seq += list(line)
     seqs.append(np.array([s.upper() for s in seq]))
     nams.append(nam)
@@ -198,6 +205,8 @@ def seqType(arr):
     '''
     Detects if an alignment is of nucleotides or amino acids using pre-built
     dictionarys of amino acid and nucleotide codes.
+    Checks if arr contains characters that are not in the dictionary (not
+    IUPAC)
 
     Parameters
     ----------
@@ -209,28 +218,40 @@ def seqType(arr):
     str
     'aa' for amino acid and 'nt for nucleotide
     '''
-    seq1 = arr[0]
-    nucs = set(list(getNtColours().keys()))
-    aas = set(list(getAAColours().keys()))
-    n = 0
-    a = 0
-    x = 0
-    for s in seq1:
-        s = s.upper()
-        if s in nucs:
-            n += 1
-        if s in aas:
-            a += 1
-        if s not in aas and s not in nucs:
-            x += 1
-    counts = n, a, x
-    if n == max(counts):
+    nt_count = 0
+    aa_count = 0
+    for seq in arr:
+        nucs = set(list(getNtColours().keys()))
+        aas = set(list(getAAColours().keys()))
+        n = 0
+        a = 0
+        x = 0
+        for s in seq:
+            s = s.upper()
+            if s in nucs:
+                n += 1
+            if s in aas:
+                a += 1
+            if s not in aas and s not in nucs:
+                x += 1
+        ch = 0
+        if n == len(seq):
+            nt_count += 1
+            ch += 1
+        if a == len(seq):
+            aa_count += 1
+            ch += 1
+        if ch == 0:
+            print("Unknown nucleotides or amino acids detected.\
+                  Please fix your MSA.")
+            exit()
+
+    if nt_count == len(arr):
         return "nt"
-    elif a == max(counts):
+    if aa_count == len(arr):
         return "aa"
-    else:
-        print("Majority of positions are not known nucleotides or amino acids")
-        exit()
+    print("MSA type couldn't be established. Please fix your MSA.")
+    exit()
 
 
 def updateNams(nams, removed_seqs):
