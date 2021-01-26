@@ -205,7 +205,8 @@ def seqType(arr):
     '''
     Detects if an alignment is of nucleotides or amino acids using pre-built
     dictionarys of amino acid and nucleotide codes.
-    Checks if arr contains characters that are not in the dictionary (not IUPAC)
+    Checks if arr contains characters that are not in the dictionary (not
+    IUPAC)
 
     Parameters
     ----------
@@ -233,21 +234,24 @@ def seqType(arr):
                 a += 1
             if s not in aas and s not in nucs:
                 x += 1
-        counts = n, a, x
+        ch = 0
         if n == len(seq):
             nt_count += 1
-        elif a == len(seq):
+            ch += 1
+        if a == len(seq):
             aa_count += 1
-        else:
-            print("Unknown nucleotides or amino acids detected. Please fix your MSA.")
+            ch += 1
+        if ch == 0:
+            print("Unknown nucleotides or amino acids detected.\
+                  Please fix your MSA.")
             exit()
+
     if nt_count == len(arr):
         return "nt"
-    elif aa_count == len(arr):
+    if aa_count == len(arr):
         return "aa"
-    else:
-        print("MSA type couldn't be established. Please fix your MSA.")
-        exit()
+    print("MSA type couldn't be established. Please fix your MSA.")
+    exit()
 
 
 def updateNams(nams, removed_seqs):
