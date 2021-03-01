@@ -13,6 +13,7 @@ try:
     import CIAlign.utilityFunctions as utilityFunctions
 except ImportError:
     import utilityFunctions
+import os
 matplotlib.use('Agg')
 
 
@@ -143,7 +144,7 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
         a.set_xlim(0, 1)
         a.set_ylim(0, 1)
         fs = getFontSize(f, a, 1)
-        a.text(0.5, 0, base, fontsize=fs, fontdict={'family': 'monospace',
+        a.text(0.5, 0.02, base, fontsize=fs*0.95, fontdict={'family': 'monospace',
                                                     'name': fontname},
                color=colours[base], va='baseline', ha='center')
         plt.gca().set_axis_off()
@@ -153,7 +154,7 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
         a.set_frame_on(False)
         # temporarily safe plot in working directory
         f.savefig("%s_temp.png" % base, dpi=500,
-                  pad_inches=0)
+                  pad_inches=0.1)
         plt.close()
 
 
@@ -343,7 +344,12 @@ def sequence_logo(alignment,
             rend = alignment_width
         a = plt.subplot(gs[n])
         a.set_xlim(rstart, rstart+figrowlength)
-        a.set_ylim(0, 2.1)
+        if typ == 'nt':
+            a.set_ylim(0, 2.1)
+            a.set_yticks(np.arange(0, 2.1, 1))
+        elif typ == 'aa':
+            a.set_ylim(0, 4.6)
+            a.set_yticks(np.arange(0, 4.6, 1))
         limits = a.axis()
 
         # for each column calculate heights via entropy
@@ -356,17 +362,20 @@ def sequence_logo(alignment,
                                                           len(alignment[:, 0]),
                                                           typ=typ)
             height_sum_higher = 0
-            for base, height in height_per_base.items():
+            Z = zip(height_per_base.keys(), height_per_base.values())
+            Z = sorted(Z, key=lambda x: x[1])
+            for base, height in Z:
                 if height > 0:
                     L = plt.imread("%s_temp.png" % base)
                     a.imshow(L, extent=(i, i+1, height_sum_higher,
                                         height_sum_higher+height),
                              filternorm=False)
+
                     height_sum_higher += height
         a.axis(limits)
         a.set_xticks([rstart, rend])
         a.set_xticklabels([rstart, rend])
-        a.set_yticks(np.arange(0, 2.1, 1))
+        
         a.spines['right'].set_visible(False)
         a.spines['top'].set_visible(False)
         if n == (nsegs - 1):
@@ -375,12 +384,12 @@ def sequence_logo(alignment,
         rstart += figrowlength
         rend += figrowlength
     # obtain colours
-    #  if typ == 'nt':
-    #    allbases = utilityFunctions.getNtColours()
-    # elif typ == 'aa':
-    #    allbases = utilityFunctions.getAAColours()
-    # for base in allbases:
-    #    os.unlink("%s_temp.png" % base)
+    if typ == 'nt':
+        allbases = utilityFunctions.getNtColours()
+    elif typ == 'aa':
+        allbases = utilityFunctions.getAAColours()
+    for base in allbases:
+        os.unlink("%s_temp.png" % base)
     # save plot using figname
     f.savefig(figname, dpi=figdpi, bbox_inches='tight')
     plt.close()
@@ -434,7 +443,12 @@ def sequence_bar_logo(alignment,
             rend = alignment_width
         axes = f.add_subplot(gs[n])
         axes.set_xlim(rstart-0.5, rend-0.5)
-        axes.set_ylim(0, 2.1)
+        if typ == 'nt':
+            axes.set_ylim(0, 2.1)
+            axes.set_yticks(np.arange(0, 2.1, 1))
+        elif typ == 'aa':
+            axes.set_ylim(0, 4.6)
+            axes.set_yticks(np.arange(0, 4.6, 1))
         seq_count = len(alignment[:, 0])
         width = 0.75
         ind = np.arange(rstart, rend)
