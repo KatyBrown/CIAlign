@@ -17,7 +17,7 @@ import utilityFunctions
 #    import utilityFunctions
 
 
-def alignment_to_matrix(arr):
+def alignment_to_matrix(arr, nams):
     '''
     Converts an alignment matrix stored as a numpy array into a
     matrix of integers, representing
@@ -59,7 +59,11 @@ def alignment_to_matrix(arr):
     # replace ! (CIAlign removed residues) in the input with 0
     pos[arr == "!"] = 0
     pos = pos.astype(int)
-    return(pos)
+    order = np.argsort(nams)
+    nams = list(np.array(nams)[order])
+    pos_new = copy.copy(pos)[order, :]
+
+    return(pos_new, nams)
 
 
 def find_removed_cialign(removed_file, arr, nams):
@@ -159,8 +163,10 @@ def find_removed_cialign(removed_file, arr, nams):
     removed_count_total += np.sum(cleanarr == "!")
     # sometimes gaps are removed - make these gaps in the output rather than
     # !s
-    cleanarr[arr == "-"] = "-"
+
     removed_count_nongap += np.sum(cleanarr == "!")
+    count_nongap = np.sum(cleanarr != "-")
+    
     return (cleanarr, cleannams, removed_count_total, removed_count_nongap)
 
 
@@ -350,14 +356,14 @@ def column_score(pos_benchmark, pos_test):
 
     # make a set of strings where each string represents a column in the
     # benchmark
-    S_orig = set(np.apply_along_axis(
-        lambda x: "_".join(x), 0, pos_benchmark.astype(str)))
+    S_orig = ["_".join(x) for x in pos_benchmark.astype(str).T]
 
     # make a set of strings where each string represents a column in the
     # test
-    S_new = set(np.apply_along_axis(
-        lambda x: "_".join(x), 0, pos_test.astype(str)))
+    S_new = ["_".join(x) for x in pos_test.astype(str).T]
 
+    S_orig = set(S_orig)
+    S_new = set(S_new)
     # calculate the column score
     column_score = len(S_new & S_orig) / np.shape(pos_benchmark)[1]
     return (column_score)
