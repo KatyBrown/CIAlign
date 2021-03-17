@@ -33,7 +33,7 @@ def determineStartEnd(sequence, mingap_perc=0.05, redefine_perc=0.1):
 
     start = 0
     end = 0
-    start = findValue(sequence, mingap_perc)
+    start = findValue(sequence, mingap_perc, redefine_perc)
     # put in reverse for end
     end = len(sequence) - findValue(sequence[::-1], mingap_perc, redefine_perc)
 
