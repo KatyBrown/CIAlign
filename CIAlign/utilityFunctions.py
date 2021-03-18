@@ -49,9 +49,10 @@ def FastaToArray(infile, log, outfile_stem=None):
 
     Parameters
     ----------
-    fasta_dict: dict
-        dictionary based on a fasta file with sequence names as keys and
-        sequences as values
+    infile: string
+        path to input alignment file in FASTA format
+    log: logging.Logger
+        An open log file object
 
     Returns
     -------

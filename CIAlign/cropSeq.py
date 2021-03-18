@@ -71,6 +71,7 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
     position = 0
 
     gaps = countGaps(sequence)
+    print(gaps)
 
     seq_length = len(gaps)
     boundary1 = int(0.1*seq_length)
@@ -79,6 +80,7 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
     boundary3 = int(0.01*seq_length)
     # the threshold for the change in gap numbers
     mingap = int(mingap_perc*seq_length)
+    print("mingap: ", mingap)
 
     # for very short sequences it is not desirable to redefine
     if seq_length < 21:

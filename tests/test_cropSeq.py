@@ -18,22 +18,58 @@ import CIAlign.cropSeq as cropSeq
 
 class cropSeqsTests(unittest.TestCase):
 
-    # todo: more test cases
+
     @parameterized.expand([
             [0.05, 0.1, '--UC----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 8, 42],
             [0.05, 0.1, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 6, 47],
             [0.05, 0.2, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
+            # [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
     ])
     def test_determineStartEnd(self, mingap, redefine_perc, input, expected_start, expected_end):
 
-        seqs = []
-        seqs.append([s for s in input])
-        input = np.array(seqs[0])
-        print(input)
+        seq = []
+        seq.append([s for s in input])
+        input = np.array(seq[0])
         start, end = cropSeq.determineStartEnd(input, mingap, redefine_perc)
-        print(start, end)
 
         self.assertEqual(start, expected_start)
         self.assertEqual(end, expected_end)
 
-# todo: test other functions
+    @parameterized.expand([
+            [0.05, 0.1, '--UC----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 8, 13],
+            [0.05, 0.1, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 6, 13],
+            [0.05, 0.2, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 13],
+            # [0.01, 0.2, '--UC--AA-----UCUCUCUCGGGAGAGGCGUAUUCGAUCGAUCGAUCGUACGAUCGUACGAUGCUCGUGUGUGAAAAAA----AAAUUUU------------A', 13],
+            # [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
+    ])
+    def test_findValue(self, mingap_perc, redefine_perc, input, expected_value, expected_reverse_value):
+
+        seq = []
+        seq.append([s for s in input])
+        input = np.array(seq[0])
+        reverse = input[::-1]
+        print(input)
+        value = cropSeq.findValue(input, mingap_perc, redefine_perc)
+        reverseValue = cropSeq.findValue(reverse, mingap_perc, redefine_perc)
+        print(value)
+
+        self.assertEqual(value, expected_value)
+        self.assertEqual(reverseValue, expected_reverse_value)
+
+    @parameterized.expand([
+            ['UCUCUCUCUCGCGUGUGUGAAAAAAAAAUUUUA', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'],
+            ['UCUC--UCUCUCGCG---UGUGUGAAAAAAAAAUUUUA---', '0,0,0,0,2,2,2,2,2,2,2,2,2,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5'],
+            ['--UC----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', '2,2,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,10,10,10,10,10,10,10,22'],
+    ])
+    def test_countGaps(self, input, expected_gaps):
+
+        seq = []
+        seq.append([s for s in input])
+        input = np.array(seq[0])
+
+        gap_list = expected_gaps.split(",")
+        expected = [int(s) for s in gap_list]
+
+        gaps = cropSeq.countGaps(input)
+
+        self.assertTrue(gaps == expected)
