@@ -16,8 +16,6 @@ import CIAlign
 
 import CIAlign.utilityFunctions as utilityFunctions
 
-# class utilityFunctions
-
 
 class utilityFunctionsgetColoursTests(unittest.TestCase):
 
@@ -98,9 +96,50 @@ class ultilityFunctionsWriteOutfileTest(unittest.TestCase):
             self.in_array.append(record.seq)
             self.nams.append(record.id)
         self.in_array = np.array(self.in_array)
+        self.removed = set()
+        self.outfile = "writeOutfile_test.txt"
 
 
     def tearDown(self):
-        pass
+        os.remove(self.outfile)
 
     def test_writeOutfile(self):
+
+        utilityFunctions.writeOutfile(self.outfile, self.in_array, self.nams, self.removed)
+
+        self.assertTrue(os.path.isfile(self.outfile))
+
+
+class utilityFunctionsCheckSeqTest(unittest.TestCase):
+
+    @parameterized.expand([
+            ['./tests/test_files/example1.fasta', "nt"],
+            ['./tests/test_files/example2.fasta', "aa"],
+            ['./tests/test_files/uORF_nt.fasta', "nt"],
+            ['./tests/test_files/uORF_aa.fasta', "aa"],
+    ])
+    def test_seqType(self, input, expected):
+
+        in_array = []
+        input_ali = AlignIO.read(open(input), "fasta")
+        for record in input_ali:
+            in_array.append(record.seq)
+        in_array = np.array(in_array)
+
+        type = utilityFunctions.seqType(in_array)
+
+        self.assertEqual(type, expected)
+
+class utilityFunctionsListFontsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.outfile = "listFonts_test.png"
+
+    def tearDown(self):
+        os.remove(self.outfile)
+
+    def test_listFonfts(self):
+
+        utilityFunctions.listFonts(self.outfile)
+
+        self.assertTrue(os.path.isfile(self.outfile))

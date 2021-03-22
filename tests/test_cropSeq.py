@@ -40,7 +40,7 @@ class cropSeqsTests(unittest.TestCase):
             [0.05, 0.1, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 6, 13],
             [0.05, 0.2, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 13],
             # [0.01, 0.2, '--UC--AA-----UCUCUCUCGGGAGAGGCGUAUUCGAUCGAUCGAUCGUACGAUCGUACGAUGCUCGUGUGUGAAAAAA----AAAUUUU------------A', 13],
-            # [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
+            [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
     ])
     def test_findValue(self, mingap_perc, redefine_perc, input, expected_value, expected_reverse_value):
 
