@@ -17,25 +17,22 @@ import CIAlign
 import CIAlign.utilityFunctions as utilityFunctions
 
 
-class utilityFunctionsgetColoursTests(unittest.TestCase):
+class UtilityFunctionsgetColoursTests(unittest.TestCase):
 
-    def test_getAAColours(self):
-
+    def testGetAAColours(self):
         AAcolours = utilityFunctions.getAAColours()
 
         self.assertEqual(len(AAcolours), 26)
 
-    def test_getNtColours(self):
-
+    def testGetNtColours(self):
         Ntcolours = utilityFunctions.getNtColours()
 
         self.assertEqual(len(Ntcolours), 18)
 
 
-class utilityFunctionsMSAInputTests(unittest.TestCase):
+class UtilityFunctionsMSAInputTests(unittest.TestCase):
 
     def setUp(self):
-
         self.input = "./tests/test_files/example1.fasta"
 
         self.in_array = []
@@ -50,8 +47,7 @@ class utilityFunctionsMSAInputTests(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_replaceUbyT(self):
-
+    def testReplaceUbyT(self):
         result_ali = utilityFunctions.replaceUbyT(self.in_array)
         findU = np.where(result_ali == "U")
         findu = np.where(result_ali == "u")
@@ -61,16 +57,14 @@ class utilityFunctionsMSAInputTests(unittest.TestCase):
         self.assertFalse(len(findu[0]) > 0)
         self.assertFalse(len(findu[1]) > 0)
 
-    def test_unAlign(self):
-
+    def testUnAlign(self):
         result_ali = utilityFunctions.unAlign(self.in_array)
         findGap = np.where(result_ali == "-")
 
         self.assertFalse(len(findGap[0]) > 0)
         self.assertFalse(len(findGap[1]) > 0)
 
-    def test_FastaToArray(self):
-
+    def testFastaToArray(self):
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
             ali, nams = utilityFunctions.FastaToArray(self.input, logger)
@@ -83,12 +77,10 @@ class utilityFunctionsMSAInputTests(unittest.TestCase):
         self.assertTrue(nams == self.nams)
 
 
-class ultilityFunctionsWriteOutfileTest(unittest.TestCase):
+class UltilityFunctionsWriteOutfileTest(unittest.TestCase):
 
     def setUp(self):
-
         self.input = "./tests/test_files/example1.fasta"
-
         self.in_array = []
         self.nams = []
         input_ali = AlignIO.read(open(self.input), "fasta")
@@ -103,14 +95,13 @@ class ultilityFunctionsWriteOutfileTest(unittest.TestCase):
     def tearDown(self):
         os.remove(self.outfile)
 
-    def test_writeOutfile(self):
-
+    def testWriteOutfile(self):
         utilityFunctions.writeOutfile(self.outfile, self.in_array, self.nams, self.removed)
 
         self.assertTrue(os.path.isfile(self.outfile))
 
 
-class utilityFunctionsCheckSeqTest(unittest.TestCase):
+class UtilityFunctionsCheckSeqTest(unittest.TestCase):
 
     @parameterized.expand([
             ['./tests/test_files/example1.fasta', "nt"],
@@ -118,8 +109,7 @@ class utilityFunctionsCheckSeqTest(unittest.TestCase):
             ['./tests/test_files/uORF_nt.fasta', "nt"],
             ['./tests/test_files/uORF_aa.fasta', "aa"],
     ])
-    def test_seqType(self, input, expected):
-
+    def testSeqType(self, input, expected):
         in_array = []
         input_ali = AlignIO.read(open(input), "fasta")
         for record in input_ali:
@@ -130,7 +120,7 @@ class utilityFunctionsCheckSeqTest(unittest.TestCase):
 
         self.assertEqual(type, expected)
 
-class utilityFunctionsListFontsTest(unittest.TestCase):
+class UtilityFunctionsListFontsTest(unittest.TestCase):
 
     def setUp(self):
         self.outfile = "listFonts_test.png"
@@ -138,8 +128,7 @@ class utilityFunctionsListFontsTest(unittest.TestCase):
     def tearDown(self):
         os.remove(self.outfile)
 
-    def test_listFonfts(self):
-
+    def testListFonts(self):
         utilityFunctions.listFonts(self.outfile)
 
         self.assertTrue(os.path.isfile(self.outfile))

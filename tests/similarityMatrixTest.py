@@ -18,10 +18,9 @@ import CIAlign
 
 from CIAlign.similarityMatrix import calculateSimilarityMatrix
 
-class simMatrixTests(unittest.TestCase):
+class SimMatrixTests(unittest.TestCase):
 
     def setUp(self):
-
         self.in_array = []
         self.nams = []
         input_ali = AlignIO.read(open("./tests/test_files/remove_gaponly_cleaned.fasta"), "fasta")
@@ -39,8 +38,7 @@ class simMatrixTests(unittest.TestCase):
         [1, "./tests/test_files/sim_matrix2_input_similarity.tsv", ],
         [2, "./tests/test_files/sim_matrix3_input_similarity.tsv", ],
     ])
-    def test_similarityMatrix(self, keepgaps, expected):
-
+    def testSimilarityMatrix(self, keepgaps, expected):
         exp_matrix = pd.read_csv(expected, sep="\t")
         exp_matrix = np.array(exp_matrix)
         exp_matrix = np.delete(exp_matrix, 0, 1)

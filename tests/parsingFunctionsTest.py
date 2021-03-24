@@ -16,10 +16,9 @@ import CIAlign
 
 import CIAlign.parsingFunctions as parsingFunctions
 
-class cleaningFunctionsTests(unittest.TestCase):
+class CleaningFunctionsTests(unittest.TestCase):
 
     def setUp(self):
-
         self.in_array = []
         self.nams = []
         input_ali = AlignIO.read(open("./tests/test_files/example1.fasta"), "fasta")
@@ -39,8 +38,7 @@ class cleaningFunctionsTests(unittest.TestCase):
             [0.6, 0.1, "./tests/test_files/example1.fasta", ],
             [0.05, 0.05, "./tests/test_files/example1.fasta", ],
     ])
-    def test_cropEnds(self, mingap, redefine_perc, expected):
-
+    def testCropEnds(self, mingap, redefine_perc, expected):
         exp_array = []
         expected_ali = AlignIO.read(open(expected), "fasta")
         exp_array = np.array([list(rec) for rec in expected_ali])
@@ -59,8 +57,7 @@ class cleaningFunctionsTests(unittest.TestCase):
             [20, 100, 5, "./tests/test_files/example1.fasta", ],
             [3, 100, 30, "./tests/test_files/example1.fasta", ],
     ])
-    def test_removeInsertions(self, min_size, max_size, min_flank, expected):
-
+    def testRemoveInsertions(self, min_size, max_size, min_flank, expected):
         exp_array = []
         expected_ali = AlignIO.read(open(expected), "fasta")
         exp_array = np.array([list(rec) for rec in expected_ali])
@@ -78,8 +75,7 @@ class cleaningFunctionsTests(unittest.TestCase):
             [0.75, "./tests/test_files/remove_divergent_cleaned.fasta", ],
             [0.1,  "./tests/test_files/example1.fasta", ],
     ])
-    def test_removeDivergent(self, percidentity, expected):
-
+    def testRemoveDivergent(self, percidentity, expected):
         exp_array = []
         expected_ali = AlignIO.read(open(expected), "fasta")
         exp_array = np.array([list(rec) for rec in expected_ali])
@@ -98,8 +94,7 @@ class cleaningFunctionsTests(unittest.TestCase):
             [50, "./tests/test_files/remove_short_cleaned.fasta", ],
             [10,  "./tests/test_files/example1.fasta", ],
     ])
-    def test_removeShort(self, min_length, expected):
-
+    def testRemoveShort(self, min_length, expected):
         exp_array = []
         expected_ali = AlignIO.read(open(expected), "fasta")
         exp_array = np.array([list(rec) for rec in expected_ali])
@@ -112,8 +107,7 @@ class cleaningFunctionsTests(unittest.TestCase):
         self.assertTrue((result_ali == exp_array).all())
         self.assertGreaterEqual(len(self.in_array), len(result_ali))
 
-    def test_removeGapOnly(self):
-
+    def testRemoveGapOnly(self):
         expected = "./tests/test_files/remove_gaponly_cleaned.fasta"
         exp_array = []
         expected_ali = AlignIO.read(open(expected), "fasta")

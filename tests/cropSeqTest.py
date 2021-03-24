@@ -16,21 +16,22 @@ import CIAlign
 
 import CIAlign.cropSeq as cropSeq
 
-class cropSeqsTests(unittest.TestCase):
+class CropSeqsTests(unittest.TestCase):
 
 
     @parameterized.expand([
             [0.05, 0.1, '--UC----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 8, 42],
             [0.05, 0.1, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 6, 47],
             [0.05, 0.2, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
-            # [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
+            [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 36],
     ])
-    def test_determineStartEnd(self, mingap, redefine_perc, input, expected_start, expected_end):
-
+    def testDetermineStartEnd(self, mingap_perc, redefine_perc, input, expected_start, expected_end):
         seq = []
         seq.append([s for s in input])
         input = np.array(seq[0])
-        start, end = cropSeq.determineStartEnd(input, mingap, redefine_perc)
+        logger = logging.getLogger('path.to.module.under.test')
+        with mock.patch.object(logger, 'debug') as mock_debug:
+            start, end = cropSeq.determineStartEnd(input, "test_name", logger, mingap_perc, redefine_perc)
 
         self.assertEqual(start, expected_start)
         self.assertEqual(end, expected_end)
@@ -39,19 +40,16 @@ class cropSeqsTests(unittest.TestCase):
             [0.05, 0.1, '--UC----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 8, 13],
             [0.05, 0.1, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 6, 13],
             [0.05, 0.2, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 13],
-            # [0.01, 0.2, '--UC--AA-----UCUCUCUCGGGAGAGGCGUAUUCGAUCGAUCGAUCGUACGAUCGUACGAUGCUCGUGUGUGAAAAAA----AAAUUUU------------A', 13],
-            [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
+            [0.01, 0.2, '--UC--AA-----UCUCUCUCGGGAGAGGCGUAUUCGAUCGAUCGAUCGUACGAUCGUACGAUGCUCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 24],
+            [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 24],
     ])
-    def test_findValue(self, mingap_perc, redefine_perc, input, expected_value, expected_reverse_value):
-
+    def testFindValue(self, mingap_perc, redefine_perc, input, expected_value, expected_reverse_value):
         seq = []
         seq.append([s for s in input])
         input = np.array(seq[0])
         reverse = input[::-1]
-        print(input)
         value = cropSeq.findValue(input, mingap_perc, redefine_perc)
         reverseValue = cropSeq.findValue(reverse, mingap_perc, redefine_perc)
-        print(value)
 
         self.assertEqual(value, expected_value)
         self.assertEqual(reverseValue, expected_reverse_value)
@@ -61,8 +59,7 @@ class cropSeqsTests(unittest.TestCase):
             ['UCUC--UCUCUCGCG---UGUGUGAAAAAAAAAUUUUA---', '0,0,0,0,2,2,2,2,2,2,2,2,2,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5'],
             ['--UC----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', '2,2,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,10,10,10,10,10,10,10,22'],
     ])
-    def test_countGaps(self, input, expected_gaps):
-
+    def testCountGaps(self, input, expected_gaps):
         seq = []
         seq.append([s for s in input])
         input = np.array(seq[0])

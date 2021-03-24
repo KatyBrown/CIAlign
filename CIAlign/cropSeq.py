@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 
-def determineStartEnd(sequence, mingap_perc=0.05, redefine_perc=0.1):
+def determineStartEnd(sequence, name, log, mingap_perc=0.05, redefine_perc=0.1):
     '''
     Determines the start and the end of a sequence by calling a subroutine
 
@@ -9,6 +9,12 @@ def determineStartEnd(sequence, mingap_perc=0.05, redefine_perc=0.1):
     ----------
     sequence: np.array
         sequence
+
+    name: string
+        name of the sequence
+
+    log: logging.Logger
+        An open log file object
 
     mingap_perc: float
         proportion of the sequence length (excluding gaps) that is the
@@ -33,6 +39,14 @@ def determineStartEnd(sequence, mingap_perc=0.05, redefine_perc=0.1):
 
     start = 0
     end = 0
+    gaps = countGaps(sequence)
+    # make sure the mingap is not lower than 2, and if it is give a warning
+    mingap = int(mingap_perc*len(gaps))
+    # print("mingap:", mingap)
+    if mingap < 2 and len(gaps) > 20:
+        log.warning("Given the length of sequence %s, the mingap_perc threshold is too low and the change in gap numbers was replaced by 2." % name)
+        print("Given the length of sequence %s, the mingap_perc threshold is too low and the change in gap numbers was replaced by 2.\n" % name)
+
     start = findValue(sequence, mingap_perc, redefine_perc)
     # put in reverse for end
     end = len(sequence) - findValue(sequence[::-1], mingap_perc, redefine_perc)
@@ -50,6 +64,12 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
     ----------
     sequence: numpy array
         sequence
+
+    name: string
+        name of the sequence
+
+    log: logging.Logger
+        An open log file object
 
     mingap_perc: float
         proportion of the sequence length (excluding gaps) that is the
@@ -71,7 +91,6 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
     position = 0
 
     gaps = countGaps(sequence)
-    print(gaps)
 
     seq_length = len(gaps)
     boundary1 = int(0.1*seq_length)
@@ -80,7 +99,9 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
     boundary3 = int(0.01*seq_length)
     # the threshold for the change in gap numbers
     mingap = int(mingap_perc*seq_length)
-    print("mingap: ", mingap)
+    # make sure mingap is not lower than 2 and if it is, set it to 2
+    if mingap < 2:
+        mingap = 2
 
     # for very short sequences it is not desirable to redefine
     if seq_length < 21:
