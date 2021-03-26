@@ -17,18 +17,12 @@ import pandas as pd
 import CIAlign
 
 from CIAlign.similarityMatrix import calculateSimilarityMatrix
+from tests.helperFunctions import readMSA
 
 class SimMatrixTests(unittest.TestCase):
 
     def setUp(self):
-        self.in_array = []
-        self.nams = []
-        input_ali = AlignIO.read(open("./tests/test_files/remove_gaponly_cleaned.fasta"), "fasta")
-        for record in input_ali:
-            self.in_array.append(record.seq)
-            self.nams.append(record.id)
-        self.in_array = np.array(self.in_array)
-
+        self.in_array, self.nams = readMSA("./tests/test_files/remove_gaponly_cleaned.fasta")
 
     def tearDown(self):
         pass

@@ -13,22 +13,15 @@ import os
 from os import path
 
 import CIAlign
-
 import CIAlign.parsingFunctions as parsingFunctions
+from tests.helperFunctions import readMSA
 
 class CleaningFunctionsTests(unittest.TestCase):
 
     def setUp(self):
-        self.in_array = []
-        self.nams = []
-        input_ali = AlignIO.read(open("./tests/test_files/example1.fasta"), "fasta")
-        for record in input_ali:
-            self.in_array.append(record.seq)
-            self.nams.append(record.id)
-        self.in_array = np.array(self.in_array)
+        self.in_array, self.nams = readMSA("./tests/test_files/example1.fasta")
         self.relativePositions = list(range(0, len(self.in_array[0])))
         self.rm_file = 'mock_rmfile.txt'
-
 
     def tearDown(self):
         os.remove(self.rm_file)
@@ -39,10 +32,7 @@ class CleaningFunctionsTests(unittest.TestCase):
             [0.05, 0.05, "./tests/test_files/example1.fasta", ],
     ])
     def testCropEnds(self, mingap, redefine_perc, expected):
-        exp_array = []
-        expected_ali = AlignIO.read(open(expected), "fasta")
-        exp_array = np.array([list(rec) for rec in expected_ali])
-        exp_array = np.array(exp_array)
+        exp_array, names = readMSA(expected)
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
@@ -58,10 +48,7 @@ class CleaningFunctionsTests(unittest.TestCase):
             [3, 100, 30, "./tests/test_files/example1.fasta", ],
     ])
     def testRemoveInsertions(self, min_size, max_size, min_flank, expected):
-        exp_array = []
-        expected_ali = AlignIO.read(open(expected), "fasta")
-        exp_array = np.array([list(rec) for rec in expected_ali])
-        exp_array = np.array(exp_array)
+        exp_array, names = readMSA(expected)
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
@@ -76,10 +63,7 @@ class CleaningFunctionsTests(unittest.TestCase):
             [0.1,  "./tests/test_files/example1.fasta", ],
     ])
     def testRemoveDivergent(self, percidentity, expected):
-        exp_array = []
-        expected_ali = AlignIO.read(open(expected), "fasta")
-        exp_array = np.array([list(rec) for rec in expected_ali])
-        exp_array = np.array(exp_array)
+        exp_array, names = readMSA(expected)
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
@@ -95,10 +79,7 @@ class CleaningFunctionsTests(unittest.TestCase):
             [10,  "./tests/test_files/example1.fasta", ],
     ])
     def testRemoveShort(self, min_length, expected):
-        exp_array = []
-        expected_ali = AlignIO.read(open(expected), "fasta")
-        exp_array = np.array([list(rec) for rec in expected_ali])
-        exp_array = np.array(exp_array)
+        exp_array, names = readMSA(expected)
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
@@ -109,10 +90,7 @@ class CleaningFunctionsTests(unittest.TestCase):
 
     def testRemoveGapOnly(self):
         expected = "./tests/test_files/remove_gaponly_cleaned.fasta"
-        exp_array = []
-        expected_ali = AlignIO.read(open(expected), "fasta")
-        exp_array = np.array([list(rec) for rec in expected_ali])
-        exp_array = np.array(exp_array)
+        exp_array, names = readMSA(expected)
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:

@@ -15,6 +15,7 @@ from os import path
 import CIAlign
 
 import CIAlign.utilityFunctions as utilityFunctions
+from tests.helperFunctions import readMSA
 
 
 class UtilityFunctionsgetColoursTests(unittest.TestCase):
@@ -34,15 +35,7 @@ class UtilityFunctionsMSAInputTests(unittest.TestCase):
 
     def setUp(self):
         self.input = "./tests/test_files/example1.fasta"
-
-        self.in_array = []
-        self.nams = []
-        input_ali = AlignIO.read(open(self.input), "fasta")
-        for record in input_ali:
-            self.in_array.append(record.seq)
-            self.nams.append(record.id)
-        self.in_array = np.array(self.in_array)
-
+        self.in_array, self.nams = readMSA(self.input)
 
     def tearDown(self):
         pass
@@ -81,13 +74,7 @@ class UltilityFunctionsWriteOutfileTest(unittest.TestCase):
 
     def setUp(self):
         self.input = "./tests/test_files/example1.fasta"
-        self.in_array = []
-        self.nams = []
-        input_ali = AlignIO.read(open(self.input), "fasta")
-        for record in input_ali:
-            self.in_array.append(record.seq)
-            self.nams.append(record.id)
-        self.in_array = np.array(self.in_array)
+        self.in_array, self.nams = readMSA(self.input)
         self.removed = set()
         self.outfile = "writeOutfile_test.txt"
 
@@ -110,11 +97,7 @@ class UtilityFunctionsCheckSeqTest(unittest.TestCase):
             ['./tests/test_files/uORF_aa.fasta', "aa"],
     ])
     def testSeqType(self, input, expected):
-        in_array = []
-        input_ali = AlignIO.read(open(input), "fasta")
-        for record in input_ali:
-            in_array.append(record.seq)
-        in_array = np.array(in_array)
+        in_array, names = readMSA(input)
 
         type = utilityFunctions.seqType(in_array)
 
