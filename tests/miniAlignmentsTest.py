@@ -40,26 +40,35 @@ class MiniAlignmentsTests(unittest.TestCase):
 
         self.assertTrue((arr_int == arr_expected).all())
 
-    def testDrawMarkUp(self):
+class DrawMarkUpLegendTest(unittest.TestCase):
 
-        self.assertEqual(0, 0)
+    def setUp(self):
+        self.dest = './tests/test_files/legend'
+        self.result = './tests/test_files/legend_legend.png'
+
+    def tearDown(self):
+        os.remove(self.result)
 
     def testDrawMarkUpLegend(self):
+        miniAlignments.drawMarkUpLegend(self.dest)
 
-        self.assertEqual(0, 0)
+        self.assertTrue(os.path.isfile(self.result))
 
 class MiniAlignmentsDrawTest(unittest.TestCase):
 
     def setUp(self):
-        self.dest = "./tests/test_files/test_mini.png"
-        self.alignment, self.names = readMSA("./tests/test_files/example1.fasta")
+        pass
 
     def tearDown(self):
-        os.remove("./tests/test_files/test_mini_legend.png")
+        if os.path.isfile(self.legend):
+            os.remove(self.legend)
         os.remove(self.dest)
 
-    def testDrawMiniAlignment(self):
-        expected = image.imread('./tests/test_files/expected_mini_ali.png')
+    def testDrawMiniAlignmentMarkUp(self):
+        self.alignment, self.names = readMSA("./tests/test_files/example1.fasta")
+        self.dest = "./tests/test_files/test_mini_markup.png"
+        self.legend = "./tests/test_files/test_mini_markup_legend.png"
+        expected = image.imread('./tests/test_files/expected_mini_ali_markup.png')
         markup_dict = {'remove_divergent': {'Seq1'},
                         'remove_gaponly': {89, 90, 91, 92, 93, 94, 95},
                         'remove_insertions': {22, 23, 24, 25, 26, 27},
@@ -76,8 +85,60 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
 
         self.assertTrue((mini_alignment == expected).all())
 
+    @parameterized.expand([
+            ['./tests/test_files/example1.fasta', './tests/test_files/expected_mini_ali.png', 'nt'],
+            ['./tests/test_files/example2.fasta', './tests/test_files/expected_mini_ali_aa.png', 'aa'],
+    ])
+    def testDrawMiniAlignment(self, input, expected, type):
+        self.alignment, self.names = readMSA(input)
+        self.dest = "./tests/test_files/test_mini.png"
+        self.legend = ""
+        expected = image.imread(expected)
 
-# https://www.pluralsight.com/guides/importing-image-data-into-numpy-arrays
-# i think PIL can load images from a flat file and convert to np array
-# and then numpy.array_equal to check they are the same
-# we already depend on PIL because matplotlib needs it
+        logger = logging.getLogger('path.to.module.under.test')
+        with mock.patch.object(logger, 'debug') as mock_debug:
+            miniAlignments.drawMiniAlignment(self.alignment, self.names, logger, self.dest,
+                                                                type, 300, None, 5, 3,
+                                                                False, None, False)
+
+        mini_alignment = image.imread(self.dest)
+
+        self.assertTrue((mini_alignment == expected).all())
+
+class DrawMarkUpTest(unittest.TestCase):
+
+    def setUp(self):
+        self.dest = "./tests/test_files/test_mini.png"
+        self.alignment, self.names = readMSA("./tests/test_files/example1.fasta")
+        self.ali_width = len(self.alignment[0])
+        self.ali_height = len(self.alignment)
+        self.markup_dict = {'remove_divergent': {'Seq1'},
+                        'remove_gaponly': {89, 90, 91, 92, 93, 94, 95},
+                        'remove_insertions': {22, 23, 24, 25, 26, 27},
+                        'crop_ends': {'Seq5': ((np.array([]), np.array([92, 93, 94, 95])))},
+                        'remove_short': {'Seq6'}}
+        logger = logging.getLogger('path.to.module.under.test')
+        with mock.patch.object(logger, 'debug') as mock_debug:
+            # make mini plot without markup
+            self.mini_plot = miniAlignments.drawMiniAlignment(self.alignment, self.names, logger, self.dest,
+                                                                'nt', 300, None, 5, 3,
+                                                                False, None, True)
+            # make mini plot with markup
+            self.mini_plot_expected = miniAlignments.drawMiniAlignment(self.alignment, self.names, logger, self.dest,
+                                                                'nt', 300, None, 5, 3,
+                                                                True, self.markup_dict, True)
+
+    def tearDown(self):
+        if os.path.isfile("./tests/test_files/test_mini_legend.png"):
+            os.remove("./tests/test_files/test_mini_legend.png")
+
+    def testDrawMarkUp(self):
+        # add markup to mini plot
+        miniAlignments.drawMarkUp(self.mini_plot.axes[0], self.markup_dict, self.names, self.ali_width, self.ali_height)
+        # convert plots to numpy arrays to compare
+        self.mini_plot.canvas.draw()
+        self.mini_plot_expected.canvas.draw()
+        data = np.frombuffer(self.mini_plot.canvas.tostring_rgb(), dtype=np.uint8)
+        data2 = np.frombuffer(self.mini_plot_expected.canvas.tostring_rgb(), dtype=np.uint8)
+
+        self.assertTrue((data == data2).all())

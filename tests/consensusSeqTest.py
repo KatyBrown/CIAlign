@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 
 import CIAlign
 import CIAlign.consensusSeq as consensusSeq
-from tests.helperFunction import readMSA
+from tests.helperFunctions import readMSA
 
 class ConsensusSeqTests(unittest.TestCase):
 

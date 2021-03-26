@@ -96,8 +96,7 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
 
     Returns
     -------
-    a: matplotlib.pyplot.subplot
-        An open subplot containing the marked up mini alignment
+
     '''
     # removes single positions
     if "crop_ends" in markupdict:
