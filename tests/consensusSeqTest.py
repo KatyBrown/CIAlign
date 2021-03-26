@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 
 import CIAlign
 import CIAlign.consensusSeq as consensusSeq
+from tests.helperFunction import readMSA
 
 class ConsensusSeqTests(unittest.TestCase):
 
@@ -191,17 +192,3 @@ class ConsensusSeqCoverageSequenceLogoBarTest(unittest.TestCase):
         alignment, names = readMSA("./tests/test_files/consensus_example_aa.fasta")
         consensusSeq.sequence_bar_logo(alignment, self.dest, 'aa')
         self.assertTrue(os.path.isfile(self.dest))
-
-# helper function to read MSA from file into np array
-def readMSA(input):
-    in_array = []
-    names = []
-    input_handle = open(input, 'r')
-    input_ali = AlignIO.read(input_handle, "fasta")
-    for record in input_ali:
-        in_array.append(record.seq)
-        names.append(record.id)
-    in_array = np.array(in_array)
-    input_handle.close()
-
-    return in_array, names
