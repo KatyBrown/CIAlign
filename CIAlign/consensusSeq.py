@@ -303,7 +303,7 @@ def sequence_logo(alignment,
     '''
     Creates a sequence logo based on an entropy calculation using letters
     Scales the letters according to the information content of the alignment
-    Representations the consensus sequence of the alignment
+    Representation of the consensus sequence of the alignment
 
     Parameters
     ----------
@@ -403,7 +403,7 @@ def sequence_bar_logo(alignment,
     '''
     Creates a sequence logo based on an entropy calculation using bars
     Scales the bars according to the information content of the alignment
-    Representations the consensus sequence of the alignment
+    Representation of the consensus sequence of the alignment
 
     Parameters
     ----------
@@ -502,7 +502,7 @@ def calc_entropy(count, seq_count, typ):
     '''
     Creates a sequence logo based on an entropy calculation using bars
     Scales the bars according to the information content of the alignment
-    Representations the consensus sequence of the alignment
+    Representation of the consensus sequence of the alignment
 
     Parameters
     ----------

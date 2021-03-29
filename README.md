@@ -86,7 +86,7 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.75 |
 | **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 |
-| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 100 |
+| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 200 |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
 | *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 |
@@ -94,6 +94,8 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 | **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False |
 | *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | 50 |
 | **`--keep_gaponly`** | Keep gap only columns in the alignment | True |
+
+Note: if the sequences are short (e.g. < 100), a low crop_ends_mingap_perc (e.g. 0.01) will result in a change of gap numbers that is too low (e.g. 0). If this happens, the change in gap numbers will be set to 2 and a warning will be printed.
 
 ## Generating a Consensus Sequence
 This step generates a consensus sequence based on the cleaned alignment.  If no cleaning functions are performed, the consensus will be based on the input alignment.
