@@ -7,6 +7,7 @@ import numpy as np
 import copy
 import itertools
 import sys
+import ete3
 # temporary until I sort out my $PATH
 sys.path.insert(0, "/home/katy/CIAlign/CIAlign")
 import utilityFunctions
@@ -114,6 +115,7 @@ def find_removed_cialign(removed_file, arr, nams):
     for line in lines:
         func = line[0]
         ids = line[-1].split(",")
+        ids = [id.upper() for id in ids]
         # for crop_ends and remove_insertions columns are removed so keep
         # track of column numbers as integers
         if func in ['crop_ends', 'remove_insertions']:
@@ -121,7 +123,7 @@ def find_removed_cialign(removed_file, arr, nams):
         # crop_ends is only applied to some sequences so also
         # keep track of sequence names
         if func == "crop_ends":
-            nam = line[1]
+            nam = line[1].upper()
             D[nam] = D[nam] | set(ids)
         # no need to remove insertions from sequences which were removed
         # completely later
@@ -137,7 +139,7 @@ def find_removed_cialign(removed_file, arr, nams):
     # make copies of the arrays (because I'm never quite sure when
     # python makes links rather than copies)
     cleannams = copy.copy(nams)
-    cleannams = np.array(cleannams)
+    cleannams = np.array([x.upper() for x in cleannams])
     cleanarr = copy.copy(arr)
 
     # iterate through everything that has been changed
@@ -145,10 +147,16 @@ def find_removed_cialign(removed_file, arr, nams):
         which_nam = np.where(cleannams == nam)[0][0]
         # remove the removed sequences from the array
         if val == "removed":
+            # keep track of the number of removed positions
             removed_count_total += len(cleanarr[which_nam])
+            # keep track of the number of removed residues
             removed_count_nongap += sum(cleanarr[which_nam] != "-")
+
+            # only keep names of sequences which are not removed
             cleannams = np.append(cleannams[:which_nam],
                                   cleannams[which_nam + 1:])
+
+            # only keep the sequences which are not removed
             cleanarr = np.vstack([cleanarr[:which_nam],
                                   cleanarr[which_nam+1:]])
             # remove them from the input temporarily just to keep the shapes
@@ -161,12 +169,11 @@ def find_removed_cialign(removed_file, arr, nams):
                 cleanarr[which_nam, which_pos] = "!"
 
     removed_count_total += np.sum(cleanarr == "!")
+
     # sometimes gaps are removed - make these gaps in the output rather than
     # !s
-
+    cleanarr[arr == "-"] = "-"
     removed_count_nongap += np.sum(cleanarr == "!")
-    count_nongap = np.sum(cleanarr != "-")
-    
     return (cleanarr, cleannams, removed_count_total, removed_count_nongap)
 
 
@@ -214,6 +221,7 @@ def get_POARS(arr, nams):
     POARS_2 = []
     POAR_nams_1 = []
     POAR_nams_2 = []
+    POARS = set()
     # take every rowise combination of sequences in the alignment
     for i, j in itertools.combinations(np.arange(nrows), 2):
         # find the sequence names
@@ -241,7 +249,7 @@ def sum_of_pairs_overlap_score(POARS_benchmark, POARS_test):
     The sum of pairs score is calculated as the number of POARs present in
     both alignments divided by the number of POARs in the reference alignment.
 
-    The overlap score is simular but is the number of POARS present in
+    The overlap score is similar but is the number of POARS present in
     both alignments divided by the mean number of POARS in the two alignmnents.
 
     Sum of pairs score requires on alignment to be the reference and shows
@@ -286,7 +294,7 @@ def sum_of_pairs_overlap_score(POARS_benchmark, POARS_test):
     return (sum_of_pairs_score, overlap_score)
 
 
-def column_score(pos_benchmark, pos_test):
+def column_score(pos_benchmark, pos_benchmark_cs, pos_test):
     '''
     Calculates the column score described in Thompson et al. 1999
     (DOI: 10.1093/nar/27.13.2682) to
@@ -331,12 +339,21 @@ def column_score(pos_benchmark, pos_test):
 
     2-0, 4-3 and 5-4 are in both so the score would be 3/5
 
+    The column_score_cs calculation is identical but it's based on an array
+    where rows excluded by CIAlign are also excluded from the benchmark (so
+    that non-zero column scores can be calculated for alignments with excluded
+    rows)
     Parameters
     ----------
     pos_benchmark: np.array
         Numpy array of integers showing the cumulative number of non-gap
         residues prior to the residue at this position in the sequence
         for the benchmark alignment (or the first for overlap score)
+    pos_benchmark_cs: np.array
+        Numpy array of integers showing the cumulative number of non-gap
+        residues prior to the residue at this position in the sequence
+        for the benchmark alignment, excluding rows not present in the
+        pos_test array
     pos_test: np.array
         Numpy array of integers showing the cumulative number of non-gap
         residues prior to the residue at this position in the sequence
@@ -352,21 +369,27 @@ def column_score(pos_benchmark, pos_test):
     '''
     # don't count columns which are all zeroes
     pos_benchmark = pos_benchmark[:, pos_benchmark.sum(0) != 0]
+    # version excluding CIAlign excluded rows
+    pos_benchmark_cs = pos_benchmark_cs[:, pos_benchmark_cs.sum(0) != 0]
     pos_test = pos_test[:, pos_test.sum(0) != 0]
 
     # make a set of strings where each string represents a column in the
     # benchmark
     S_orig = ["_".join(x) for x in pos_benchmark.astype(str).T]
 
+    S_orig_cs = ["_".join(x) for x in pos_benchmark_cs.astype(str).T]
     # make a set of strings where each string represents a column in the
     # test
     S_new = ["_".join(x) for x in pos_test.astype(str).T]
 
     S_orig = set(S_orig)
+    S_orig_cs = set(S_orig_cs)
     S_new = set(S_new)
+
     # calculate the column score
     column_score = len(S_new & S_orig) / np.shape(pos_benchmark)[1]
-    return (column_score)
+    column_score_cs = len(S_new & S_orig_cs) / np.shape(pos_benchmark)[1]
+    return (column_score, column_score_cs)
 
 
 def format_alignment(ali, cleaned=False, cialign_removed=None):
@@ -461,39 +484,74 @@ def calculate_alignment_scores(arr_1, arr_2, nams_1, nams_2):
         The column score for the alignment - the number of columns present
         in both the benchmark and the test divided by the number of columns
         in the benchmark
+
+    column_score_cs: float
+        The column score for the alignment - the number of columns present
+        in both the benchmark and the test divided by the number of columns
+        in the benchmark - where only rows present in both arrays are
+        considered
+
+    POARS_1: set
+        Set of strings representing all the pairs of aligned residues in the
+        array as w_x_y_z where w is the name of sequence 1, x the name of
+        sequence 2, y the index of the residue in sequence 1, z the
+        index of the residue in sequence 2, for arr_1
+
+    POARS_2: set
+        Set of strings representing all the pairs of aligned residues in the
+        array as w_x_y_z where w is the name of sequence 1, x the name of
+        sequence 2, y the index of the residue in sequence 1, z the
+        index of the residue in sequence 2, for arr_2
+
     '''
     POARS_1 = get_POARS(arr_1, nams_1)
     POARS_2 = get_POARS(arr_2, nams_2)
-    this_column_score = column_score(arr_1, arr_2)
+    cs_arr_1 = arr_1[np.isin(np.array(nams_1), np.array(nams_2)), :]
+
+    this_column_score, this_column_score_cs = column_score(arr_1,
+                                                           cs_arr_1,
+                                                           arr_2)
     this_sum_of_pairs, this_overlap = sum_of_pairs_overlap_score(POARS_1,
                                                                  POARS_2)
-    return (this_column_score, this_sum_of_pairs, this_overlap, POARS_1,
-            POARS_2)
+    return (this_column_score, this_column_score_cs,
+            this_sum_of_pairs, this_overlap, POARS_1, POARS_2)
 
 
-def alignmentConsistency(alignments, all_nams):
-    poarD = dict()
-    all_poars = set()
-    for i, alignment in enumerate(alignments):
-        nams = all_nams[i]
-        POARs = get_POARS(alignment, nams)
-        poarD[i] = POARs
-        all_poars = all_poars | POARs
-    POAR_consistency = dict()
-    max_score = 0
-    for poar in all_poars:
-        x = 0
-        for poarset in poarD.values():
-            if poar in poarset:
-                x += 1
-        POAR_consistency[poar] = x - 1
-        if (x - 1) > max_score:
-            max_score = (x - 1)
-    alignment_scores = []
-    for i, alignment in enumerate(alignments):
-        score = 0
-        for poar in poarD[i]:
-            score += POAR_consistency[poar]
-        alignment_score = score / max_score
-        alignment_scores[i] = alignment_score
-    return (alignment_scores)
+def good_POARS(benchmark_POARS, test_POARS, cialign_POARS):
+    '''
+    Calculates the proportion of pairs of aligned residues (POARS) which
+    are shared between the benchmark alignment and a test alignment,
+    then the proportion of these which are also present in the CIAlign
+    cleaned alignment - i.e. the proportion of correct POARS in the test
+    alignment which CIAlign has not removed
+
+    Parameters
+    ----------
+    benchmark_POARS: set
+        Set of strings representing all the pairs of aligned residues in the
+        array as w_x_y_z where w is the name of sequence 1, x the name of
+        sequence 2, y the index of the residue in sequence 1, z the
+        index of the residue in sequence 2, for the benchmark alignment.
+
+    test_POARS: set
+        Set of strings representing all the pairs of aligned residues in the
+        array as w_x_y_z where w is the name of sequence 1, x the name of
+        sequence 2, y the index of the residue in sequence 1, z the
+        index of the residue in sequence 2, for the test alignment.
+
+    cialign_POARS: set
+        Set of strings representing all the pairs of aligned residues in the
+        array as w_x_y_z where w is the name of sequence 1, x the name of
+        sequence 2, y the index of the residue in sequence 1, z the
+        index of the residue in sequence 2, for the CIAlign cleaned alignment.
+
+    Returns
+    -------
+    prop_good: float
+        The proportion of POARS which are in the test, cialign and benchmark
+        alignments divided by the proportion which are in the
+        test and benchmark alignments
+    '''
+    good_POARS = benchmark_POARS & test_POARS
+    prop_good = len(good_POARS & cialign_POARS) / len(good_POARS)
+    return (prop_good)
