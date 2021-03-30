@@ -78,7 +78,7 @@ def main():
                        which the most common base / amino acid in the \
                        alignment is present. Default: %(default)s")
     optional.add("--remove_divergent_minperc", dest="remove_divergent_minperc",
-                 type=float, default=0.75,
+                 type=float, default=0.65,
                  help="Minimum proportion of positions which should be \
                        identical to the most common base / amino acid in \
                        order to be preserved. Default: %(default)s")
