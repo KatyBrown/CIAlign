@@ -1,15 +1,15 @@
-# Full output tables for benchmarking analysis with simulated data and for using CIAlign with biological data. Column headings are described at the top of each file. Reference numbers within files correspond to numbering in the CIAlign manuscript.
+### Full output tables for benchmarking analysis with simulated data and for using CIAlign with biological data. Column headings are described at the top of each file. Reference numbers within files correspond to numbering in the CIAlign manuscript.
 
-## Supplementary Table 1
+### Supplementary Table 1
 Table showing the results of 100 simulations using each of EvolvAGene [1] and INDELible [2] and cleaning with CIAlign with relaxed, moderate and stringent settings. Column headings are described at the top of the file.
 
-## Supplementary Table 2
+### Supplementary Table 2
 Table showing the comparison of consensus sequences generated from alignments of  the results of 100 simulations each of good quality, medium quality and poor quality Oxford Nanopore reads using BadRead [3] with the original input sequence. Column headings are described at the top of the file.
 
-## Supplementary Table 3
+### Supplementary Table 3
 Table showing the results of cleaning Pfam seed and full alignments [4] using CIAlign. Column headings are described at the top of the file.
 
-## Supplementary Table 4
+### Supplementary Table 4
 Table showing the results of cleaning FASTA files containing indels from the 1000 genomes project [5] using CIAlign. Column headings are described at the top of the file.
 
 ## References
