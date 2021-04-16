@@ -153,6 +153,13 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                                                      ali_height,
                                                      color=colour,
                                                      zorder=46, lw=0))
+    # removes whole columns
+    if "crop_divergent" in markupdict:
+        colour = "#127349"
+        for col in markupdict['crop_divergent']:
+            a.add_patch(matplotlib.patches.Rectangle(
+                    (col-0.5, -0.5), 1, ali_height, color=colour, zorder=48,
+                    lw=0))
 
 
 def drawMarkUpLegend(outfile):
