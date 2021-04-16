@@ -12,6 +12,7 @@ try:
     import CIAlign.miniAlignments as miniAlignments
     import CIAlign.similarityMatrix as similarityMatrix
     import CIAlign.consensusSeq as consensusSeq
+    import CIAlign.TEfunctions as TEfunctions
     from CIAlign._version import __version__
 except ImportError:
     import utilityFunctions
@@ -19,6 +20,7 @@ except ImportError:
     import miniAlignments
     import similarityMatrix
     import consensusSeq
+    import TEfunctions
     from _version import __version__
 
 
@@ -49,6 +51,11 @@ def main():
                  action="store_true",
                  help="Use all available functions with default parameters.")
 
+    # parameter to run all functions plus TE_functions 
+    optional.add("--all_TE", dest="all_options_TE",
+                 action="store_true",
+                 help="""Use all available functions including TE functions
+                 with default parameters.""")
     # Runtime
     optional.add("--silent", dest='silent',
                  help="Do not print progress to the screen. \
@@ -116,6 +123,42 @@ def main():
                  action="store_false",
                  help="Keep gap only columns in the alignment. Default: \
                        %(default)s")
+                       
+    # TEs
+    # Crop Divergent
+    optional.add("--crop_divergent_left", dest="cd_left",
+                 action="store_true",
+                 help="""Crop divergent columns from the left side of the
+                 alignment Default: %(default)s""")
+    optional.add("--crop_divergent_right", dest="cd_right",
+                 action="store_true",
+                 help="""Crop divergent columns from the right side of the
+                 alignment Default: %(default)s""")
+    optional.add("--crop_divergent_both", dest="cd_both",
+                 action="store_true",
+                 help="""Crop divergent columns from both sides of the
+                 alignment. Default: %(default)s""")
+    optional.add("--crop_divergent_min_prop_ident",
+                 dest="cd_min_prop_ident",
+                 type=float, default=0.5,
+                 help="""Minimum proportion of sequences which should have
+                 the same residue in each column to define start and
+                 end for cropping divergent columns.
+                 Default: %(default)s")""")
+    optional.add("--crop_divergent_min_prop_nongap",
+                 dest="cd_min_prop_nongap",
+                 type=float, default=0.5,
+                 help="""Minimum proportion of sequences in a column which
+                 should be non-gaps to define start and end for cropping
+                 divergent columns.
+                 Default: %(default)s""")
+    optional.add("--crop_divergent_buffer",
+                 dest="cd_buffer",
+                 type=float, default=10,
+                 help="""Minimum proportion of sequences in a column which
+                 should be non-gaps to define start and end for cropping
+                 divergent columns.
+                 Default: %(default)s""")
 
     # Consensus
     optional.add("--make_consensus", dest="make_consensus",
@@ -286,6 +329,10 @@ def main():
                  help='Show the current version.')
 
     args = parser.parse_args()
+
+    # If all_options_TE is selected, also run all non TE functions
+    if args.all_options_TE:
+        args.all_options = True
 
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
@@ -522,6 +569,34 @@ def main():
             markupdict['remove_gaponly'].update(r)
         else:
             markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
+        utilityFunctions.checkArrLength(arr, log)
+
+
+    if args.cd_left or args.cd_both or args.all_options_TE:
+        cd_start = True
+    if args.cd_right or args.cd_both or args.all_options_TE:
+        cd_end = True
+
+    if (args.cd_left or args.cd_right or
+        args.cd_both) or args.all_options_TE:
+        log.info("Cropping divergent columns")
+        if not args.silent:
+            print("Cropping divergent columns")
+        A = TEfunctions.cropDivergent(arr,
+                                      relativePositions,
+                                      rmfile,
+                                      log,
+                                      cd_start=cd_start,
+                                      cd_end = cd_end,
+                                      cd_min_prop_ident=\
+                                          args.cd_min_prop_ident,
+                                      cd_min_prop_nongap=\
+                                          args.cd_min_prop_nongap,
+                                      cd_buffer=args.cd_buffer)
+
+        arr, r, relativePositions = A
+        markupdict['crop_divergent'] = r
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
