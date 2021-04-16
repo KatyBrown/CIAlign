@@ -1,20 +1,13 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
+
 import copy
 import numpy as np
 
-
-def flankingMotifs():
-    pass
-
-def clusterTEs():
-    pass
-
-def cropDivergent(arr, min_prop_ident, min_prop_nongap, buffer,
-                  start=True):
+def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
+                     start=True):
     '''
     Find the new start (if start=True) or end (if end=True) postion if
     the alignment is cropped to remove divergent flanking sequences.
-
     Find the index of the leftmost column in the first series of
     consecutive columns of length buffer where the proportion of
     non-gap residues doesn't fall below min_prop_nongap and the
@@ -102,7 +95,3 @@ def cropDivergent(arr, min_prop_ident, min_prop_nongap, buffer,
         return (i - buffer + 1)
     else:
         return (np.shape(arr)[1] - i + buffer - 2)
-
-
-def cropDivergent_byrow():
-    pass
