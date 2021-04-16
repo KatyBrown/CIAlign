@@ -3,8 +3,10 @@ import numpy as np
 import matplotlib
 try:
     import CIAlign.cropSeq as cropSeq
+    import CIAlign.utilityFunctions as utilityFunctions
 except ImportError:
     import cropSeq
+    import utilityFunctions
 matplotlib.use('Agg')
 
 
@@ -178,9 +180,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         the columns removed using this function.
     '''
     log.info("Removing insertions\n")
-    out = open(rmfile, "a")
-    if out.closed:
-        print('file is closed')
+
     # record which sites are not "-"
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
@@ -208,7 +208,6 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     # for the putative indels, check if there are more sequences
     # with a gap at this position (but with sequence on either side)
     # than with no gap (but with sequence on either side)
-    rmpos = set()
     absolutePositions = set()
     i = 0
 
@@ -228,24 +227,9 @@ def removeInsertions(arr, relativePositions, rmfile, log,
             absolutePositions.add(p)
         i += 1
 
-    # make a list of positions to remove
-    rm_relative = set()
-    for n in absolutePositions:
-        rm_relative.add(relativePositions[n])
-    for n in rm_relative:
-        relativePositions.remove(n)
-    # for n in absolutePositions:
-    #     relativePositions.remove(n)
-    rmpos = np.array(list(absolutePositions))
-
-    keeppos = np.arange(0, len(sums))
-    keeppos = np.invert(np.in1d(keeppos, rmpos))
-    if len(rmpos) != 0:
-        rmpos_str = [str(x) for x in rm_relative]
-        log.info("Removing sites %s" % (", ".join(rmpos_str)))
-        out.write("remove_insertions\t%s\n" % (",".join(rmpos_str)))
-    out.close()
-    arr = arr[:, keeppos]
+    arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
+        absolutePositions, relativePositions, arr, log, rmfile,
+        "remove_insertions")
     # return (arr, set(rmpos), relativePositions)
     return (arr, set(rm_relative), relativePositions)
 
@@ -321,27 +305,15 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
         values are removed as columns are removed from the alignment, minus
         the columns removed using this function.
     '''
-    out = open(rmfile, "a")
-    if out.closed:
-        print('file is closed')
+
     if len(arr) != 0:
         sums = sum(arr == "-")
         absolutePositions = set(np.where(sums == len(arr[:, 0]))[0])
-        rmpos = []
-        for n in absolutePositions:
-            rmpos.append(relativePositions[n])
-        # remove deleted columns from relativePositions
-        for n in rmpos:
-            relativePositions.remove(n)
-        rmpos = set(rmpos)
-        arr = arr[:, sums != len(arr[:, 0])]
-        if len(rmpos) != 0:
-            rmpos_str = [str(x) for x in rmpos]
-            log.info("Removing gap only sites %s" % (
-                    ", ".join(rmpos_str)))
-            out.write("remove_gap_only\t%s\n" % (",".join(rmpos_str)))
+        
+        arr, relativePositions, rmpos = utilityFunctions.removeColumns(
+            absolutePositions, relativePositions, arr, log, rmfile,
+            "remove_gaponly")
     else:
         rmpos = set()
 
-    out.close()
     return (arr, rmpos, relativePositions)
