@@ -8,14 +8,11 @@ import copy
 import itertools
 import sys
 import ete3
-# temporary until I sort out my $PATH
-sys.path.insert(0, "/home/katy/CIAlign/CIAlign")
-import utilityFunctions
-# put this back eventually
-# try:
-#    import CIAlign.utilityFunctions as utilityFunctions
-# except ImportError:
-#    import utilityFunctions
+
+try:
+   import CIAlign.utilityFunctions as utilityFunctions
+except ImportError:
+   import utilityFunctions
 
 
 def alignment_to_matrix(arr, nams):
