@@ -3,7 +3,9 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
-
+import warnings
+warnings.filterwarnings('ignore',
+                        message='Glyph 84 missing from current font')
 
 def replaceUbyT(arr):
     '''
