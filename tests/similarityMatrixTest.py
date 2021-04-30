@@ -33,16 +33,16 @@ class SimMatrixTests(unittest.TestCase):
         [2, "./tests/test_files/sim_matrix3_input_similarity.tsv", ],
     ])
     def testSimilarityMatrix(self, keepgaps, expected):
-        exp_matrix = pd.read_csv(expected, sep="\t")
+        dp = 4 # does not effect the return value of function but what is saved
+        # in the output file
+
+        exp_matrix = pd.read_csv(expected, sep="\t").round(dp)
         exp_matrix = np.array(exp_matrix)
         exp_matrix = np.delete(exp_matrix, 0, 1)
-
         minoverlap = 1
         outfile = None
-        dp = 4 # does not effect the return value of function but what is saved in the output file
-
         result_matrix = calculateSimilarityMatrix(self.in_array, self.nams, minoverlap, keepgaps, outfile, dp)
-
+        
         self.assertTrue((np.round(result_matrix, dp) == exp_matrix).all())
         self.assertEqual(len(self.in_array), len(result_matrix))
 
