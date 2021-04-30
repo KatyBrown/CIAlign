@@ -124,7 +124,6 @@ def getPutativeIndels(boolarr, sums, width, puts,
                 # regions
                 left_pos = current_start - 1
                 right_pos = current_end + 1
-                print (left_pos, right_pos)
                 # If the low coverage region isn't at the end of the alignment
                 if left_pos >= 0 and right_pos <= width-1:
     
