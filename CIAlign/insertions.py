@@ -233,9 +233,10 @@ def finalCheck(absolutePositions, min_size, max_size):
     keep : set
         Final set of positions to remove
     '''
+    abso = np.array(sorted(list(absolutePositions)))
     # Find the consecutive positions and split the array at these points
-    diffs = np.where(np.diff(absolutePositions) != 1)[0] + 1
-    splits = np.array(np.split(absolutePositions, diffs), dtype=object)
+    diffs = np.where(np.diff(abso) != 1)[0] + 1
+    splits = np.array(np.split(abso, diffs), dtype=object)
     
     # Filter to keep only the insertions which are within the size limit
     keep = splits[np.array([(len(r) > min_size) &
