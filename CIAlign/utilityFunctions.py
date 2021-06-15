@@ -44,7 +44,7 @@ def unAlign(arr):
     return (arr)
 
 
-def FastaToArray(infile, log, outfile_stem=None):
+def FastaToArray(infile, log=None, outfile_stem=None):
     '''
     Convert an alignment into a numpy array.
 
@@ -82,7 +82,8 @@ def FastaToArray(infile, log, outfile_stem=None):
                 nam = line.replace(">", "")
             else:
                 if len(nams) == 0:
-                    log.error(formatErrorMessage)
+                    if log:
+                        log.error(formatErrorMessage)
                     print(formatErrorMessage)
                     exit()
                 seq += list(line)
