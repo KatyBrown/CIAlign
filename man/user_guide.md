@@ -64,7 +64,7 @@ Command help can be accessed by typing `CIAlign --help`
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| `--infile` | Path to input alignment file in FASTA format | None |
+| `--infile` | Path to input alignment file in FASTA format | None | 
 | `--inifile` | Path to config file | None |
 | `--outfile_stem` | Prefix for output files, including the path to the output directory | CIAlign |
 | `--silent` | Do not print progress to the screen | False |
@@ -86,20 +86,20 @@ Each of these steps will be performed sequentially in the order specified in the
 
 The "cleaned" alignment after all steps have been performed will be saved as **`OUTFILE_STEM_cleaned.fasta`**
 
-| Parameter | Description | Default Value |
-| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False |
-| *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.65 |
-| **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False |
-| *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 |
-| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 200 |
-| *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5
-| **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False |
-| *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 |
-| *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. | 0.1 |
-| **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False |
-| *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | 50 |
-| **`--keep_gaponly`** | Keep gap only columns in the alignment | True |
+| Parameter | Description | Default Value | Minimum | Maximum |
+| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |-----|------|
+| **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False | NA | NA |
+| *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.65 | 0 | 1 | 
+| **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False | NA | NA |
+| *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 | 1 | n_columns | 
+| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 200 | 1 | 1000 | 
+| *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5 | 0 | n_columns/2 | 
+| **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False | NA | NA |
+| *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 | 0 | 0.5 | 
+| *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. |  0.1 | 0 | 0.5 | 
+| **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False | NA | NA |
+| *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | 50 | 0perc_min | n_columns | 
+| **`--keep_gaponly`** | Keep gap only columns in the alignment | False | NA | NA |
 
 Note: if the sequences are short (e.g. < 100), a low crop_ends_mingap_perc (e.g. 0.01) will result in a change of gap numbers that is too low (e.g. 0). If this happens, the change in gap numbers will be set to 2 and a warning will be printed.
 
