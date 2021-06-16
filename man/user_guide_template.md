@@ -86,6 +86,8 @@ Each of these steps will be performed sequentially in the order specified in the
 
 The "cleaned" alignment after all steps have been performed will be saved as **`OUTFILE_STEM_cleaned.fasta`**
 
+remove_divergent, remove_insertions and crop_ends require three or more sequences in the alignment, remove_short and remove_gap_only require two or more sequences.
+
 | Parameter | Description | Default Value | Min | Max |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False | NA | NA |

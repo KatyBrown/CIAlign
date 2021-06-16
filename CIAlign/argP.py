@@ -46,7 +46,7 @@ def float_range(mini, maxi):
     return (float_range_checker)
 
 
-def int_range(mini, maxi, n_columns):
+def int_range(mini, maxi, n_col):
     '''
     Defines a type for argparse of an integer with a fixed range, where
     the maximum value is a function of the number of columns
@@ -58,7 +58,7 @@ def int_range(mini, maxi, n_columns):
         minumum valid value for the parameter.
     
     maxi: str 
-        A string containing a function using n_columns to convert number
+        A string containing a function using n_col to convert number
         of columns to the maximum valid value for the paramter.
     
     Returns
@@ -143,12 +143,12 @@ def getParser():
                                                   tempargs.outfile_stem)
         
         # Find the number of columns in the input alignment
-        n_columns = np.shape(arr)[1]
+        n_col = np.shape(arr)[1]
         # Remove the array from memory
         del arr
     else:
         # Gives a valid int value just for generating the --help text
-        n_columns = 100
+        n_col = 100
     # parameter to run all functions without having to type them in
     optional.add("--all", dest="all_options",
                  action="store_true",
@@ -215,7 +215,7 @@ def getParser():
     optional.add("--insertion_min_size", dest="insertion_min_size",
                  type=int_range(minis['insertion_min_size'],
                                 maxis['insertion_max_size'],
-                                n_columns),
+                                n_col),
                  default=defs['insertion_min_size'],
                  help="Only remove insertions >= this number of residues. \
                        Default: %(default)s.",
@@ -226,7 +226,7 @@ def getParser():
     optional.add("--insertion_max_size", dest="insertion_max_size",
                  type=int_range(minis['insertion_max_size'],
                                 maxis['insertion_max_size'],
-                                n_columns),
+                                n_col),
                  default=defs['insertion_max_size'],
                  help="Only remove insertions <= this number of residues. \
                        Default: %(default)s",
@@ -237,7 +237,7 @@ def getParser():
     optional.add("--insertion_min_flank", dest="insertion_min_flank",
                  type=int_range(minis['insertion_min_flank'],
                                 maxis['insertion_min_flank'],
-                                n_columns),
+                                n_col),
                  default=defs['insertion_min_flank'],
                  help="Minimum number of bases on either side of an insertion \
                        to classify it as an insertion.\
@@ -255,7 +255,7 @@ def getParser():
     optional.add("--remove_min_length", dest="remove_min_length",
                  type=int_range(minis['remove_min_length'],
                                 maxis['remove_min_length'],
-                                n_columns),
+                                n_col),
                  default=defs['remove_min_length'],
                  help="Sequences are removed if they are shorter than this \
                        minimum length, excluding gaps. Default: %(default)s",

@@ -30,8 +30,7 @@ def main():
     os.system(statement)
     
     statement = """\
-    pandoc -o user_guide.pdf user_guide.md \
-        --template=template.tex
+    pandoc -o user_guide.pdf user_guide.md 
     echo '# CIAlign' > ../README.md
     awk 'NR > 7' user_guide.md >> ../README.md"""
     os.system(statement)
