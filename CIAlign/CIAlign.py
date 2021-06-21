@@ -156,13 +156,6 @@ def main():
         log.info("Removing insertions")
         if not args.silent:
             print("Removing insertions")
-        
-        max_flank = int(np.size(orig_arr)[1] * 0.4)
-        if args.remove_insertions_min_flank > max_flank:
-            log.warn("""remove_insertions_min_flank is too large, fixing \
-                     remove insertions_min_flank value at 0.4 * alignment \
-                     length: %i""" % max_flank)
-            args.remove_insertions_min_flank = max_flank
             
         A = parsingFunctions.removeInsertions(arr,
                                               relativePositions,
