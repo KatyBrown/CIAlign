@@ -98,7 +98,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
     ])
     def testDrawMiniAlignment(self, input, expected, type):
         self.alignment, self.names = readMSA(input)
-        self.dest = expected.replace("expected_", "test_")
+        self.dest = "./tests/test_files/test_mini.png"
         self.legend = ""
         expected = image.imread(expected)
 
