@@ -293,7 +293,7 @@ def main():
                                                    minoverlap=minoverlap,
                                                    keepgaps=keepgaps,
                                                    outfile=outf, dp=dp)
-
+    fn = args.plot_force_numbers
     if args.plot_input or args.all_options:
         log.info("Plotting mini alignment for input")
         if not args.silent:
@@ -302,19 +302,32 @@ def main():
         miniAlignments.drawMiniAlignment(orig_arr, log, cmt_file,
                                          outf, typ, args.plot_dpi,
                                          False, args.plot_width,
-                                         args.plot_height)
+                                         args.plot_height,
+                                         force_numbers=fn)
 
     if args.plot_output or args.all_options:
         log.info("Plotting mini alignment for output")
         if not args.silent:
             print("Plotting mini alignment for output")
         outf = "%s_output.%s" % (args.outfile_stem, args.plot_format)
-        miniAlignments.drawMiniAlignment(arr, nams, log,
-                                         outf, typ,
-                                         args.plot_dpi,
-                                         False,
-                                         args.plot_width,
-                                         args.plot_height)
+        if not args.plot_keep_numbers:
+            miniAlignments.drawMiniAlignment(arr, nams, log,
+                                             outf, typ,
+                                             args.plot_dpi,
+                                             False,
+                                             args.plot_width,
+                                             args.plot_height,
+                                             force_numbers=fn)
+        else:
+            miniAlignments.drawMiniAlignment(arr, nams, log,
+                                             outf, typ,
+                                             args.plot_dpi,
+                                             False,
+                                             args.plot_width,
+                                             args.plot_height,
+                                             orig_nams=orig_nams,
+                                             keep_numbers=True,
+                                             force_numbers=fn)
 
     if args.plot_markup or args.all_options:
         log.info("Plotting mini alignment with markup")
@@ -325,8 +338,11 @@ def main():
                                          outf, typ,
                                          args.plot_dpi,
                                          False,
-                                         args.plot_width, args.plot_height,
-                                         markup=True, markupdict=markupdict)
+                                         args.plot_width,
+                                         args.plot_height,
+                                         markup=True,
+                                         markupdict=markupdict,
+                                         force_numbers=fn)
 
     if args.make_consensus or args.all_options:
         log.info("Building consensus sequence")

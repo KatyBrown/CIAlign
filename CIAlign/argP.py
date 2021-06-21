@@ -323,6 +323,18 @@ def getParser():
     optional.add("--plot_height", dest="plot_height",
                  type=int, default=3,
                  help="Mini alignment height in inches. Default: %(default)s")
+    optional.add("--plot_keep_numbers", dest="plot_keep_numbers",
+                 action="store_true",
+                 help="If specified, for mini alignments based on CIAlign \
+                       output with <10 sequences (or if force_numbers \
+                       is switched on) the rows will be labelled \
+                       based on the input alignment, rather \
+                       than renumbered")
+    optional.add("--plot_force_numbers", dest="plot_force_numbers",
+                 action="store_true",
+                 help="Force all rows to be numbered on the mini alignments \
+                 rather than labelling e.g. every 10th row for larger plots. \
+                 Will cause labels to overlap on large plots")
 
     # Sequence logos
     optional.add("--make_sequence_logo", dest="make_sequence_logo",
