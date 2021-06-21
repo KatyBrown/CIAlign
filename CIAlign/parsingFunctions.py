@@ -39,7 +39,8 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
     newarr = []
     r = dict()
     for i, row in enumerate(arr):
-        start, end = cropSeq.determineStartEnd(row, nams[i], log, mingap, redefine_perc)
+        start, end = cropSeq.determineStartEnd(row, nams[i], log,
+                                               mingap, redefine_perc)
         start = max(start - 1, 0)
         end = end + 1
         newseq = "-" * start + "".join(

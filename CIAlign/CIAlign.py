@@ -19,7 +19,6 @@ except ImportError:
     import miniAlignments
     import similarityMatrix
     import consensusSeq
-    from _version import __version__
 
 
 def main():
@@ -30,7 +29,6 @@ def main():
     # Set up logger
     log = logging.getLogger(__name__)
     log.setLevel(logging.INFO)
-
 
     logfile = "%s_log.txt" % args.outfile_stem
     handler = logging.FileHandler(logfile)
@@ -67,7 +65,6 @@ def main():
     if not os.path.isfile(args.infile):
         print("Error! Your input alignmnent path could not be found.")
         exit()
-
 
     arr, nams = utilityFunctions.FastaToArray(args.infile, log,
                                               args.outfile_stem)
@@ -156,7 +153,8 @@ def main():
         log.info("Removing insertions")
         if not args.silent:
             print("Removing insertions")
-            
+        assert args.insertion_min_size < args.insertion_max_size, "\
+            insertion_min_size must be less than insertion_max_size"
         A = parsingFunctions.removeInsertions(arr,
                                               relativePositions,
                                               rmfile,
@@ -431,9 +429,11 @@ def main():
                                       removed_seqs)
 
     if args.replace_output:
-        log.info("Generating a T instead of U version of the output alignment")
+        log.info("Generating a T instead of U version of\
+                 the output alignment")
         if not args.silent:
-            print("Generating a T instead of U version of the output alignment")
+            print("Generating a T instead of U version of\
+                  the output alignment")
         outf = "%s_T_output.fasta" % (args.outfile_stem)
         T_arr = utilityFunctions.replaceUbyT(arr)
         utilityFunctions.writeOutfile(outf, T_arr,

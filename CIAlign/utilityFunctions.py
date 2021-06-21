@@ -2,8 +2,8 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.use('Agg')
 import warnings
+matplotlib.use('Agg')
 
 
 def replaceUbyT(arr):
@@ -74,7 +74,7 @@ def FastaToArray(infile, log=None, outfile_stem=None):
         for line in input:
             line = line.strip()
             if len(line) == 0:
-                continue # todo: test!
+                continue  # todo: test!
             if line[0] == ">":
                 seqs.append([s.upper() for s in seq])
                 nams.append(nam)
@@ -353,23 +353,21 @@ def listFonts(outfile):
                 # Some of the fonts seem not to have a name? Ignore these.
                 pass
 
-    
         flist2 = sorted(list(flist2))[::-1]
         f = plt.figure(figsize=(5, len(flist2) / 4), dpi=200)
         a = f.add_subplot(111)
         a.set_ylim(0, len(flist2))
         a.set_xlim(0, 1)
         a.text(-0.1, -1, "*Fonts shown as [] cannot be displayed with CIAlign")
-    
+
         for i, fname in enumerate(flist2):
             a.text(0.7, i, "ACTG", fontdict={'name': fname, 'size': 14})
             a.text(0, i, fname, fontsize=10)
 
-    
         a.text(0.7, i+1, "Sample", fontsize=10, fontweight='bold')
         a.text(0, i+1, "Font Name", fontsize=10, fontweight='bold')
-    
+
         a.set_axis_off()
-    
+
         f.tight_layout()
         f.savefig(outfile, dpi=200, bbox_inches='tight')

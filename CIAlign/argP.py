@@ -10,39 +10,42 @@ except ImportError:
     import utilityFunctions
     from _version import __version__
 
-    
+
 def float_range(mini, maxi):
     '''
     Defines a type for argparse of a float with a fixed range
-    
+
     Parameters
     ----------
     mini: str or float
         A float (or a string which can be converted to a float) with the
         minumum valid value for the parameter.
-    
+
     maxi: str or float
         A float (or a string which can be converted to a float) with the
         maximum valid value for the paramter.
-    
+
     Returns
     -------
     float_range_checker: function
         A function to input as a type to argparse to check if the value
         provided is in the right range
     '''
+    # Based on solution from @georg-w stack overflow qu. 55324449
     mini = float(mini)
     maxi = float(maxi)
+
     def float_range_checker(arg):
         try:
             f = float(arg)
-        except ValueError:    
+        except ValueError:
             raise configargparse.ArgumentTypeError(
                 "Must be a floating point number")
         if f < mini or f > maxi:
             raise configargparse.ArgumentTypeError(
                 "Must be in range [%s .. %s]" % (mini, maxi))
         return (f)
+
     return (float_range_checker)
 
 
@@ -50,28 +53,30 @@ def int_range(mini, maxi, n_col):
     '''
     Defines a type for argparse of an integer with a fixed range, where
     the maximum value is a function of the number of columns
-    
+
     Parameters
     ----------
     mini: str or int
         An integer (or a string which can be converted to an integer) with the
         minumum valid value for the parameter.
-    
-    maxi: str 
+
+    maxi: str
         A string containing a function using n_col to convert number
         of columns to the maximum valid value for the paramter.
-    
+
     Returns
     -------
     int_range_checker: function
         A function to input as a type to argparse to check if the value
         provided is in the right range
     '''
+    # Based on solution from @georg-w stack overflow qu. 55324449
     mini = int(mini)
     try:
         maxi_val = eval(maxi)
-    except:
+    except TypeError:
         maxi_val = int(maxi)
+
     def int_range_checker(arg):
         try:
             f = int(arg)
@@ -79,18 +84,17 @@ def int_range(mini, maxi, n_col):
             raise configargparse.ArgumentTypeError("Must be an integer")
 
         if f < mini or f > maxi_val:
-            raise configargparse.ArgumentTypeError("Must be in range\
-                                                    [%s .. %s (%s)]" % (
-                                                    mini, maxi, maxi_val))
+            raise configargparse.ArgumentTypeError(
+                "Must be in range [%s .. %s (%s)]" % (mini, maxi, maxi_val))
         return (f)
-    return (int_range_checker)
 
+    return (int_range_checker)
 
 
 def getParser():
     '''
     Builds a configargparse.ArgumentParser object with the CIAlign parameters
-    
+
     Returns
     -------
     parser: configargparse.ArgumentParser
@@ -130,7 +134,7 @@ def getParser():
                  default="CIAlign",
                  help="Prefix for output files, including the path to the \
                      output directory. Default: %(default)s")
-    
+
     # Initial setup
     # Read the alignment temporarily just to find out how many columns there
     # are as for several of the cleaning functions the range of valid
@@ -141,7 +145,7 @@ def getParser():
         # Read the FASTA file into an array
         arr, nams = utilityFunctions.FastaToArray(tempargs.infile, None,
                                                   tempargs.outfile_stem)
-        
+
         # Find the number of columns in the input alignment
         n_col = np.shape(arr)[1]
         # Remove the array from memory
@@ -166,7 +170,7 @@ def getParser():
                  help="Crop the ends of sequences if they are poorly aligned. \
                  Default: %(default)s")
 
-    optional.add("--crop_ends_mingap_perc",dest='crop_ends_mingap_perc',
+    optional.add("--crop_ends_mingap_perc", dest='crop_ends_mingap_perc',
                  type=float_range(minis['crop_ends_mingap_perc'],
                                   maxis['crop_ends_mingap_perc']),
                  default=defs['crop_ends_mingap_perc'],
@@ -233,7 +237,7 @@ def getParser():
                  metavar="(int, %s..%s)" % (
                      minis['insertion_max_size'],
                      maxis['insertion_max_size']))
-                
+
     optional.add("--insertion_min_flank", dest="insertion_min_flank",
                  type=int_range(minis['insertion_min_flank'],
                                 maxis['insertion_min_flank'],
@@ -242,7 +246,7 @@ def getParser():
                  help="Minimum number of bases on either side of an insertion \
                        to classify it as an insertion.\
                        Default: %(default)s",
-                 metavar="(int, %s..%s)"% (
+                 metavar="(int, %s..%s)" % (
                      minis['insertion_min_flank'],
                      maxis['insertion_min_flank']))
 
@@ -259,9 +263,9 @@ def getParser():
                  default=defs['remove_min_length'],
                  help="Sequences are removed if they are shorter than this \
                        minimum length, excluding gaps. Default: %(default)s",
-                       metavar="(int, %s..%s)" % (
-                           minis['remove_min_length'],
-                           maxis['remove_min_length']))
+                 metavar="(int, %s..%s)" % (
+                     minis['remove_min_length'],
+                     maxis['remove_min_length']))
 
     # keep gap only
     optional.add("--keep_gaponly", dest="remove_gaponly",
