@@ -162,7 +162,8 @@ Output files:
 | *`--plot_format`* | Image format for mini alignments - can be png, svg, tiff or jpg | png |
 | *`--plot_width`* | Mini alignment width in inches | 5 |
 | *`--plot_height`* | Mini alignment height in inches | 3 |
-
+| *`--plot_keep_numbers`* | Label rows in mini alignments based on input alignment, rather than renumbering | False |
+| *`--plot_force_numbers`* | Force all rows in mini alignments to be numbered rather than labelling e.g. every 10th row for larger plots Will cause labels to overlap in larger plots | False |
 
 ### Sequence logos
 These functions draw sequence logos representing your output (cleaned) alignment.  If no cleaning functions are specified, the logo will be based on your input alignment.
