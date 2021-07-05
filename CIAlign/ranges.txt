@@ -1,0 +1,7 @@
+crop_ends_mingap_perc	0.05	0	0.5
+crop_ends_redefine_perc	0.1	0	0.5
+remove_divergent_minperc	0.65	0	1
+insertion_min_size	3	1	n_col
+insertion_max_size	200	1	1000
+insertion_min_flank	5	0	n_col/2
+remove_min_length	50	0	n_col

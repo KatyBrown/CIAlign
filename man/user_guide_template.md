@@ -91,16 +91,16 @@ remove_divergent, remove_insertions and crop_ends require three or more sequence
 | Parameter | Description | Default Value | Min | Max |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False | NA | NA |
-| *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.65 | 0 | 1 | 
+| *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | remove_divergent_minperc_def | remove_divergent_minperc_min | remove_divergent_minperc_max | 
 | **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False | NA | NA |
-| *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 | 1 | n_col | 
-| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 200 | 1 | 1000 | 
-| *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5 | 0 | n_col/2 | 
+| *`--insertion_min_size`* | Only remove insertions >= this number of residues | insertion_min_size_def | insertion_min_size_min | insertion_min_size_max | 
+| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | insertion_max_size_def | insertion_max_size_min | insertion_max_size_max | 
+| *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | insertion_min_flank_def | insertion_min_flank_min | insertion_min_flank_max | 
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False | NA | NA |
-| *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 | 0 | 0.5 | 
-| *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. |  0.1 | 0 | 0.5 | 
+| *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | crop_ends_mingap_perc_def | crop_ends_mingap_perc_min | crop_ends_mingap_perc_max | 
+| *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. |  crop_ends_redefine_perc_def | crop_ends_redefine_perc_min | crop_ends_redefine_perc_max | 
 | **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False | NA | NA |
-| *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | 50 | 0 | n_col | 
+| *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | remove_min_length_def | remove_min_length_min | remove_min_length_max | 
 | **`--keep_gaponly`** | Keep gap only columns in the alignment | False | NA | NA |
 
 Note: if the sequences are short (e.g. < 100), a low crop_ends_mingap_perc (e.g. 0.01) will result in a change of gap numbers that is too low (e.g. 0). If this happens, the change in gap numbers will be set to 2 and a warning will be printed.

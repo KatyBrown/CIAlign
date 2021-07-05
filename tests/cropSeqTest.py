@@ -20,11 +20,11 @@ class CropSeqsTests(unittest.TestCase):
 
 
     @parameterized.expand([
-            [0.05, 0.1, '--UC----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 8, 42],
-            [0.05, 0.1, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 6, 47],
-            [0.05, 0.2, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 47],
-            [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 36],
-    ])
+        [0.1, 0.1, '--UC----UCUCUCUCGCGUGUGUGAAAAAAAAAAAAAAAA----AAAUUUU------------A', 8, 52],
+        [0.1, 0.1, '--UC--AAA-----UCUCUCUCGCGUGUGUGAAAAAAAAAAA----AAAUUUU------------A', 3, 53],
+        [0.05, 0.1, '--UC--AAA-----UCUCUCUCAAAAAAAAAAAAAAAAAAAA----AAAUUUU-----------A', 6, 53],
+        [0.05, 0.3, '--UC--AAA-----UCUCUCUCGCGUGUGUAAAAAAAAAAAA----AAAUUUU------------A', 14, 42]
+        ])
     def testDetermineStartEnd(self, mingap_perc, redefine_perc, input, expected_start, expected_end):
         seq = []
         seq.append([s for s in input])
@@ -36,13 +36,12 @@ class CropSeqsTests(unittest.TestCase):
         self.assertEqual(start, expected_start)
         self.assertEqual(end, expected_end)
 
-    @parameterized.expand([
-            [0.05, 0.1, '--UC----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 8, 13],
-            [0.05, 0.1, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 6, 13],
-            [0.05, 0.2, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 13],
-            [0.01, 0.2, '--UC--AA-----UCUCUCUCGGGAGAGGCGUAUUCGAUCGAUCGAUCGUACGAUCGUACGAUGCUCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 24],
-            [0.01, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAA----AAAUUUU------------A', 13, 24],
-    ])
+    @parameterized.expand([[0.05, 0.1, '--UC----UCUCUCUCGCGUGUGUGAAAAAAAAAAAAAAAAAAAAAA----AAAUUUU------------A', 8, 13],
+                           [0.05, 0.1, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAAAAAAAAAAAAA----AAAUUUU------------A', 13, 13],
+                           [0.05, 0.2, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAAAAAAAAAAAAA----AAAUUUU------------A', 13, 24],
+                           [0.02, 0.2, '--UC--AA-----UCUCUCUCGGGAGAGGCGUAUAAAUCGAUCGAUCGAUCGUACGAUCGUACGAUGCUCGUGUGUGAAAAAAAAAAAAAAAAAAAAAAAAAAAA----AAAUUUU------------A', 13, 24],
+                           [0.02, 0.3, '--UC--AA-----UCUCUCUCGCGUGUGUGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA----AAAUUUU------------A', 13, 24],
+                           ])
     def testFindValue(self, mingap_perc, redefine_perc, input, expected_value, expected_reverse_value):
         seq = []
         seq.append([s for s in input])

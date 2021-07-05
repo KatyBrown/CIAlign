@@ -144,9 +144,11 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
         a.set_xlim(0, 1)
         a.set_ylim(0, 1)
         fs = getFontSize(f, a, 1)
-        a.text(0.5, 0.02, base, fontsize=fs*0.95, fontdict={'family': 'monospace',
-                                                    'name': fontname},
-               color=colours[base], va='baseline', ha='center')
+        a.text(0.5, 0.02, base, fontsize=fs*0.95,
+               fontdict={'family': 'monospace',
+                         'name': fontname},
+               color=colours[base], va='baseline',
+               ha='center')
         plt.gca().set_axis_off()
         a.margins(0, 0)
         f.subplots_adjust(top=1, bottom=0, right=1, left=0,

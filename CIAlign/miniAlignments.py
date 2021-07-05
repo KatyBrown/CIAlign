@@ -191,7 +191,8 @@ def drawMarkUpLegend(outfile):
 
 def drawMiniAlignment(arr, nams, log, outfile, typ,
                       dpi=300, title=None, width=5, height=3, markup=False,
-                      markupdict=None, ret=False):
+                      markupdict=None, ret=False, orig_nams=[],
+                      keep_numbers=False, force_numbers=False):
     '''
     Draws a "mini alignment" image showing a small representation of the
     whole alignment so that gaps and poorly aligned regions are visible.
@@ -219,11 +220,17 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     markup: bool
         Should the deleted rows and columns be marked on the output image?
     markupdict: dict
-        dictionary where the keys are function names and the values are
+        Dictionary where the keys are function names and the values are
         lists of columns, rows or positions which have been removed
     ret: bool
-        return the subplot as a matplotlib object, used to make plots when
+        Return the subplot as a matplotlib object, used to make plots when
         using this function directly rather than the CIAlign workflow
+    orig_nams: list
+        List of names in the original input plot, used if keep_numbers is
+        switched on to keep the original numbering scheme
+    keep_numbers: bool
+        Number the sequences (rows) based on the original CIAlign input rather
+        than renumbering.
 
     Returns
     -------
@@ -241,7 +248,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     # 2+ = 100+ sequences - label every 100th row
 
     om = math.floor(math.log10(ali_height))
-    tickint = 1 if om == 0 else 10 if om == 1 else 100
+    tickint = 1 if om == 0 or force_numbers else 10 if om == 1 else 100
 
     # use thinner lines for bigger alignments
     lineweight_h = 10 / ali_height
@@ -252,7 +259,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     a.set_xlim(-0.5, ali_width)
     a.set_ylim(-0.5, ali_height-0.5)
 
-    # generate the numeric version of the arry
+    # generate the numeric version of the array
     arr2, cm = arrNumeric(arr, typ)
     # display it on the axis
     a.imshow(arr2, cmap=cm, aspect='auto', interpolation='nearest')
@@ -276,9 +283,19 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     for t in a.get_xticklabels():
         t.set_fontsize(fontsize)
     a.set_yticks(np.arange(ali_height-1, -1, -tickint))
+    x = 1
     if tickint == 1:
-        a.set_yticklabels(np.arange(1, ali_height+1, tickint),
-                          fontsize=fontsize)
+        if keep_numbers:
+            labs = []
+            for nam in orig_nams:
+                if nam in nams:
+                    labs.append(x)
+                x += 1
+            a.set_yticklabels(labs,
+                              fontsize=fontsize)
+        else:
+            a.set_yticklabels(np.arange(1, ali_height+1, tickint),
+                              fontsize=fontsize)
     else:
         a.set_yticklabels(np.arange(0, ali_height, tickint), fontsize=fontsize)
 

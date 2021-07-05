@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 
 
-def determineStartEnd(sequence, name, log, mingap_perc=0.05, redefine_perc=0.1):
+def determineStartEnd(sequence, name, log,
+                      mingap_perc=0.05, redefine_perc=0.1):
     '''
     Determines the start and the end of a sequence by calling a subroutine
 
