@@ -173,7 +173,7 @@ def drawMarkUpLegend(outfile):
     None
     '''
     legend = plt.figure(figsize=(2, 2), dpi=100)
-    leg = legend.add_subplot(111)
+    leg = legend.add_subplot(1, 1, 1)
     colours = ['black', '#f434c5', "#7bc5ff", '#fff6b3', "#f57700"]
     functions = ['Cropped Ends', 'Too Divergent', 'Insertions',
                  'Too Short', 'Gap Only']
@@ -248,7 +248,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     lineweight_v = 10 / ali_width
 
     f = plt.figure(figsize=(width, height), dpi=dpi)
-    a = f.add_subplot('111')
+    a = f.add_subplot(1, 1, 1)
     a.set_xlim(-0.5, ali_width)
     a.set_ylim(-0.5, ali_height-0.5)
 

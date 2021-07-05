@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
-
+import warnings
+warnings.filterwarnings('ignore', message='Glyph')
 
 def replaceUbyT(arr):
     '''
@@ -329,6 +330,7 @@ def listFonts(outfile):
     matplotlib.font_manager._rebuild()
     flist = matplotlib.font_manager.get_fontconfig_fonts()
     flist2 = set()
+    checkglyphs = [108, 112, 65, 71, 84, 67]
     for fname in flist:
         try:
             F = matplotlib.font_manager.FontProperties(fname=fname)
@@ -336,11 +338,18 @@ def listFonts(outfile):
             L = font.get_charmap()
             # this tests if matplotlib can actually render "ACTG" in this
             # font
-            if 108 in L:
+            x = 0
+            for glyph in checkglyphs:
+                if glyph in L:
+                    x += 1
+            if x == len(checkglyphs):
                 g = F.get_name()
                 flist2.add(g)
         except RuntimeError:
             # Some of the fonts seem not to have a name? Ignore these.
+            pass
+        except RuntimeWarning:
+            # Don't report missing glyphs
             pass
 
     flist2 = sorted(list(flist2))[::-1]
@@ -349,12 +358,15 @@ def listFonts(outfile):
     a.set_ylim(0, len(flist2))
     a.set_xlim(0, 1)
     a.text(-0.1, -1, "*Fonts shown as [] cannot be displayed with CIAlign")
+
     for i, fname in enumerate(flist2):
         a.text(0.7, i, "ACTG", fontdict={'name': fname, 'size': 14})
         a.text(0, i, fname, fontsize=10)
 
     a.text(0.7, i+1, "Sample", fontsize=10, fontweight='bold')
     a.text(0, i+1, "Font Name", fontsize=10, fontweight='bold')
+
     a.set_axis_off()
+
     f.tight_layout()
     f.savefig(outfile, dpi=200, bbox_inches='tight')

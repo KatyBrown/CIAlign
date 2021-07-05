@@ -140,7 +140,7 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
     # for each possible base/aa create temporary plot
     for base in colours.keys():
         f = plt.figure(figsize=(1, 1), dpi=dpi, edgecolor='black')
-        a = f.add_subplot(111)
+        a = f.add_subplot(1, 1, 1)
         a.set_xlim(0, 1)
         a.set_ylim(0, 1)
         fs = getFontSize(f, a, 1)
@@ -262,7 +262,7 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
 
     # plain plotting of the coverage
     f = plt.figure(figsize=(width, height), dpi=dpi)
-    a = f.add_subplot('211')
+    a = f.add_subplot(2, 1, 1)
     a.plot(x, y, color=colour)
     a.set_xlabel('Position', fontsize=fontsize)
     a.set_ylabel('Coverage', fontsize=fontsize)
