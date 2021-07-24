@@ -120,12 +120,14 @@ def whichFunctions(args):
             args.crop_ends,
             args.remove_short,
             args.remove_gaponly,
+            args.clean,
             args.all_options]):
         which_functions.append("cleaning")
 
     # Similarity Matrix
     if any([args.make_simmatrix_input,
             args.make_simmatrix_output,
+            args.interpret,
             args.all_options]):
         which_functions.append("matrices")
 
@@ -133,17 +135,20 @@ def whichFunctions(args):
     if any([args.plot_input,
             args.plot_output,
             args.plot_markup,
+            args.visualise,
             args.all_options]):
         which_functions.append("mini_alignments")
 
     # Consensus sequences
     if any([args.make_consensus,
+            args.interpret,
             args.all_options]):
         which_functions.append("consensus")
 
     # Coverage Plots
     if any([args.plot_coverage_input,
             args.plot_coverage_output,
+            args.interpret,
             args.all_options]):
         which_functions.append("coverage")
 
@@ -332,7 +337,7 @@ def runCleaning(args, log, arr, nams):
     removed_seqs, removed_cols, removed_positions = R
 
     # Remove divergent sequences
-    if args.remove_divergent or args.all_options:
+    if args.remove_divergent or args.all_options or args.clean:
         log.info("Removing divergent sequences")
         if not args.silent:
             print("Removing divergent sequences")
@@ -349,7 +354,7 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove gaps created by remove divergent
-    if (args.remove_divergent and args.remove_gaponly) or args.all_options:
+    if (args.remove_divergent and args.remove_gaponly) or args.all_options or args.clean:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -370,7 +375,7 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove insertions
-    if args.remove_insertions or args.all_options:
+    if args.remove_insertions or args.all_options or args.clean:
         log.info("Removing insertions")
         if not args.silent:
             print("Removing insertions")
@@ -392,7 +397,7 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove gaps created by remove insertions
-    if (args.remove_insertions and args.remove_gaponly) or args.all_options:
+    if (args.remove_insertions and args.remove_gaponly) or args.all_options or args.clean:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -413,7 +418,7 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Crop Ends
-    if args.crop_ends or args.all_options:
+    if args.crop_ends or args.all_options or args.clean:
         # doesn't remove any whole columns or rows
         log.info("Cropping ends")
         if not args.silent:
@@ -429,7 +434,7 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove empty columns created by crop ends
-    if (args.crop_ends and args.remove_gaponly) or args.all_options:
+    if (args.crop_ends and args.remove_gaponly) or args.all_options or args.clean:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -449,7 +454,7 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove short
-    if args.remove_short or args.all_options:
+    if args.remove_short or args.all_options or args.clean:
         log.info("Removing short sequences")
         if not args.silent:
             print("Removing short sequences")
@@ -463,7 +468,7 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove empty columns created by remove short
-    if (args.remove_short and args.remove_gaponly) or args.all_options:
+    if (args.remove_short and args.remove_gaponly) or args.all_options or args.clean:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -484,7 +489,8 @@ def runCleaning(args, log, arr, nams):
                                     args.remove_divergent or
                                     args.remove_insertions or
                                     args.crop_ends or
-                                    args.remove_short):
+                                    args.remove_short or
+                                    args.clean):
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -530,7 +536,7 @@ def runMatrix(args, log, orig_arr, orig_nams, arr, nams):
         List of sequence names in the cleaned alignment
     '''
     # Input matrix
-    if args.make_simmatrix_input or args.all_options:
+    if args.make_simmatrix_input or args.all_options or args.interpret:
         log.info("Building similarity matrix for input alignment")
         if not args.silent:
             print("Building similarity matrix for input alignment")
@@ -544,7 +550,8 @@ def runMatrix(args, log, orig_arr, orig_nams, arr, nams):
                                                    keepgaps=keepgaps,
                                                    outfile=outf, dp=dp)
     # Output matrix
-    if args.make_simmatrix_output or args.all_options:
+    # todo: what if only interpret functions are called?
+    if args.make_simmatrix_output or args.all_options or (args.interpret):
         log.info("Building similarity matrix for output alignment")
         if not args.silent:
             print("Building similarity matrix for output alignment")
@@ -586,7 +593,7 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
     '''
     fn = args.plot_force_numbers
     # Mini alignment of CIAlign input
-    if args.plot_input or args.all_options:
+    if args.plot_input or args.all_options or args.visualise:
         log.info("Plotting mini alignment for input")
         if not args.silent:
             print("Plotting mini alignment for input")
@@ -597,7 +604,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                          args.plot_height,
                                          force_numbers=fn)
     # Mini alignment of CIAlign output
-    if args.plot_output or args.all_options:
+    # todo: what if only interpret functions are called?
+    if args.plot_output or args.all_options or args.visualise:
         log.info("Plotting mini alignment for output")
         if not args.silent:
             print("Plotting mini alignment for output")
@@ -621,7 +629,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                              keep_numbers=True,
                                              force_numbers=fn)
     # Markup plot
-    if args.plot_markup or args.all_options:
+    # todo: what if only interpret functions are called?
+    if args.plot_markup or args.all_options or args.visualise:
         log.info("Plotting mini alignment with markup")
         if not args.silent:
             print("Plotting mini alignment with markup")
@@ -658,7 +667,7 @@ def runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
     removed_seqs: set
         Set of sequence names which have been removed
     '''
-    if args.make_consensus or args.all_options:
+    if args.make_consensus or args.all_options or args.interpret:
         log.info("Building consensus sequence")
         if not args.silent:
             print("Building consensus sequence")
@@ -702,7 +711,7 @@ def runCoverage(args, log, orig_arr, orig_nams, arr, nams):
         List of sequence names in the cleaned alignment
     '''
     # Coverage plot for CIAlign input
-    if args.plot_coverage_input or args.all_options:
+    if args.plot_coverage_input or args.all_options or args.interpret:
         log.info("Plotting coverage for input")
         if not args.silent:
             print("Plotting coverage for input")
@@ -713,7 +722,8 @@ def runCoverage(args, log, orig_arr, orig_nams, arr, nams):
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
 
     # Coverage plot for CIAlign output
-    if args.plot_coverage_output or args.all_options:
+    # todo: what if only interpret functions are called?
+    if args.plot_coverage_output or args.all_options or args.interpret:
         if not args.silent:
             print("Plotting coverage for output")
         log.info("Plotting coverage for output")
