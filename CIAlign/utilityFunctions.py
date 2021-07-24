@@ -135,7 +135,9 @@ def getAAColours():
             'B': '#b2b2b2',
             'Z': '#b2b2b2',
             'J': '#b2b2b2',
-            '*': '#FFFFFF00'
+            '*': '#FFFFFF00',
+            'U': '#b2b2b2',
+            'O': '#b2b2b2'
             }
 
 
