@@ -339,7 +339,8 @@ def sequence_logo(alignment,
     -------
     none
     '''
-
+    if end < start:
+        print("")
     if start == 0 and end == 0:
         alignment_width = len(alignment[0, :])
     else:
