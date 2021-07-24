@@ -551,7 +551,7 @@ def runMatrix(args, log, orig_arr, orig_nams, arr, nams):
                                                    outfile=outf, dp=dp)
     # Output matrix
     # todo: what if only interpret functions are called?
-    if args.make_simmatrix_output or args.all_options or (args.interpret):
+    if args.make_simmatrix_output or args.all_options or args.interpret:
         log.info("Building similarity matrix for output alignment")
         if not args.silent:
             print("Building similarity matrix for output alignment")
@@ -757,6 +757,8 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
     if args.make_sequence_logo or args.all_options:
         figdpi = args.sequence_logo_dpi
         figrowlength = args.sequence_logo_nt_per_row
+        logo_start = args.logo_start
+        logo_end = args.logo_end
         # Sequence logo bar chart
         if args.sequence_logo_type == 'bar':
             log.info("Generating sequence logo bar chart")
@@ -767,7 +769,8 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
 
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=figdpi,
-                                           figrowlength=figrowlength)
+                                           figrowlength=figrowlength,
+                                           start=logo_start, end=logo_end)
         elif args.sequence_logo_type == 'text':
             # Text sequence logo
             log.info("Generating text sequence logo")
@@ -778,7 +781,8 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
             consensusSeq.sequence_logo(arr, out, typ=typ,
                                        figdpi=figdpi,
                                        figfontname=args.sequence_logo_font,
-                                       figrowlength=figrowlength)
+                                       figrowlength=figrowlength,
+                                       start=logo_start, end=logo_end)
         elif args.sequence_logo_type == 'both':
             # Plot both types of sequence logo
             log.info("Generating sequence logo bar chart")
@@ -788,7 +792,8 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
                                       args.sequence_logo_filetype)
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=figdpi,
-                                           figrowlength=figrowlength)
+                                           figrowlength=figrowlength,
+                                           start=logo_start, end=logo_end)
             log.info("Generating text sequence logo")
             if not args.silent:
                 print("Generating text sequence logo")
@@ -797,7 +802,8 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
             consensusSeq.sequence_logo(arr, out, typ=typ,
                                        figdpi=figdpi,
                                        figfontname=args.sequence_logo_font,
-                                       figrowlength=figrowlength)
+                                       figrowlength=figrowlength,
+                                       start=logo_start, end=logo_end)
 
 
 def runUnalign(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):

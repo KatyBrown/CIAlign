@@ -378,7 +378,7 @@ def getParser():
                  type=int, default=0,
                  help="Start position of sequence logo. Default: %(default)s")
     optional.add("--logo_end", dest="logo_end",
-                 type=int, default=10,
+                 type=int, default=0,
                  help="End position of sequence logo. Default: %(default)s")
     optional.add("--list_fonts_only", dest='list_fonts_only',
                  action="store_true",
