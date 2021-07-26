@@ -158,6 +158,21 @@ def getParser():
                  action="store_true",
                  help="Use all available functions with default parameters.")
 
+    # parameter to run all cleaning functions without having to type them in
+    optional.add("--clean", dest="clean",
+                 action="store_true",
+                 help="Use all cleaning functions with default parameters.")
+
+    # parameter to create all mini alignments without having to type them in
+    optional.add("--visualise", dest="visualise",
+                 action="store_true",
+                 help="Plot all mini alignments with default parameters.")
+
+    # parameter to run all interpreation functions except creating sequence logos without having to type them in
+    optional.add("--interpret", dest="interpret",
+                 action="store_true",
+                 help="Use all interpreting functions with default parameters.")
+
     # Runtime
     optional.add("--silent", dest='silent',
                  help="Do not print progress to the screen. \
@@ -359,6 +374,12 @@ def getParser():
                  type=str, default='png',
                  help="Image file type to use for the sequence logo - can be \
                        png, svg, tiff or jpg. Default: %(default)s")
+    optional.add("--logo_start", dest="logo_start",
+                 type=int, default=0,
+                 help="Start position of sequence logo. Default: %(default)s")
+    optional.add("--logo_end", dest="logo_end",
+                 type=int, default=0,
+                 help="End position of sequence logo. Default: %(default)s")
     optional.add("--list_fonts_only", dest='list_fonts_only',
                  action="store_true",
                  help="Make a swatch showing available fonts. \
