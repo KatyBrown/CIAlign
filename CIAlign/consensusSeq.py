@@ -301,7 +301,9 @@ def sequence_logo(alignment,
                   typ='nt',
                   figfontname='Arial',
                   figdpi=300,
-                  figrowlength=50):
+                  figrowlength=50,
+                  start=0,
+                  end=0):
     '''
     Creates a sequence logo based on an entropy calculation using letters
     Scales the letters according to the information content of the alignment
@@ -327,23 +329,38 @@ def sequence_logo(alignment,
     figrowlength: int
             clength of figure (default: 50)
 
+    start: int
+           start pos to be turned into logo
+
+    end: int
+         end pos to be turned into logo
+
     Returns
     -------
     none
     '''
-    alignment_width = len(alignment[0, :])
+    if end < start:
+        print("")
+    if start == 0 and end == 0:
+        alignment_width = len(alignment[0, :])
+    else:
+        if end == 0:
+            end = len(alignment[0,:])
+        alignment_width = len(alignment[0,start:end])
+
     if alignment_width < figrowlength:
         figrowlength = alignment_width
     nsegs = math.ceil(alignment_width / figrowlength)
     f = plt.figure(figsize=(figrowlength, nsegs*2), dpi=figdpi)
     gs = gridspec.GridSpec(ncols=1, nrows=nsegs)
     getLetters(typ=typ, fontname=figfontname, dpi=figdpi)
-    rstart = 0
+    rstart = start
     rend = rstart + figrowlength
+
     for n in range(nsegs):
 
-        if rend > alignment_width:
-            rend = alignment_width
+        if rend > (alignment_width + start):
+            rend = alignment_width + start
         a = plt.subplot(gs[n])
         a.set_xlim(rstart, rstart+figrowlength)
         if typ == 'nt':
@@ -401,7 +418,9 @@ def sequence_bar_logo(alignment,
                       figname,
                       typ='nt',
                       figdpi=300,
-                      figrowlength=50):
+                      figrowlength=50,
+                      start=0,
+                      end=0):
     '''
     Creates a sequence logo based on an entropy calculation using bars
     Scales the bars according to the information content of the alignment
@@ -427,22 +446,35 @@ def sequence_bar_logo(alignment,
     figrowlength: int
             clength of figure (default: 50)
 
+    start: int
+           start pos to be turned into logo
+
+    end: int
+         end pos to be turned into logo
+
     Returns
     -------
     none
     '''
-    alignment_width = len(alignment[0, :])
+
+    if start == 0 and end == 0:
+        alignment_width = len(alignment[0, :])
+    else:
+        if end == 0:
+            end = len(alignment[0,:])
+        alignment_width = len(alignment[0,start:end])
+
     if alignment_width < figrowlength:
         figrowlength = alignment_width
     nsegs = math.ceil(alignment_width / figrowlength)
     f = plt.figure(figsize=(figrowlength/5, nsegs*2), dpi=figdpi)
     gs = gridspec.GridSpec(ncols=1, nrows=nsegs)
-    rstart = 0
+    rstart = start
     rend = rstart + figrowlength
 
     for n in range(nsegs):
-        if rend > alignment_width:
-            rend = alignment_width
+        if rend > (alignment_width + start):
+            rend = alignment_width + start
         axes = f.add_subplot(gs[n])
         axes.set_xlim(rstart-0.5, rend-0.5)
         if typ == 'nt':
