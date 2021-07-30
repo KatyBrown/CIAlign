@@ -15,8 +15,12 @@ except ImportError:
     import similarityMatrix
     import consensusSeq
 
+#testing
+import checkMemoryAndTime as CMT
 
 def run(args, log):
+
+    main_cmt = CMT.start_mem_time("main")
     # Basic checks before running
     prelimChecks(args, log)
     # Set up arrays of the sequence names and aligned sequences
@@ -26,35 +30,51 @@ def run(args, log):
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
     functions = whichFunctions(args)
+
+    cmt_seqs = len(orig_arr)
+    cmt_length = len(orig_arr[0])
+
     if "cleaning" in functions:
+        cleaning_cmt = CMT.start_mem_time("cleaning")
         arr, nams, markupdict, removed = runCleaning(args,
                                                      log,
                                                      arr,
-                                                     nams)
+                                                     nams, cmt_seqs, cmt_length)
+        CMT.end_mem_time(cleaning_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
     else:
         markupdict = dict()
         removed = set()
 
     if "matrices" in functions:
+        matrices_cmt = CMT.start_mem_time("matrices")
         # Make similarity matrices
-        runMatrix(args, log, orig_arr, orig_nams, arr, nams)
+        runMatrix(args, log, orig_arr, orig_nams, arr, nams, cmt_seqs, cmt_length)
+        CMT.end_mem_time(matrices_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
 
     if "mini_alignments" in functions:
         # Plot mini alignments
+        miniali_cmt = CMT.start_mem_time("mini_ali")
         runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
-                          markupdict, typ)
+                          markupdict, typ, cmt_seqs, cmt_length)
+        CMT.end_mem_time(miniali_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
 
     if "consensus" in functions:
         # Make consensus sequences
+        consensus_cmt = CMT.start_mem_time("consensus")
         runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed)
+        CMT.end_mem_time(consensus_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
 
     if "coverage" in functions:
         # Plot coverage plots
+        coverage_cmt = CMT.start_mem_time("coverage")
         runCoverage(args, log, orig_arr, orig_nams, arr, nams)
+        CMT.end_mem_time(coverage_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
 
     if "logos" in functions:
         # Draw sequence logos
+        logos_cmt = CMT.start_mem_time("logos")
         runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ)
+        CMT.end_mem_time(logos_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
 
     if "unalign" in functions:
         # Make an unaligned copy of the input or output
@@ -63,6 +83,9 @@ def run(args, log):
     if "ttou" in functions:
         # Convert T to U in the input or output
         runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed)
+
+    #test
+    CMT.end_mem_time(main_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
 
 
 def prelimChecks(args, log):
@@ -303,7 +326,7 @@ def setupOutfiles(args):
     return (outfile, rmfile)
 
 
-def runCleaning(args, log, arr, nams):
+def runCleaning(args, log, arr, nams, cmt_seqs, cmt_length):
     '''
     Run the cleaning functions
 
@@ -342,9 +365,11 @@ def runCleaning(args, log, arr, nams):
         if not args.silent:
             print("Removing divergent sequences")
         minperc = args.remove_divergent_minperc
+        divergent_cmt = CMT.start_mem_time("divergent")
         arr, r = parsingFunctions.removeDivergent(arr, nams,
                                                   rmfile, log,
                                                   minperc)
+        CMT.end_mem_time(divergent_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
         # Track what has been removed
         markupdict['remove_divergent'] = r
         removed_seqs = removed_seqs | r
@@ -358,10 +383,12 @@ def runCleaning(args, log, arr, nams):
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
+            gap_cmt = CMT.start_mem_time("gap_only")
         A = parsingFunctions.removeGapOnly(arr,
                                            relativePositions,
                                            rmfile,
                                            log)
+        CMT.end_mem_time(gap_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
         # Track what has been removed
         arr, r, relativePositions = A
 
@@ -381,6 +408,7 @@ def runCleaning(args, log, arr, nams):
             print("Removing insertions")
         assert args.insertion_min_size < args.insertion_max_size, "\
             insertion_min_size must be less than insertion_max_size"
+        insertions_cmt = CMT.start_mem_time("insertions")
         A = parsingFunctions.removeInsertions(arr,
                                               relativePositions,
                                               rmfile,
@@ -390,6 +418,7 @@ def runCleaning(args, log, arr, nams):
                                               args.insertion_min_flank)
 
         # Track what has been removed
+        CMT.end_mem_time(insertions_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
         arr, r, relativePositions = A
         markupdict['remove_insertions'] = r
         removed_cols = removed_cols | r
@@ -401,7 +430,6 @@ def runCleaning(args, log, arr, nams):
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
-
         A = parsingFunctions.removeGapOnly(arr,
                                            relativePositions,
                                            rmfile,
@@ -423,11 +451,13 @@ def runCleaning(args, log, arr, nams):
         log.info("Cropping ends")
         if not args.silent:
             print("Cropping ends")
+        crop_cmt = CMT.start_mem_time("crop_ends")
         arr, r = parsingFunctions.cropEnds(arr, nams, relativePositions,
                                            rmfile,
                                            log, args.crop_ends_mingap_perc,
                                            args.crop_ends_redefine_perc)
         # Track what has been removed
+        CMT.end_mem_time(crop_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
         markupdict['crop_ends'] = r
         removed_positions.update(r)
         # Check there are still some positions left
@@ -458,9 +488,11 @@ def runCleaning(args, log, arr, nams):
         log.info("Removing short sequences")
         if not args.silent:
             print("Removing short sequences")
+        short_cmt = CMT.start_mem_time("short")
         arr, r = parsingFunctions.removeTooShort(arr, nams, rmfile, log,
                                                  args.remove_min_length)
         # Track what has been removed
+        CMT.end_mem_time(short_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
         nams = utilityFunctions.updateNams(nams, r)
@@ -516,7 +548,7 @@ def runCleaning(args, log, arr, nams):
     return (arr, nams, markupdict, removed_seqs)
 
 
-def runMatrix(args, log, orig_arr, orig_nams, arr, nams):
+def runMatrix(args, log, orig_arr, orig_nams, arr, nams, cmt_seqs, cmt_length):
     '''
     Make similarity matrices
 
@@ -544,11 +576,13 @@ def runMatrix(args, log, orig_arr, orig_nams, arr, nams):
         minoverlap = args.make_simmatrix_minoverlap
         keepgaps = args.make_simmatrix_keepgaps
         dp = args.make_simmatrix_dp
+        in_matrix_cmt = CMT.start_mem_time("input_sim_matrix")
         similarityMatrix.calculateSimilarityMatrix(orig_arr,
                                                    orig_nams,
                                                    minoverlap=minoverlap,
                                                    keepgaps=keepgaps,
                                                    outfile=outf, dp=dp)
+        CMT.end_mem_time(in_matrix_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
     # Output matrix
     # todo: what if only interpret functions are called?
     if args.make_simmatrix_output or args.all_options or args.interpret:
@@ -567,7 +601,7 @@ def runMatrix(args, log, orig_arr, orig_nams, arr, nams):
 
 
 def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
-                      markupdict, typ):
+                      markupdict, typ, cmt_seqs, cmt_length):
     '''
     Plot mini alignments
 
@@ -598,11 +632,13 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
         if not args.silent:
             print("Plotting mini alignment for input")
         outf = "%s_input.%s" % (args.outfile_stem, args.plot_format)
+        in_miniali_cmt = CMT.start_mem_time("input_miniali")
         miniAlignments.drawMiniAlignment(orig_arr, orig_nams, log,
                                          outf, typ, args.plot_dpi,
                                          False, args.plot_width,
                                          args.plot_height,
                                          force_numbers=fn)
+        CMT.end_mem_time(in_miniali_cmt, args.outfile_stem + "_cmt", cmt_seqs, cmt_length)
     # Mini alignment of CIAlign output
     # todo: what if only interpret functions are called?
     if args.plot_output or args.all_options or args.visualise:
@@ -759,6 +795,9 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
         figrowlength = args.sequence_logo_nt_per_row
         logo_start = args.logo_start
         logo_end = args.logo_end
+        if logo_end < logo_start:
+            print("Error! The start should be smaller than the end for the sequence logo!")
+            exit()
         # Sequence logo bar chart
         if args.sequence_logo_type == 'bar':
             log.info("Generating sequence logo bar chart")
@@ -766,7 +805,6 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
                 print("Generating sequence logo bar chart")
             out = "%s_logo_bar.%s" % (args.outfile_stem,
                                       args.sequence_logo_filetype)
-
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=figdpi,
                                            figrowlength=figrowlength,
