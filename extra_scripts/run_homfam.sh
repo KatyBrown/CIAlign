@@ -12,5 +12,5 @@ for f in $FILES
     echo $f
     # python3 check_length.py $f
 
-    python3 /home/charlotte/CIAlign/CIAlign/CIAlign.py --infile $f --outfile $OUTFILE_CIAlign --all --logo_start 10 --logo_end 60
+    python3 /home/charlotte/CIAlign/CIAlign/CIAlign.py --infile $f --outfile $OUTFILE_CIAlign --clean --visualise
 done
