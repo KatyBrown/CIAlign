@@ -12,5 +12,9 @@ for f in $FILES
     echo $f
     # python3 check_length.py $f
 
-    python3 /home/charlotte/CIAlign/CIAlign/CIAlign.py --infile $f --outfile $OUTFILE_CIAlign --clean --visualise
+    python3 /home/charlotte/CIAlign/CIAlign/CIAlign.py --infile $f --outfile $OUTFILE_CIAlign"crop_ends" --crop_ends
+    python3 /home/charlotte/CIAlign/CIAlign/CIAlign.py --infile $f --outfile $OUTFILE_CIAlign"remove_insertions" --remove_insertions
+    python3 /home/charlotte/CIAlign/CIAlign/CIAlign.py --infile $f --outfile $OUTFILE_CIAlign"remove_divergent" --remove_divergent --remove_divergent_minperc 0.3
+    python3 /home/charlotte/CIAlign/CIAlign/CIAlign.py --infile $f --outfile $OUTFILE_CIAlign"remove_short" --remove_short
+
 done
