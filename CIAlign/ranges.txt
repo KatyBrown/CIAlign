@@ -5,5 +5,3 @@ insertion_min_size	3	1	n_col
 insertion_max_size	200	1	1000
 insertion_min_flank	5	0	n_col/2
 remove_min_length	50	0	n_col
-logo_start	0	0	n_col
-logo_end	0	1	n_col
