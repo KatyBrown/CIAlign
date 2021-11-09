@@ -1,4 +1,3 @@
-### Full output tables for benchmarking analysis with simulated data and for using CIAlign with biological data. Column headings are described at the top of each file.
 
 ### Online Table 1
 Table showing the results of 100 simulations using each of EvolvAGene [1] and INDELible [2] and with the BAliBase reference alignments [3], cleaned with CIAlign with relaxed, moderate and stringent settings.
@@ -13,15 +12,18 @@ Table showing the results of running CIAlign on the HomFam reference alignments 
 Table showing the results of comparing the secondary protein structure for reference sequences provided with the QuanTest2 [6] tool and secondary structure for these reference sequences once incorporated into a test alignment, before and after running CIAlign.
 
 ### Online Table 5
-Table showing the results of 100 simulations using each of EvolvAGene [1] and INDELible [2] and with the BAliBase reference alignments [3], cleaned with CIAlign with relaxed, moderate and stringent settings, using a large selection of different alignment tools.
+Table showing the results of 100 simulations using each of EvolvAGene [1] and INDELible [2], cleaned with CIAlign with relaxed, moderate and stringent settings, using a large selection of different alignment tools.
 
 ### Online Table 6
-Table showing the results of cleaning the simulated alignments using CIAlign with relaxed, moderate and stringent settings plus the results of using other tools GBlocks [7], TrimAl[8] and ZORRO [9].
+Table showing the results of 100 simulations using each of EvolvAGene [1] and INDELible [2], cleaned with CIAlign with relaxed, moderate and stringent settings and with the trimming tools GBlocks[7], TrimAl[8] and ZORRO[9].
 
 ### Online Table 7
-Table showing the results of cleaning Pfam seed and full alignments [10] using CIAlign.
+Table showing the impact of removing gaps then realigning sequences after running CIAlign under stringent, moderate and relaxed settings, calculated as the sum of pairs score between the original cleaned alignment and the realigned version.
 
 ### Online Table 8
+Table showing the results of cleaning Pfam seed and full alignments [10] using CIAlign.
+
+### Online Table 9
 Table showing the results of cleaning FASTA files containing indels from the 1000 genomes project [11] using CIAlign.
 
 ## References
