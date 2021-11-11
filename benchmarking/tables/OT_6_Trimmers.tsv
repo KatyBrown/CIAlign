@@ -3,7 +3,7 @@
 # Simulation Tool: EvolvAGene or INDELible
 # Number of positions: total number of positions in the alignment
 # Alignment_Tool: Software used to align the sequences
-# Trimming Tool: Tool used to trim the alignments, Relaxed, Moderate and Stringent are CIAlign with parameter settings as listed in Supplementary Table 2, None means without running any trimmer.
+# Trimming Tool: Tool used to trim the alignments, Relaxed, Moderate and Stringent are CIAlign with parameter settings as listed in Supplementary Table 1, None means without running any trimmer.
 # Correct_Pairs_Removed: the proportion of correctly aligned pairs of residues in the test alignment which are removed by CIAlign
 # Nt_Removed, Gaps_Removed, Positions_Removed: proportion of non-gap positions, gap positions, all positions removed by the trimming tool, respectively
 #

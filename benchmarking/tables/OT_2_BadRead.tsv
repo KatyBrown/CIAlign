@@ -2,7 +2,7 @@
 # BadRead_Params: the set of BadRead parameters used (see Supplementary Methods)
 # Simulation: Simulation number
 # CIAlign_Stringency: None the alignment was not cleaned with CIAlign and Moderate if CIAlign cleaning was performed with moderate parameters
-# Consensus_NW_Score, Consensus_Alignment_Length, Consensus_Percentage_Similarity and  Consensus_Percentage_Identity are as for Supplementary Table 2.
+# Consensus_NW_Score, Consensus_Alignment_Length, Consensus_Percentage_Similarity and  Consensus_Percentage_Identity are as for Supplementary Table 1.
 # Consensus_NW_Score: Needleman-Wunsch score for a consensus sequence generated from the alignment compared to the input sequence to BadRead
 # Consensus_Alignment_Length, length of alignment of the consensus sequence with the input sequence
 # Consensus_Percentage_Similarity: percentage similarity between the consensus sequence and the input sequence
