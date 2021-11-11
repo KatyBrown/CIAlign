@@ -17,6 +17,7 @@ except ImportError:
 
 
 def run(args, log):
+
     # Basic checks before running
     prelimChecks(args, log)
     # Set up arrays of the sequence names and aligned sequences
@@ -26,6 +27,8 @@ def run(args, log):
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
     functions = whichFunctions(args)
+
+
     if "cleaning" in functions:
         arr, nams, markupdict, removed = runCleaning(args,
                                                      log,
@@ -401,7 +404,6 @@ def runCleaning(args, log, arr, nams):
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
-
         A = parsingFunctions.removeGapOnly(arr,
                                            relativePositions,
                                            rmfile,
@@ -759,6 +761,9 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
         figrowlength = args.sequence_logo_nt_per_row
         logo_start = args.logo_start
         logo_end = args.logo_end
+        if logo_end < logo_start:
+            print("Error! The start should be smaller than the end for the sequence logo!")
+            exit()
         # Sequence logo bar chart
         if args.sequence_logo_type == 'bar':
             log.info("Generating sequence logo bar chart")
@@ -766,7 +771,6 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
                 print("Generating sequence logo bar chart")
             out = "%s_logo_bar.%s" % (args.outfile_stem,
                                       args.sequence_logo_filetype)
-
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=figdpi,
                                            figrowlength=figrowlength,
