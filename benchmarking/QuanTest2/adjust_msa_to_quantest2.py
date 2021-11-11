@@ -208,18 +208,13 @@ def find_removed_cialign(removed_file, arr, nams, keeprows=False):
     return (cleanarr, cleannams, removed_count_total, removed_count_nongap)
 
 
-msa_file = sys.argv[1]#"/Users/lotti/CIAlign_benchmark_structure/QuanTestBla/AAA_muscle.fasta"
-removed_file = sys.argv[2]#"/Users/lotti/CIAlign_benchmark_structure/QuanTestBla/AAA_less_div_removed.txt"
+msa_file = sys.argv[1]
+removed_file = sys.argv[2]
 fake_outfile = sys.argv[3]
 
 arr, nams = readMSA(msa_file)
 arr = np.char.upper(arr)
-# o = np.argsort(nams)
-# nams = np.array(nams)[o]
-# arr = arr[o, :]
 
 (cleanarr, cleannams, removed_count_total, removed_count_nongap) = find_removed_cialign(removed_file, arr, nams)
 
-
-# f = open("/Users/lotti/CIAlign_benchmark_structure/QuanTestBla/AAA_fake.fasta", "a")
 writeOutfile(fake_outfile, cleanarr, cleannams)

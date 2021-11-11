@@ -2,14 +2,16 @@
 __author__ = "fabian"
 __date__ = "2019"
 
-### lotti: send katy in and output actually send her EVERYTHING
-### katy: send lotti examples of stringency
+# Adapted from QuanTest2 available via Higgins et al. (2019)
+# DOI: 10.1093/bioinformatics/btz552,
+# licensed under Creative Commons Attribution License (http://creativecommons.org/licenses/by/4.0/)
 
 import numpy as np
 import copy
 import itertools
 import sys
 import ete3
+import subprocess
 
 import numpy as np
 from Bio import AlignIO
@@ -22,8 +24,6 @@ VERBOSE =  True #True ## default should be 'False'
 VVERBOSE = False #True ## default *definitely* should be 'False'
 RUTHLESS = False #False #True ## tidy up files down-loaded from Jpred, should be 'True'
 UNKNOWN = -1
-import sys
-import subprocess
 
 nFiles_3 = 0
 alnFiles = []
@@ -304,12 +304,6 @@ def ExtractAndScore(blkReg, jobReg, nmeReg, refReg, indiScores, predicted, cia_c
         match = 0
         cia_adjust = 0
         ####
-        print(cia_check[j])
-        print(len(cia_check[j]))
-        print(refReg[0])
-        print(len(refReg[0]))
-        print(states)
-        print(len(states))
         for c in range(len(refReg[j])):
 
             if(cia_check[j][c] == '!'):
@@ -327,10 +321,10 @@ def ExtractAndScore(blkReg, jobReg, nmeReg, refReg, indiScores, predicted, cia_c
                 elif (r != 'H' and r != 'G' and r != 'I' and r != 'E' and r != 'B' and r != '-' and r != 'C') or (s != 'H' and s != 'G' and s != 'I' and s != 'E' and s != 'B' and s != '-' and s != 'C'):
                     print("WARNING: unknown SS status, c={}: r = {} / s = {}".format(c,r,s))
 
-        perc = match/len(refReg[j])*100
+        perc =  match/(len(refReg[j])-cia_adjust)*100
         indiScores[j] = perc
         if VERBOSE:
-            print("there are {} matches out of {} = {}%".format(match,len(refReg[j]),perc))
+            print("there are {} matches out of {} = {}%".format(match,len(refReg[j])-cia_adjust,perc))
 
         logFile.write("{}\t{}\t{}\n".format(nmeReg[j], perc, aux))
 
@@ -375,7 +369,7 @@ def main():
 
         secondary = ssFiles[II]
         cia_file = ciaFiles[II]
-        cia_read, cia_names = msa_fake, names_fake = readMSA(cia_file)
+        cia_read, cia_names = msa_replaced, names_replaced = readMSA(cia_file)
 
         try:
             ssFilePtr = open(secondary,"r")
