@@ -4,13 +4,15 @@ import unittest
 from unittest import mock
 from mock import patch
 from parameterized import parameterized, parameterized_class
-
+import matplotlib.font_manager
 import sys
 import logging
 import numpy as np
 from Bio import AlignIO
 import os
 from os import path
+
+import warnings
 
 import CIAlign
 
@@ -23,7 +25,7 @@ class UtilityFunctionsgetColoursTests(unittest.TestCase):
     def testGetAAColours(self):
         AAcolours = utilityFunctions.getAAColours()
 
-        self.assertEqual(len(AAcolours), 26)
+        self.assertEqual(len(AAcolours), 28)
 
     def testGetNtColours(self):
         Ntcolours = utilityFunctions.getNtColours()
@@ -112,6 +114,9 @@ class UtilityFunctionsListFontsTest(unittest.TestCase):
         os.remove(self.outfile)
 
     def testListFonts(self):
-        utilityFunctions.listFonts(self.outfile)
+        with warnings.catch_warnings():
+            # Don't raise warnings for missing glyphs
+            warnings.filterwarnings('ignore')
+            utilityFunctions.listFonts(self.outfile)
 
-        self.assertTrue(os.path.isfile(self.outfile))
+            self.assertTrue(os.path.isfile(self.outfile))

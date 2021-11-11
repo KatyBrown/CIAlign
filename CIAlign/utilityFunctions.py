@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import warnings
+import matplotlib.font_manager
 matplotlib.use('Agg')
 
 
@@ -333,7 +334,10 @@ def listFonts(outfile):
     with warnings.catch_warnings():
         # Don't raise warnings for missing glyphs
         warnings.filterwarnings('ignore', message='Glyph')
-        matplotlib.font_manager._rebuild()
+        try:
+            matplotlib.font_manager._rebuild()
+        except AttributeError:
+                pass
         flist = matplotlib.font_manager.get_fontconfig_fonts()
         flist2 = set()
         checkglyphs = [108, 112, 65, 71, 84, 67]
