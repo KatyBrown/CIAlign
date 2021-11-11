@@ -1,0 +1,6 @@
+function, time (s), memory (MB), number of sequences, length
+all_core_functions, 101.54,	258.44,	2140,	2907
+all_core_functions, 1030.62,	689,	2000,	3000
+all_core_functions, 833.82,	691.66,	2000,	3000
+all_core_functions, 581.84,	674.2,	2000,	3000
+all_core_functions, 561.05,	712,	2000,	3000
