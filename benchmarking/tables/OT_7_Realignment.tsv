@@ -3,7 +3,7 @@
 # Simulation Tool: EvolvAGene or INDELible
 # Number of positions: total number of positions in the alignment
 # Alignment_Tool: Software used to align the sequences
-# CIAlign_Stringency: CIAlign stringency - relaxed, moderate or stringent settings as listed in Supplementary Table 2
+# CIAlign_Stringency: CIAlign stringency - relaxed, moderate or stringent settings as listed in Supplementary Table 1
 # Sum_of_Pairs_Score: Sum of pairs score comparing the original alignment cleaned with CIAlign to the alignment after removing gaps and rerunning the alignment software
 #
 Simulation	Simulation_Tool	Alignment_Tool	CIAlign_Stringency	Sum_of_Pairs_Score
