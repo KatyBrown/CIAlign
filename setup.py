@@ -25,6 +25,7 @@ setuptools.setup(
      packages=setuptools.find_packages(),
      package_dir={'cialign':'cialign'},
      package_data={'cialign': ['CIAlign/*.txt']},
+     include_package_data=True,
      install_requires=['matplotlib', 'numpy', 'ConfigArgParse', 'pillow'],
      scripts=['CIAlign/CIAlign'],
      classifiers=[

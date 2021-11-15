@@ -1,2 +1,5 @@
 include *.md
-recursive-include my_package *.txt
+include *.in
+include LICENSE
+recursive-include CIAlign *.txt
+recursive-include CIAlign *.py
