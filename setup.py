@@ -23,7 +23,8 @@ setuptools.setup(
      long_description_content_type="text/markdown",
      url="https://github.com/KatyBrown/CIAlign",
      packages=setuptools.find_packages(),
-     include_package_data=True,
+     package_dir={'cialign':'cialign'},
+     package_data={'cialign': ['CIAlign/*.txt']},
      install_requires=['matplotlib', 'numpy', 'ConfigArgParse', 'pillow'],
      scripts=['CIAlign/CIAlign'],
      classifiers=[
