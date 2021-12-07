@@ -306,3 +306,4 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     f.savefig(outfile, dpi=dpi, bbox_inches='tight')
     if ret:
         return (f)
+    plt.close()

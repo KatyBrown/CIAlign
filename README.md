@@ -1,5 +1,6 @@
 # CIAlign
 ---
+[![CI](https://github.com/KatyBrown/CIAlign/actions/workflows/main.yml/badge.svg?branch=CI_testing)](https://github.com/KatyBrown/CIAlign/actions/workflows/main.yml)
 
 CIAlign is a command line tool which performs various functions to clean and analyse a multiple sequence alignment (MSA).
 

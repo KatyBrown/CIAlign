@@ -154,7 +154,8 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
         f.subplots_adjust(top=1, bottom=0, right=1, left=0,
                           wspace=None, hspace=None)
         a.set_frame_on(False)
-        # temporarily safe plot in working directory
+        # temporarily save plot in working directory
+        base = base.replace("*", "stop")
         f.savefig("%s_temp.png" % base, dpi=500,
                   pad_inches=0.1)
         plt.close()
@@ -384,7 +385,8 @@ def sequence_logo(alignment,
             Z = sorted(Z, key=lambda x: x[1])
             for base, height in Z:
                 if height > 0:
-                    L = plt.imread("%s_temp.png" % base)
+                    b = base.replace("*", "stop")
+                    L = plt.imread("%s_temp.png" % b)
                     a.imshow(L, extent=(i, i+1, height_sum_higher,
                                         height_sum_higher+height),
                              filternorm=False)
@@ -407,7 +409,8 @@ def sequence_logo(alignment,
     elif typ == 'aa':
         allbases = utilityFunctions.getAAColours()
     for base in allbases:
-        os.unlink("%s_temp.png" % base)
+        b = base.replace("*", "stop")
+        os.unlink("%s_temp.png" % b)
     # save plot using figname
     f.savefig(figname, dpi=figdpi, bbox_inches='tight')
     plt.close()

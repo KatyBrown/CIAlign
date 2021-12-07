@@ -123,13 +123,15 @@ class ConsensusSeqNtLettersTests(unittest.TestCase):
     def tearDown(self):
         # for each possible base/aa delete plot
         for base in self.coloursNT.keys():
-            os.remove("%s_temp.png" % base)
+            b = base.replace("*", "stop")
+            os.remove("%s_temp.png" % b)
 
     def testGetLetters(self):
         consensusSeq.getLetters('nt','monospace',500)
 
         for base in self.coloursNT.keys():
-            self.assertTrue(os.path.isfile("%s_temp.png" % base))
+            b = base.replace("*", "stop")
+            self.assertTrue(os.path.isfile("%s_temp.png" % b))
 
 class ConsensusSeqAALettersTests(unittest.TestCase):
 
@@ -139,13 +141,15 @@ class ConsensusSeqAALettersTests(unittest.TestCase):
     def tearDown(self):
         # for each possible base/aa delete plot
         for base in self.coloursAA.keys():
-            os.remove("%s_temp.png" % base)
+            b = base.replace("*", "stop")
+            os.remove("%s_temp.png" % b)
 
     def testGetLetters(self):
         consensusSeq.getLetters('aa','monospace',500)
 
         for base in self.coloursAA.keys():
-            self.assertTrue(os.path.isfile("%s_temp.png" % base))
+            b = base.replace("*", "stop")
+            self.assertTrue(os.path.isfile("%s_temp.png" % b))
 
 class ConsensusSeqCoveragePlotTest(unittest.TestCase):
 
@@ -167,8 +171,9 @@ class ConsensusSeqSequenceLogoTest(unittest.TestCase):
     def tearDown(self):
         coloursNT = CIAlign.utilityFunctions.getNtColours()
         for base in coloursNT.keys():
-            if os.path.exists("%s_temp.png" % base):
-                os.remove("%s_temp.png" % base)
+            b = base.replace("*", "stop")
+            if os.path.exists("%s_temp.png" % b):
+                os.remove("%s_temp.png" % b)
         os.remove(self.dest)
 
     def testMakeCoveragePlot(self):
@@ -184,8 +189,9 @@ class ConsensusSeqCoverageSequenceLogoBarTest(unittest.TestCase):
     def tearDown(self):
         coloursAA = CIAlign.utilityFunctions.getAAColours()
         for base in coloursAA.keys():
-            if os.path.exists("%s_temp.png" % base):
-                os.remove("%s_temp.png" % base)
+            b = base.replace("*", "stop")
+            if os.path.exists("%s_temp.png" % b):
+                os.remove("%s_temp.png" % b)
         os.remove(self.dest)
 
     def testMakeCoveragePlot(self):

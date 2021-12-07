@@ -11,6 +11,7 @@ import numpy as np
 from Bio import AlignIO
 import os
 from os import path
+import sys
 
 import warnings
 
@@ -111,12 +112,14 @@ class UtilityFunctionsListFontsTest(unittest.TestCase):
         self.outfile = "listFonts_test.png"
 
     def tearDown(self):
-        os.remove(self.outfile)
+        if os.path.exists(self.outfile):
+            os.remove(self.outfile)
 
     def testListFonts(self):
         with warnings.catch_warnings():
             # Don't raise warnings for missing glyphs
             warnings.filterwarnings('ignore')
-            utilityFunctions.listFonts(self.outfile)
-
-            self.assertTrue(os.path.isfile(self.outfile))
+            plat = sys.platform
+            if plat != "win32" and plat != "cygwin":
+                utilityFunctions.listFonts(self.outfile)
+                self.assertTrue(os.path.isfile(self.outfile))
