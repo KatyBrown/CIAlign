@@ -365,7 +365,7 @@ def listFonts(outfile):
         a.set_ylim(0, len(flist2))
         a.set_xlim(0, 1)
         a.text(-0.1, -1, "*Fonts shown as [] cannot be displayed with CIAlign")
-
+        i = 0
         for i, fname in enumerate(flist2):
             a.text(0.7, i, "ACTG", fontdict={'name': fname, 'size': 14})
             a.text(0, i, fname, fontsize=10)
