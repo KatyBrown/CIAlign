@@ -111,7 +111,8 @@ class UtilityFunctionsListFontsTest(unittest.TestCase):
         self.outfile = "listFonts_test.png"
 
     def tearDown(self):
-        os.remove(self.outfile)
+        if os.path.exists(self.outfile):
+            os.remove(self.outfile)
 
     def testListFonts(self):
         with warnings.catch_warnings():
