@@ -1,0 +1,38 @@
+name: CI
+
+# We can specify which Github events will trigger a CI build
+on: push
+
+# now define a single job 'build' (but could define more)
+jobs:
+
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        python-version: [ 3.7, 3.8 ]
+
+    # a job is a seq of steps
+    steps:
+
+      # Next we need to checkout out repository, and set up Python
+      # A 'name' is just an optional label shown in the log - helpful to clarify progress - and can be anything
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+          pip3 install -e .
+
+      - name: Test with PyTest
+        run: |
+          pytest tests/*.py
