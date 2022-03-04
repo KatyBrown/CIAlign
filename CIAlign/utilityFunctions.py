@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import warnings
 import matplotlib.font_manager
 import sys
+try:
+    import CIAlign.palettes as palettes
+except ImportError:
+    import palettes
 matplotlib.use('Agg')
 
 
@@ -95,16 +99,42 @@ def FastaToArray(infile, log=None, outfile_stem=None):
     return (arr, nams[1:])
 
 
-def getAAColours():
+def getPalette(palette='CBS'):
+    '''
+    Generates a dictionary which assigns a name to each colour using a colour
+    blindness safe palette, generated using
+    https://medialab.github.io/iwanthue/
+    Parameters
+    ----------
+    palette: str
+        The ID of the palette to be used, currently only colour blind safe
+        (CBS) is implemented.
+
+    Returns
+    -------
+    dict
+        Dictionary where keys are names of colours and
+        values are hexadecimal codes for colours
+    '''
+    if palette.lower() == 'cbs':
+        p = palettes.CBSafe()
+
+    return (p)
+
+
+def getAAColours(pal='CBS'):
     '''
     Generates a dictionary which assigns a colour to each amino acid.
     Based on the "RasmMol" amino colour scheme and the table here:
         http://acces.ens-lyon.fr/biotic/rastop/help/colour.htm
-    (plus grey for "X" and white for "-")
+    approximated using a CB safe palette generated using
+    https://medialab.github.io/iwanthue/
 
     Parameters
     ----------
-    None
+    pal: str
+        A string designating which palette to use, currently only colour blind
+        safe (CBS) is implemented.
 
     Returns
     -------
@@ -112,44 +142,47 @@ def getAAColours():
         Dictionary where keys are single letter amino acid codes and
         values are hexadecimal codes for colours
     '''
-    return {'D': '#E60A0A',
-            'E': '#E60A0A',
-            'C': '#E6E600',
-            'M': '#E6E600',
-            'K': '#145AFF',
-            'R': '#145AFF',
-            'S': '#FA9600',
-            'T': '#FA9600',
-            'F': '#3232AA',
-            'Y': '#3232AA',
-            'N': '#00DCDC',
-            'Q': '#00DCDC',
-            'G': '#EBEBEB',
-            'L': '#0F820F',
-            'V': '#0F820F',
-            'I': '#0F820F',
-            'A': '#C8C8C8',
-            'W': '#B45AB4',
-            'H': '#8282D2',
-            'P': '#DC9682',
-            'X': '#b2b2b2',
-            '-': '#FFFFFF00',
-            'B': '#b2b2b2',
-            'Z': '#b2b2b2',
-            'J': '#b2b2b2',
-            '*': '#FFFFFF00',
-            'U': '#b2b2b2',
-            'O': '#b2b2b2'
+    pal = getPalette(palette=pal)
+    return {'D': pal['red_aa'],
+            'E': pal['red_aa'],
+            'C': pal['yellow_aa'],
+            'M': pal['yellow_aa'],
+            'K': pal['blue_aa'],
+            'R': pal['blue_aa'],
+            'S': pal['orange_aa'],
+            'T': pal['orange_aa'],
+            'F': pal['midblue_aa'],
+            'Y': pal['midblue_aa'],
+            'N': pal['cyan_aa'],
+            'Q': pal['cyan_aa'],
+            'G': pal['lightgrey_aa'],
+            'L': pal['green_aa'],
+            'V': pal['green_aa'],
+            'I': pal['green_aa'],
+            'A': pal['darkgrey_aa'],
+            'W': pal['purple_aa'],
+            'H': pal['paleblue_aa'],
+            'P': pal['peach_aa'],
+            'X': pal['black'],
+            '-': pal['white'],
+            'B': pal['tan_aa'],
+            'Z': pal['tan_aa'],
+            'J': pal['tan_aa'],
+            '*': pal['white'],
+            'U': pal['tan_aa'],
+            'O': pal['tan_aa']
             }
 
 
-def getNtColours():
+def getNtColours(pal='CBS'):
     '''
     Generates a dictionary which assigns a colour to each nucleotide (plus grey
     for "N" and white for "-")
     Parameters
     ----------
-    None
+    pal: str
+        A string designating which palette to use, currently only colour blind
+        safe (CBS) is implemented.
 
     Returns
     -------
@@ -157,24 +190,48 @@ def getNtColours():
         Dictionary where keys are single letter nucleotide codes and
         values are hexadecimal codes for colours
     '''
-    return {'A': '#1ed30f',
-            'G': '#f4d931',
-            'T': '#f43131',
-            'C': '#315af4',
-            'N': '#b2b2b2',
-            "-": '#FFFFFF',
-            "U": '#f43131',
-            "R": '#b2b2b2',
-            "Y": '#b2b2b2',
-            "S": '#b2b2b2',
-            "W": '#b2b2b2',
-            "K": '#b2b2b2',
-            "M": '#b2b2b2',
-            "B": '#b2b2b2',
-            "D": '#b2b2b2',
-            "H": '#b2b2b2',
-            "V": '#b2b2b2',
-            "X": '#b2b2b2'}
+    pal = getPalette(palette=pal)
+    return {'A': pal['green_nt'],
+            'G': pal['yellow_nt'],
+            'T': pal['red_nt'],
+            'C': pal['blue_nt'],
+            'N': pal['grey_nt'],
+            "-": pal['white'],
+            "U": pal['red_nt'],
+            "R": pal['grey_nt'],
+            "Y": pal['grey_nt'],
+            "S": pal['grey_nt'],
+            "W": pal['grey_nt'],
+            "K": pal['grey_nt'],
+            "M": pal['grey_nt'],
+            "B": pal['grey_nt'],
+            "D": pal['grey_nt'],
+            "H": pal['grey_nt'],
+            "V": pal['grey_nt'],
+            "X": pal['grey_nt']}
+
+
+def getMarkupColours(pal='CBS'):
+    '''
+    Generates a dictionary which assigns a colour to each markup type
+    Parameters
+    ----------
+    pal: str
+        A string designating which palette to use, currently only colour blind
+        safe (CBS) is implemented.
+
+    Returns
+    -------
+    dict
+        Dictionary where keys are CIAlign cleaning function names and
+        values are hexadecimal codes for colours
+    '''
+    pal = getPalette(palette=pal)
+    return {'remove_insertions': pal['remove_insertions'],
+            'crop_ends': pal['crop_ends'],
+            'remove_gaponly': pal['remove_gaponly'],
+            'remove_short': pal['remove_short'],
+            'remove_divergent': pal['remove_divergent']}
 
 
 def writeOutfile(outfile, arr, nams, removed, rmfile=None):
