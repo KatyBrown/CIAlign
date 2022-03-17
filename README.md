@@ -31,6 +31,7 @@ This allows the user to:
 ## Citation
 
 If you found CIAlign useful, please cite: 
+
 [Tumescheit C, Firth AE, Brown K. 2022. CIAlign: A highly customisable command line tool to clean, interpret and visualise multiple sequence alignments. PeerJ 10:e12983 https://doi.org/10.7717/peerj.12983](https://peerj.com/articles/12983/)
 
 ## Requirements
