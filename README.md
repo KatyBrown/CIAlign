@@ -3,8 +3,6 @@
 
 CIAlign is a command line tool which performs various functions to clean and analyse a multiple sequence alignment (MSA).
 
-If you found CIAlign useful, please cite [Tumescheit C, Firth AE, Brown K. 2022. CIAlign: A highly customisable command line tool to clean, interpret and visualise multiple sequence alignments. PeerJ 10:e12983 https://doi.org/10.7717/peerj.12983](https://peerj.com/articles/12983/).
-
 CIAlign is designed to be highly customisable, allowing users to specify exactly which functions to run and which settings to use. It is also transparent, generating a clear log file and alignment markup showing exactly how the alignment has changed and what has been removed by which function.
 
 This allows the user to:
@@ -35,6 +33,11 @@ This allows the user to:
 * matplotlib >= 2.1.1
 * numpy >= 1.16.3
 * scipy >= 1.3.0
+
+## Citation
+
+If you found CIAlign useful, please cite: 
+[Tumescheit C, Firth AE, Brown K. 2022. CIAlign: A highly customisable command line tool to clean, interpret and visualise multiple sequence alignments. PeerJ 10:e12983 https://doi.org/10.7717/peerj.12983](https://peerj.com/articles/12983/)
 
 ## Installation
 The easiest way to install CIAlign is using pip3:
