@@ -228,8 +228,9 @@ def getParser():
     # # Remove Insertions
     optional.add("--remove_insertions", dest="remove_insertions",
                  action="store_true",
-                 help="Remove insertions found in <= 50 percent of sequences \
-                       from the alignment. Default: %(default)s")
+                 help="Remove insertions found in <= insertion_min_perc \
+                 percent of sequences from the alignment. \
+                 Default: %(default)s")
 
     optional.add("--insertion_min_size", dest="insertion_min_size",
                  type=int_range(minis['insertion_min_size'],
@@ -264,6 +265,17 @@ def getParser():
                  metavar="(int, %s..%s)" % (
                      minis['insertion_min_flank'],
                      maxis['insertion_min_flank']))
+
+    optional.add("--insertion_min_perc", dest="insertion_min_perc",
+                 type=float_range(minis['insertion_min_perc'],
+                                  maxis['insertion_min_perc']),
+                 default=defs['insertion_min_perc'],
+                 help="Remove insertions which are present in less than this \
+                       proportion of sequences.\
+                       Default: %(default)s",
+                 metavar="(float, %s..%s)" % (
+                     minis['insertion_min_perc'],
+                     maxis['insertion_min_perc']))
 
     # Remove Short
     optional.add("--remove_short", dest="remove_short",

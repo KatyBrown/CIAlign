@@ -147,7 +147,7 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
 
 
 def removeInsertions(arr, relativePositions, rmfile, log,
-                     min_size, max_size, min_flank):
+                     min_size, max_size, min_flank, min_perc):
     '''
     Removes insertions which are not present in the majority of sequences.
     Insertions are removed if they are between min_size and
@@ -206,6 +206,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
                 put_indels += list(x)
     put_indels = set(put_indels)
     put_indels = np.array(sorted(list(put_indels)))
+
     # for the putative indels, check if there are more sequences
     # with a gap at this position (but with sequence on either side)
     # than with no gap (but with sequence on either side)
@@ -225,8 +226,11 @@ def removeInsertions(arr, relativePositions, rmfile, log,
                 leftsum >= min_flank) & (rightsum >= min_flank)))
         lacks_region = (sum((pcol_gaps) & (
                 leftsum >= min_flank) & (rightsum >= min_flank)))
-        if lacks_region > covers_region:
-            absolutePositions.add(p)
+
+        if lacks_region + covers_region != 0:
+            prop_with_insertion = covers_region / (lacks_region + covers_region)
+            if prop_with_insertion <= min_perc:
+                absolutePositions.add(p)
         i += 1
 
     # make a list of positions to remove

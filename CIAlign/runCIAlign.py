@@ -390,7 +390,8 @@ def runCleaning(args, log, arr, nams):
                                               log,
                                               args.insertion_min_size,
                                               args.insertion_max_size,
-                                              args.insertion_min_flank)
+                                              args.insertion_min_flank,
+                                              args.insertion_min_perc)
 
         # Track what has been removed
         arr, r, relativePositions = A
