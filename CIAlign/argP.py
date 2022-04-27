@@ -168,10 +168,12 @@ def getParser():
                  action="store_true",
                  help="Plot all mini alignments with default parameters.")
 
-    # parameter to run all interpreation functions except creating sequence logos without having to type them in
+    # parameter to run all interpreation functions except creating sequence
+    # logos without having to type them in
     optional.add("--interpret", dest="interpret",
                  action="store_true",
-                 help="Use all interpreting functions with default parameters.")
+                 help="Use all interpreting functions with default \
+                 parameters.")
 
     # Runtime
     optional.add("--silent", dest='silent',

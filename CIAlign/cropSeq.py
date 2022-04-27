@@ -45,8 +45,12 @@ def determineStartEnd(sequence, name, log,
     mingap = int(mingap_perc*len(gaps))
     # print("mingap:", mingap)
     if mingap < 2 and len(gaps) > 20:
-        log.warning("Given the length of sequence %s, the mingap_perc threshold is too low and the change in gap numbers was replaced by 2." % name)
-        print("Given the length of sequence %s, the mingap_perc threshold is too low and the change in gap numbers was replaced by 2.\n" % name)
+        log.warning("Given the length of sequence %s, the mingap_perc \
+                    threshold is too low and the change in gap numbers \
+                    was replaced by 2." % name)
+        print("Given the length of sequence %s, the mingap_perc threshold \
+              is too low and the change in gap numbers was replaced \
+              by 2.\n" % name)
 
     start = findValue(sequence, mingap_perc, redefine_perc)
     # put in reverse for end

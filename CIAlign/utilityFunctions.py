@@ -391,14 +391,15 @@ def listFonts(outfile):
     '''
     plat = sys.platform
     if plat == "win32" or plat == "cygwin":
-        raise RuntimeError ("The list fonts function is currently unavailable in Windows")
+        raise RuntimeError("The list fonts function is currently \
+                            unavailable in Windows")
     with warnings.catch_warnings():
         # Don't raise warnings for missing glyphs
         warnings.filterwarnings('ignore', message='Glyph')
         try:
             matplotlib.font_manager._rebuild()
         except AttributeError:
-                pass
+            pass
         flist = matplotlib.font_manager.get_fontconfig_fonts()
         flist2 = set()
         checkglyphs = [108, 112, 65, 71, 84, 67]

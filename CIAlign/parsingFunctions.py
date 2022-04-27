@@ -149,10 +149,11 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
 def removeInsertions(arr, relativePositions, rmfile, log,
                      min_size, max_size, min_flank, min_perc):
     '''
-    Removes insertions which are not present in the majority of sequences.
+    Removes insertions which are not present in > min_perc proportion of
+    sequences.
     Insertions are removed if they are between min_size and
-    max_size residues and more than half of sequences with >= min_flank
-    residues on either side of the insertion have the insertion.
+    max_size residues and more than min_perc proportion of sequences where
+    >= min_flank residues on either side of the insertion have the insertion.
 
     Parameters
     ----------
@@ -165,6 +166,16 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         Path to a file in which to store a list of removed sequences
     log: logging.Logger
         An open log file object
+    min_size: int
+        Only remove insertions >= this number of residues.
+    max_size: int
+        Only remove insertions <= this number of residues.
+    min_flank: int
+        Minimum number of bases on either side of an insertion
+        to classify it as an insertion.
+    min_perc: float
+        Remove insertions which are present in less than this
+        proportion of sequences. Default: 0.5
 
 
     Returns
@@ -228,7 +239,8 @@ def removeInsertions(arr, relativePositions, rmfile, log,
                 leftsum >= min_flank) & (rightsum >= min_flank)))
 
         if lacks_region + covers_region != 0:
-            prop_with_insertion = covers_region / (lacks_region + covers_region)
+            prop_with_insertion = covers_region / (lacks_region +
+                                                   covers_region)
             if prop_with_insertion <= min_perc:
                 absolutePositions.add(p)
         i += 1

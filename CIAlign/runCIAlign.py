@@ -28,7 +28,6 @@ def run(args, log):
     orig_nams = copy.copy(nams)
     functions = whichFunctions(args)
 
-
     if "cleaning" in functions:
         arr, nams, markupdict, removed = runCleaning(args,
                                                      log,
@@ -357,7 +356,8 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove gaps created by remove divergent
-    if (args.remove_divergent and args.remove_gaponly) or args.all_options or args.clean:
+    if (args.remove_divergent
+            and args.remove_gaponly) or args.all_options or args.clean:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -401,7 +401,8 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove gaps created by remove insertions
-    if (args.remove_insertions and args.remove_gaponly) or args.all_options or args.clean:
+    if (args.remove_insertions
+            and args.remove_gaponly) or args.all_options or args.clean:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -437,7 +438,8 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove empty columns created by crop ends
-    if (args.crop_ends and args.remove_gaponly) or args.all_options or args.clean:
+    if (args.crop_ends
+            and args.remove_gaponly) or args.all_options or args.clean:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -471,7 +473,8 @@ def runCleaning(args, log, arr, nams):
         utilityFunctions.checkArrLength(arr, log)
 
     # Remove empty columns created by remove short
-    if (args.remove_short and args.remove_gaponly) or args.all_options or args.clean:
+    if (args.remove_short
+            and args.remove_gaponly) or args.all_options or args.clean:
         log.info("Removing gap only columns")
         if not args.silent:
             print("Removing gap only columns")
@@ -763,7 +766,8 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
         logo_start = args.logo_start
         logo_end = args.logo_end
         if logo_end < logo_start:
-            print("Error! The start should be smaller than the end for the sequence logo!")
+            print("Error! The start should be smaller than the end for the \
+                  sequence logo!")
             exit()
         # Sequence logo bar chart
         if args.sequence_logo_type == 'bar':

@@ -345,8 +345,8 @@ def sequence_logo(alignment,
         alignment_width = len(alignment[0, :])
     else:
         if end == 0:
-            end = len(alignment[0,:])
-        alignment_width = len(alignment[0,start:end])
+            end = len(alignment[0, :])
+        alignment_width = len(alignment[0, start:end])
 
     if alignment_width < figrowlength:
         figrowlength = alignment_width
@@ -463,8 +463,8 @@ def sequence_bar_logo(alignment,
         alignment_width = len(alignment[0, :])
     else:
         if end == 0:
-            end = len(alignment[0,:])
-        alignment_width = len(alignment[0,start:end])
+            end = len(alignment[0, :])
+        alignment_width = len(alignment[0, start:end])
 
     if alignment_width < figrowlength:
         figrowlength = alignment_width
@@ -583,7 +583,7 @@ def calc_entropy(count, seq_count, typ):
         entropy_per_base[element] = 0
 
     # correct for small sample sizes
-    sample_size_correction = (1/log(s,2)) * ((s-1)/(2*seq_count))
+    sample_size_correction = (1/log(s, 2)) * ((s-1)/(2*seq_count))
     gap_correction = seq_count
     if count.get("-"):
         seq_count -= count.get("-")
@@ -605,7 +605,8 @@ def calc_entropy(count, seq_count, typ):
     # if the information content is constant throughout the column,
     # these value will be negative. Since this does not add any information
     # set them to 0
-    # they can be negative due to the sample size correction (otherwise they'd be 0)
+    # they can be negative due to the sample size correction
+    # (otherwise they'd be 0)
     for base, quantity in info_per_base.items():
         if freq_per_base[base]*information_per_column < 0:
             height_per_base[base] = 0

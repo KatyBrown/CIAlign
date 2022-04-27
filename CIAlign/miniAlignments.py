@@ -112,10 +112,10 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                                 [boundary[0][0]-0.5, y-0.5],
                                 (boundary[0][-1] - boundary[0][0]) + 1,
                                 1, color=colour, lw=0, zorder=50))
-                a.hlines(y, boundary[0][0]-0.5, boundary[0][-1]+0.5, zorder=51, color='black',
+                a.hlines(y, boundary[0][0]-0.5, boundary[0][-1]+0.5,
+                         zorder=51, color='black',
                          lw=lineweight_h)
-               # a.plot([boundary[0][0]-0.5, boundary[0][-1]+0.5], [y-0.5, y+0.5], zorder=51, color='black',
-                #       lw=lineweight_h, solid_capstyle='butt')
+
             # right end of the sequence
             if boundary[1].shape[0] > 0:
                 a.add_patch(
@@ -123,10 +123,9 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                                 [boundary[1][0]-0.5, y-0.5],
                                 (boundary[1][-1] - boundary[1][0]) + 1,
                                 1, color=colour, lw=0, zorder=50))
-                a.hlines(y, boundary[1][0]-0.5, boundary[1][-1]+0.5, zorder=51, color='black',
-                         lw=lineweight_h )
-               # a.plot([boundary[1][0]-0.5, boundary[1][-1]+0.5], [y-0.5, y+0.5], zorder=51, color='black',
-                #       lw=lineweight_h, solid_capstyle='butt')
+                a.hlines(y, boundary[1][0]-0.5, boundary[1][-1]+0.5,
+                         zorder=51, color='black',
+                         lw=lineweight_h)
 
     # removes whole rows
     if "remove_divergent" in markupdict:
@@ -138,32 +137,20 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                     color=colour, zorder=48, lw=0))
             a.hlines(y+0.5, -0.5, ali_width-0.5, zorder=49, color='black',
                      lw=lineweight_h)
-          #  a.plot([-0.5, ali_width-0.5], [y+0.1, y+0.9], zorder=49, color='black',
-            #       lw=lineweight_h, solid_capstyle='butt')
 
     # removes whole columns
     if "remove_insertions" in markupdict:
         colour = colD['remove_insertions']
-        start = list(markupdict['remove_insertions'])[0]
-      #  p = start
-      #  x = False
+
         for col in markupdict['remove_insertions']:
-            #if x:
-            #    start = p
-           #     x = False
+
             a.add_patch(matplotlib.patches.Rectangle(
                     (col-0.5, -0.5), 1, ali_height, color=colour, zorder=46,
-                    lw=0 ))
+                    lw=0))
             for row in np.arange(ali_height):
                 a.hlines(row, col-0.5, col+0.5, zorder=47, color='black',
-                         lw=lineweight_h )
-           # if p != col - 1 and p != start:
-             #   a.plot([start, col+0.5], [-0.5, ali_height], zorder=47, color='black',
-               #        lw=lineweight_h, solid_capstyle='butt')
-              #  x = True
-          #  p = col
-       # a.plot([start, col+0.5], [-0.5, ali_height], zorder=47, color='black',
-       #    lw=lineweight_h, solid_capstyle='butt')
+                         lw=lineweight_h)
+
     # removes whole rows
     if "remove_short" in markupdict:
         colour = colD['remove_short']
@@ -173,7 +160,7 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                     (-0.5, y), ali_width, 1,
                     color=colour, zorder=44, lw=0))
             a.hlines(y+0.5, -0.5, ali_width-0.5, zorder=45, color='black',
-                     lw=lineweight_h )
+                     lw=lineweight_h)
     # removes whole columns
     if "remove_gaponly" in markupdict:
         colour = colD['remove_gaponly']
@@ -184,7 +171,8 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                                                      zorder=42, lw=0))
             for row in np.arange(ali_height):
                 a.hlines(row, col-0.5, col+0.5, zorder=43, color='black',
-                         lw=lineweight_h )
+                         lw=lineweight_h)
+
 
 def drawMarkUpLegend(outfile):
     '''
@@ -206,12 +194,12 @@ def drawMarkUpLegend(outfile):
     legend = plt.figure(figsize=(2, 2), dpi=100)
     leg = legend.add_subplot(1, 1, 1)
     colours = utilityFunctions.getMarkupColours()
-    
+
     functions = {'crop_ends': 'Cropped Ends',
-                'remove_divergent': 'Too Divergent',
-                'remove_insertions': 'Insertions',
-                'remove_short': 'Too Short',
-                'remove_gaponly': 'Gap Only'}
+                 'remove_divergent': 'Too Divergent',
+                 'remove_insertions': 'Insertions',
+                 'remove_short': 'Too Short',
+                 'remove_gaponly': 'Gap Only'}
     for i, (func, txt) in enumerate(functions.items()):
         leg.plot(1, 5-i, marker='.', color=colours[func], markersize=20)
         leg.text(2, 5-i, txt)

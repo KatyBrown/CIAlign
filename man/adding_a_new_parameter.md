@@ -10,6 +10,7 @@ To add a parameter:
 * Edit the function itself, including adding the parameter to the function definition and describing it in the docstring, add comments if needed to explain your steps
 * Edit the unit tests for the appropriate module file to include the new parameter
 * Run unit tests in the root directoy as `python -m unittest tests/*py` and ensure that they pass
+* Check the code is pep8 compliant by running pep8 CIAlign/*
 
 To edit the manual:
 * Edit man/user_guide_template.md, following the style for the other parameters and adding your parameter. The minimum, maximum and default will be added automatically if you use this style.

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
+
 def base():
     '''
     Returns the hexadecimal values for black and white
-    
+
     Parameters
     ----------
     None
-    
+
     Returns
     -------
     dict
@@ -17,14 +18,15 @@ def base():
     return {'black': '#000000',
             'white': '#FFFFFF'}
 
+
 def CBSafe():
     '''
     Returns the hexadecimal values for a colour blind safe colour palette
-    
+
     Parameters
     ----------
     None
-    
+
     Returns
     -------
     dict
@@ -57,4 +59,3 @@ def CBSafe():
               'remove_gaponly': '#f9c1d2',
               'remove_short': "#c85133"})
     return (b)
-                

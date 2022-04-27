@@ -10,6 +10,7 @@ except ImportError:
     import argP
     import runCIAlign
 
+
 def main():
     # Get and parse the argument parser
     parser = argP.getParser()
@@ -34,6 +35,7 @@ def main():
 
     log.info("\nInitial parameters:\n%s" % str(parser.format_values()))
     runCIAlign.run(args, log)
+
 
 if __name__ == "__main__":
     main()
