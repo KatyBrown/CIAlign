@@ -89,7 +89,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         # in rendering - look for 95% structural similarity
         simi = skimage.metrics.structural_similarity(expected,
                                                      mini_alignment,
-                                                     multichannel=True)
+                                                     channel_axis=-1)
         self.assertTrue(simi > 0.9)
 
     @parameterized.expand([
@@ -115,7 +115,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         # in rendering - look for 95% structural similarity
         simi = skimage.metrics.structural_similarity(expected,
                                                      mini_alignment,
-                                                     multichannel=True)
+                                                     channel_axis=-1)
         self.assertTrue(simi > 0.9)
 
 class DrawMarkUpTest(unittest.TestCase):
