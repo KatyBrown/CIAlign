@@ -1,4 +1,0 @@
-To edit the manual:
-edit user_guide_template.md
-run python update_manual.py
-user_guide.md, user_guide.pdf and ../README.md should be updated
