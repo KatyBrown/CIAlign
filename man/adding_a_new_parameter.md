@@ -13,7 +13,7 @@ To add a parameter:
 * Check the code is pep8 compliant by running `pep8 CIAlign/*`
 
 To edit the manual:
-* Edit [man/user_guide_template.md]((https://github.com/KatyBrown/CIAlign/blob/master/man/user_guide_template.md), following the style for the other parameters and adding your parameter. The minimum, maximum and default will be added automatically if you use this style.
+* Edit [man/user_guide_template.md](https://github.com/KatyBrown/CIAlign/blob/master/man/user_guide_template.md), following the style for the other parameters and adding your parameter. The minimum, maximum and default will be added automatically if you use this style.
 * Run `python man/update_manual.py`, which should update 
-[man/user_guide.md](https://github.com/KatyBrown/CIAlign/blob/master/man/user_guide.md) [man/user_guide.pdf](https://github.com/KatyBrown/CIAlign/blob/master/man/user_guide.pdf) and [README.md](https://github.com/KatyBrown/CIAlign/blob/master/README.md)
+[man/user_guide.md](https://github.com/KatyBrown/CIAlign/blob/master/man/user_guide.md), [man/user_guide.pdf](https://github.com/KatyBrown/CIAlign/blob/master/man/user_guide.pdf) and [README.md](https://github.com/KatyBrown/CIAlign/blob/master/README.md)
 * Commit your changes and make a pull request
