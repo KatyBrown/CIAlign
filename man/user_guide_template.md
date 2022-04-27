@@ -34,6 +34,13 @@ This allows the user to:
 
 * Replace U's by T's
 
+## Citation
+
+If you found CIAlign useful, please cite: 
+
+[Tumescheit C, Firth AE, Brown K. 2022. CIAlign: A highly customisable command line tool to clean, interpret and visualise multiple sequence alignments. PeerJ 10:e12983 https://doi.org/10.7717/peerj.12983](https://peerj.com/articles/12983/)
+
+
 ## Requirements
 * python >= 3.6
 * matplotlib >= 2.1.1
@@ -95,10 +102,11 @@ remove_divergent, remove_insertions and crop_ends require three or more sequence
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False | NA | NA |
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | remove_divergent_minperc_def | remove_divergent_minperc_min | remove_divergent_minperc_max |
-| **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False | NA | NA |
+| **`--remove_insertions`** |  Remove insertions found in <= insertion_min_perc of sequences from the alignment | False | NA | NA |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | insertion_min_size_def | insertion_min_size_min | insertion_min_size_max |
 | *`--insertion_max_size`* |  Only remove insertions <= this number of residues | insertion_max_size_def | insertion_max_size_min | insertion_max_size_max |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | insertion_min_flank_def | insertion_min_flank_min | insertion_min_flank_max |
+| *`--insertion_min_perc`* | Remove insertions which are present in less than this proportion of sequences | insertion_min_perc_def | insertion_min_perc_min | insertion_min_perc_max |
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False | NA | NA |
 | *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | crop_ends_mingap_perc_def | crop_ends_mingap_perc_min | crop_ends_mingap_perc_max |
 | *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. |  crop_ends_redefine_perc_def | crop_ends_redefine_perc_min | crop_ends_redefine_perc_max |

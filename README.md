@@ -1,6 +1,5 @@
 # CIAlign
 ---
-[![CI](https://github.com/KatyBrown/CIAlign/actions/workflows/main.yml/badge.svg?branch=CI_testing)](https://github.com/KatyBrown/CIAlign/actions/workflows/main.yml)
 
 CIAlign is a command line tool which performs various functions to clean and analyse a multiple sequence alignment (MSA).
 
@@ -28,6 +27,13 @@ This allows the user to:
 * Unalign the alignment
 
 * Replace U's by T's
+
+## Citation
+
+If you found CIAlign useful, please cite: 
+
+[Tumescheit C, Firth AE, Brown K. 2022. CIAlign: A highly customisable command line tool to clean, interpret and visualise multiple sequence alignments. PeerJ 10:e12983 https://doi.org/10.7717/peerj.12983](https://peerj.com/articles/12983/)
+
 
 ## Requirements
 * python >= 3.6
@@ -90,10 +96,11 @@ remove_divergent, remove_insertions and crop_ends require three or more sequence
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False | NA | NA |
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.65 | 0 | 1 |
-| **`--remove_insertions`** |  Remove insertions found in <= 50% of sequences from the alignment | False | NA | NA |
+| **`--remove_insertions`** |  Remove insertions found in <= insertion_min_perc of sequences from the alignment | False | NA | NA |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 | 1 | n_col |
 | *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 200 | 1 | 1000 |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5 | 0 | n_col/2 |
+| *`--insertion_min_perc`* | Remove insertions which are present in less than this proportion of sequences | 0.5 | 0 | 1 |
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False | NA | NA |
 | *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 | 0 | 0.5 |
 | *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. |  0.1 | 0 | 0.5 |
