@@ -43,16 +43,17 @@ class CleaningFunctionsTests(unittest.TestCase):
         self.assertTrue((result_ali == exp_array).all())
 
     @parameterized.expand([
-            [3, 100, 5, "./tests/test_files/remove_insertions_cleaned.fasta", ],
-            [20, 100, 5, "./tests/test_files/example1.fasta", ],
-            [3, 100, 30, "./tests/test_files/example1.fasta", ],
+            [3, 100, 5, 0.5, "./tests/test_files/remove_insertions_cleaned.fasta", ],
+            [20, 100, 5, 0.1, "./tests/test_files/example1.fasta", ],
+            [3, 100, 30, 0.9, "./tests/test_files/example1.fasta", ],
     ])
-    def testRemoveInsertions(self, min_size, max_size, min_flank, expected):
+    def testRemoveInsertions(self, min_size, max_size, min_flank, 
+                             min_perc, expected):
         exp_array, names = readMSA(expected)
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
-            result_ali, r, self.relativePositions = parsingFunctions.removeInsertions(self.in_array, self.relativePositions, self.rm_file, mock_debug, min_size, max_size, min_flank)
+            result_ali, r, self.relativePositions = parsingFunctions.removeInsertions(self.in_array, self.relativePositions, self.rm_file, mock_debug, min_size, max_size, min_flank, min_perc)
         # check if dimensions are equal first
         self.assertEqual(result_ali[0,:].size, exp_array[0,:].size)
         self.assertEqual(len(self.in_array), len(result_ali))
