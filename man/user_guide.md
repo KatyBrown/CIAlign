@@ -9,6 +9,8 @@ geometry: [top=2cm, bottom=1.5cm, left=1cm, right=1cm]
 
 CIAlign is a command line tool which performs various functions to clean and analyse a multiple sequence alignment (MSA).
 
+Sign up [here](https://t.co/tTyxFV6LR2) for updates when a new feature is added to CIAlign 
+
 The tool is designed to be highly customisable, allowing users to specify exactly which functions to run and which settings to use. It is also transparent, generating a clear log file and alignment markup showing exactly how the alignment has changed and what has been removed by which function.
 
 This allows the user to:
