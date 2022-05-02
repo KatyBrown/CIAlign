@@ -1,6 +1,6 @@
 ---
 title: CIAlign - Clean and Interpret Alignments
-author: Charlotte Tumescheit, Dr. Katherine Brown, Dr. Andrew E. Firth
+author: Charlotte Tumescheit, Dr. Andrew E. Firth, Dr. Katherine Brown
 documentclass: article
 fontsize: 10pt
 mainfont: FreeSans
@@ -50,9 +50,17 @@ If you found CIAlign useful, please cite:
 * scipy >= 1.3.0
 
 ## Installation
-The easiest way to install CIAlign is using pip3:
+The easiest way to install CIAlign is using conda or pip3.
 
+### Conda
+`conda install -c bioconda cialign`
+
+[link](https://anaconda.org/bioconda/cialign)
+
+### pip3
 `pip3 install cialign`
+
+[link](https://pypi.org/project/cialign/)
 
 The current release of CIAlign can also be downloaded directly using [this link](https://github.com/KatyBrown/CIAlign/releases/latest),
 
