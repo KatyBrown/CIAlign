@@ -450,6 +450,7 @@ def cropDivergent(arr, relativePositions, rmfile, log,
         rmpos_str = [str(x) for x in rm_relative]
         log.info("Cropping divergent ends - keeping positions %i-%i" % (
             new_start, new_end))
+        log.info("Removed positions: %s" % (",".join(rmpos_str)))
         out.write("crop_divergent\t%s\n" % (",".join(rmpos_str)))
     out.close()
     arr = arr[:, keeppos]
