@@ -21,6 +21,7 @@ This allows the user to:
   * Crop poorly aligned sequence ends
   * Remove columns containing only gaps
   * Remove sequences above a threshold level percentage of divergence from the majority
+  * Remove either end of an alignment where columns don't meet a minimum identity threshold and coverage level
 
 * Generate consensus sequences
 
@@ -85,8 +86,8 @@ Command help can be accessed by typing `CIAlign --help`
 | `--inifile` | Path to config file | None |
 | `--outfile_stem` | Prefix for output files, including the path to the output directory | CIAlign |
 | `--silent` | Do not print progress to the screen | False |
-| `--all` | Use all available functions with default parameters | False |
-| `--clean` | Use all available cleaning functions with default parameters | False |
+| `--all` | Use all available functions with default parameters. Does not currently include crop_divergent | False |
+| `--clean` | Use all available cleaning functions (except crop_divergent) with default parameters | False |
 | `--visualise` | Use all available mini alignment visualisation functions with default parameters | False |
 | `--interpret` | Use all available interpretation functions (except sequence logos) with default parameters | False |
 | `--help` | Show all available parameters with an explanation | None |
@@ -102,17 +103,17 @@ Output files:
 * **`OUTFILE_STEM_removed.txt`** - removed columns positions and sequence names text file
 
 ## Cleaning an MSA
-Each of these steps will be performed sequentially in the order specified in the table below.
+Each of these steps (if specified) will be performed sequentially in the order specified in the table below.
 
 The "cleaned" alignment after all steps have been performed will be saved as **`OUTFILE_STEM_cleaned.fasta`**
 
-remove_divergent, remove_insertions and crop_ends require three or more sequences in the alignment, remove_short and remove_gap_only require two or more sequences.
+remove_divergent, remove_insertions, crop_ends and crop divergent require three or more sequences in the alignment, remove_short and remove_gap_only require two or more sequences.
 
 | Parameter | Description | Default Value | Min | Max |
-| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |-----|------|
-| **`--remove_divergent`** |  Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present | False | NA | NA |
+| ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
+| **`--remove_divergent`** |  Remove sequences with <= `remove_divergent_minperc` positions at which the most common base / amino acid in the alignment is present | False | NA | NA |
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | remove_divergent_minperc_def | remove_divergent_minperc_min | remove_divergent_minperc_max |
-| **`--remove_insertions`** |  Remove insertions found in <= insertion_min_perc of sequences from the alignment | False | NA | NA |
+| **`--remove_insertions`** |  Remove insertions found in <= `insertion_min_perc` of sequences from the alignment | False | NA | NA |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | insertion_min_size_def | insertion_min_size_min | insertion_min_size_max |
 | *`--insertion_max_size`* |  Only remove insertions <= this number of residues | insertion_max_size_def | insertion_max_size_min | insertion_max_size_max |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | insertion_min_flank_def | insertion_min_flank_min | insertion_min_flank_max |
@@ -120,7 +121,11 @@ remove_divergent, remove_insertions and crop_ends require three or more sequence
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False | NA | NA |
 | *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | crop_ends_mingap_perc_def | crop_ends_mingap_perc_min | crop_ends_mingap_perc_max |
 | *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. |  crop_ends_redefine_perc_def | crop_ends_redefine_perc_min | crop_ends_redefine_perc_max |
-| **`--remove_short`** | Remove sequences <= N bases / amino acids from the alignment | False | NA | NA |
+| *`--crop_divergent`* |  Crop either end of the alignment until > `crop_divergent_min_prop_ident` residues in a column are identical and > `crop_divergent_min_prop_nongap` residues are not gaps, over `buffer_size` consecutive columns |  False | NA | NA |
+| *`--crop_divergent_min_prop_ident`* |  Minumum proportion of identical residues in a column to be retained by crop_divergent |  divergent_min_prop_ident_def | divergent_min_prop_ident_min | divergent_min_prop_ident_max |
+| *`--crop_divergent_min_prop_nongap`* |  Minumum proportion of non gap residues in a column to be retained by crop_divergent |  divergent_min_prop_nongap_def | divergent_min_prop_nongap_min | divergent_min_prop_nongap_max |
+| *`--crop_divergent_buffer_size`* |  Minumum number of consecutive columns which must meet the criteria for crop_divergent to be retained |  divergent_buffer_size_def | divergent_buffer_size_min | divergent_buffer_size_max |
+| **`--remove_short`** | Remove sequences <= `remove_min_length`  amino acids from the alignment | False | NA | NA |
 | *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | remove_min_length_def | remove_min_length_min | remove_min_length_max |
 | **`--keep_gaponly`** | Keep gap only columns in the alignment | False | NA | NA |
 
