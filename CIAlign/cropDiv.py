@@ -3,8 +3,9 @@
 import copy
 import numpy as np
 
+
 def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
-                         start=True):
+                     start=True):
     '''
     Find the new start (if start=True) or end (if end=True) postion if
     the alignment is cropped to remove divergent flanking sequences.
@@ -30,7 +31,7 @@ def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
     start: bool
         True - find the start position
         False - find the end position
-        
+
     Returns
     -------
     int
@@ -43,8 +44,8 @@ def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
         this_arr = copy.copy(arr)
     else:
         this_arr = copy.copy(arr[:, ::-1])
-    
-    # Find the number of rows represented by the min_prop proportion 
+
+    # Find the number of rows represented by the min_prop proportion
     min_count_nongap = int(np.shape(this_arr)[0] * min_prop_nongap)
     passfail = []
     # Iterate through the columns in the array, keep track of column index
@@ -54,7 +55,7 @@ def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
 
         # Check if there are enough non-gap residues
         pass_nongap = len(col_nongap) >= min_count_nongap
-        
+
         # If there are not enough non-gap residues this column is no
         # good
         if not pass_nongap:
@@ -63,17 +64,17 @@ def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
         else:
             # Count how many of each nt/aa there are
             C = np.unique(col_nongap, return_counts=True)
-    
+
             # Find which nt/aa is the most common
             which_max = C[1] == max(C[1])
-    
+
             # Find how many times the most common nt/aa occurs
             max_col_count = C[1][which_max][0]
             max_col_prop = max_col_count / len(col_nongap)
-        
+
             # Check if there are enough identical residues
             pass_ident = max_col_prop >= min_prop_ident
-            
+
             # If there are not enough identical residues this column
             # is no good
             if not pass_ident:
@@ -81,17 +82,17 @@ def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
                 continue
             else:
                 passfail.append(True)
-    
+
             # Are all of the previous buffer columns True?
             buffer_passfail = passfail[-buffer:]
-            
+
             # Once we meet the criteria we can stop
             if sum(buffer_passfail) == buffer:
                 break
-    
+
     # Find the position at the beginning of the buffer
     # Reverse if cropping the 3' end of the alignment
     if start:
         return (i - buffer + 1)
     else:
-        return (np.shape(arr)[1] - i + buffer - 2)
+        return (np.shape(arr)[1] - i + buffer - 1)

@@ -492,7 +492,6 @@ def runCleaning(args, log, arr, nams):
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
-
     # Crop divergent
     if args.crop_divergent:
         log.info("Removing divergent sequence ends")
@@ -509,11 +508,10 @@ def runCleaning(args, log, arr, nams):
 
         # Track what has been removed
         arr, r, relativePositions = A
-        markupdict['remove_divergent'] = r
+        markupdict['crop_divergent'] = r
         removed_cols = removed_cols | r
         # Check there are some columns left
         utilityFunctions.checkArrLength(arr, log)
-
 
     if args.remove_gaponly and not (args.all_options or
                                     args.remove_divergent or

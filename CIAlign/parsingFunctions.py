@@ -3,8 +3,12 @@ import numpy as np
 import matplotlib
 try:
     import CIAlign.cropSeq as cropSeq
+    import CIAlign.cropDiv as cropDiv
 except ImportError:
     import cropSeq
+    import cropDiv
+
+
 matplotlib.use('Agg')
 
 
@@ -362,3 +366,92 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
 
     out.close()
     return (arr, rmpos, relativePositions)
+
+
+def cropDivergent(arr, relativePositions, rmfile, log,
+                  min_prop_ident, min_prop_nongap, buffer_size):
+    '''
+    Find the new start and end postion if the alignment is cropped
+    to remove divergent flanking sequences.
+    Find the index of the leftmost column in the first series of
+    consecutive columns of length buffer where the proportion of
+    non-gap residues doesn't fall below min_prop_nongap and the
+    proportion of non-gap residues which are identical doesn't fall below
+    min_prop_ident, repeat for right size of the alignment.
+
+    Parameters
+    ----------
+    arr: np.array
+        The alignment stored as a numpy array
+    relativePositions: list
+        A list of integers representing columns in the alignment, from which
+        values are removed as columns are removed from the alignment.
+    rmfile: str
+        Path to a file in which to store a list of removed sequences
+    log: logging.Logger
+        An open log file object
+    min_prop_ident: float
+        The minimum proportion of sequences which should have the same
+        residue in each column
+    min_prop_nongap: float
+        The minimum proportion of sequences which should not be gaps in
+        each column
+    buffer: int
+        The number of consecutive columns which should meet the min_prop_ident
+        and min_prop_nongap criteria to pass filtering
+    start: bool
+        True - find the start position
+        False - find the end position
+
+    Returns
+    -------
+    arr: np.array
+        The cleaned alignment stored as a numpy array
+    r: set
+        A set of column numbers of sequences which have been removed
+    relativePositions: list
+        A list of integers representing columns in the alignment, from which
+        values are removed as columns are removed from the alignment, minus
+        the columns removed using this function.
+    '''
+
+    log.info("Cropping divergent sequence ends\n")
+    out = open(rmfile, "a")
+    if out.closed:
+        print('file is closed')
+
+    new_start = cropDiv.cropDivergentPos(arr,
+                                         min_prop_ident,
+                                         min_prop_nongap,
+                                         buffer_size,
+                                         start=True)
+    new_end = cropDiv.cropDivergentPos(arr,
+                                       min_prop_ident,
+                                       min_prop_nongap,
+                                       buffer_size,
+                                       start=False)
+    rmStart = np.arange(0, new_start)
+    rmEnd = np.arange(new_end, np.shape(arr)[1])
+
+    absolutePositions = np.append(rmStart, rmEnd)
+
+    rm_relative = set()
+    for n in absolutePositions:
+        rm_relative.add(relativePositions[n])
+    for n in rm_relative:
+        relativePositions.remove(n)
+    # for n in absolutePositions:
+    #     relativePositions.remove(n)
+    rmpos = np.array(list(absolutePositions))
+
+    keeppos = np.arange(new_start, new_end)
+
+    if len(rmpos) != 0:
+        rmpos_str = [str(x) for x in rm_relative]
+        log.info("Cropping divergent ends - keeping positions %i-%i" % (
+            new_start, new_end))
+        out.write("crop_divergent\t%s\n" % (",".join(rmpos_str)))
+    out.close()
+    arr = arr[:, keeppos]
+    # return (arr, set(rmpos), relativePositions)
+    return (arr, set(rm_relative), relativePositions)

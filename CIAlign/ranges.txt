@@ -6,6 +6,6 @@ insertion_max_size	200	1	1000
 insertion_min_flank	5	0	n_col/2
 insertion_min_perc	0.5	0	1
 remove_min_length	50	0	n_col
-divergent_min_prop_ident	0.01	1	0.5
-divergent_min_prop_nongap	0.01	1	0.5
-divergent_buffer_size	1	n_col/2	5
+divergent_min_prop_ident	0.5	0.01	1
+divergent_min_prop_nongap	0.5	0.01	1
+divergent_buffer_size	5	1	n_col

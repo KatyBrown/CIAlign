@@ -100,5 +100,28 @@ class CleaningFunctionsTests(unittest.TestCase):
         self.assertTrue((result_ali == exp_array).all())
         self.assertEqual(len(self.in_array), len(result_ali))
 
+
+    @parameterized.expand([
+            [0.5, 0.5, 5, "./tests/test_files/crop_divergent_cleaned.fasta", ],
+            [0.15, 0.15, 3,  "./tests/test_files/example1.fasta", ],
+    ])
+    def testCropDivergent(self, min_ident, min_nongap, buffer, expected):
+        exp_array, names = readMSA(expected)
+
+        logger = logging.getLogger('path.to.module.under.test')
+        with mock.patch.object(logger, 'debug') as mock_debug:
+            result_ali, r, self.relativePositions = parsingFunctions.cropDivergent(self.in_array,
+                                                                                   self.relativePositions,
+                                                                                   self.rm_file,
+                                                                                   mock_debug,
+                                                                                   min_ident,
+                                                                                   min_nongap, 
+                                                                                   buffer)
+        # check if dimensions are equal first
+        self.assertEqual(result_ali[0,:].size, exp_array[0,:].size)
+        self.assertEqual(len(self.in_array), len(result_ali))
+        self.assertTrue((result_ali == exp_array).all())
+
+
 if __name__ == '__main__':
     unittest.main(warnings='ignore')

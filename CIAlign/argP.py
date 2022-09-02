@@ -296,16 +296,14 @@ def getParser():
                      minis['remove_min_length'],
                      maxis['remove_min_length']))
 
-
     # Crop Divergent
     optional.add("--crop_divergent", dest="crop_divergent",
                  help="""Crop ends of sequences which are highly
                          divergent. Default %(default)s""",
-                action="store_true")
-    
+                 action="store_true")
+
     optional.add("--crop_divergent_min_prop_ident",
                  dest="divergent_min_prop_ident",
-                 
                  type=float_range(minis['divergent_min_prop_ident'],
                                   maxis['divergent_min_prop_ident']),
                  default=defs['divergent_min_prop_ident'],
@@ -316,9 +314,9 @@ def getParser():
                      minis['divergent_min_prop_ident'],
                      maxis['divergent_min_prop_ident']))
 
-    optional.add("--crop_divergent_min_prop_ident",
-                 dest="divergent_min_prop_ident",
-                 
+    optional.add("--crop_divergent_min_prop_nongap",
+                 dest="divergent_min_prop_nongap",
+
                  type=float_range(minis['divergent_min_prop_nongap'],
                                   maxis['divergent_min_prop_nongap']),
                  default=defs['divergent_min_prop_nongap'],
