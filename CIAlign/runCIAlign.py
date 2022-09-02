@@ -122,6 +122,7 @@ def whichFunctions(args):
             args.crop_ends,
             args.remove_short,
             args.remove_gaponly,
+            args.crop_divergent,
             args.clean,
             args.all_options]):
         which_functions.append("cleaning")
