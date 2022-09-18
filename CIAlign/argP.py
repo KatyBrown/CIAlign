@@ -208,6 +208,28 @@ def getParser():
                      minis['crop_ends_redefine_perc'],
                      maxis['crop_ends_redefine_perc']))
 
+    optional.add("--crop_ends_retain", dest="retain_seqs_ce",
+                 action="append", default=None,
+                 help="""Do not crop the sequence with this name when \
+                         running the crop_ends function. Can be specified \
+                         multiple times. Default: %(default)s""")
+
+    optional.add("--crop_ends_retain_str", dest="retain_seqs_ceS",
+                 action="append", default=None, type=str,
+                 help="""Do not crop sequences with names containing \
+                         this word (character string) when \
+                         running the crop_ends function. \
+                         Case sensitive. \
+                         Default: %(default)s""")
+
+    optional.add("--crop_ends_retain_list", dest="retain_seqs_ceL",
+                 type=str, default=None,
+                 help="""Do not crop the sequences listed in this file when \
+                         running the crop_ends function. \
+                         Sequence names must exactly match the FASTA infile. \
+                         Default: %(default)s""")
+
+
     # Remove divergent sequences
     optional.add("--remove_divergent", dest="remove_divergent",
                  action="store_true",
@@ -226,6 +248,31 @@ def getParser():
                  metavar="(float, %s..%s)" % (
                      minis['remove_divergent_minperc'],
                      maxis['remove_divergent_minperc']))
+
+
+    optional.add("--remove_divergent_retain", dest="retain_seqs_rd",
+                 action="append", default=None, type=str,
+                 help="""Do not remove the sequence with this name when \
+                         running the remove_divergent function. \
+                         Sequence names must exactly match the FASTA infile. \
+                         Can be specified \
+                         multiple times. Default: %(default)s""")
+
+
+    optional.add("--remove_divergent_retain_str", dest="retain_seqs_rdS",
+                 action="append", default=None, type=str,
+                 help="""Do not remove the sequences with names containing \
+                         this word (character string) when \
+                         running the remove_divergent function. \
+                         Case sensitive. \
+                         Default: %(default)s""")
+
+    optional.add("--remove_divergent_retain_list", dest="retain_seqs_rdL",
+                 type=str, default=None,
+                 help="""Do not remove the sequences listed in this file when \
+                         running the remove_divergent function. \
+                         Sequence names must exactly match the FASTA infile. \
+                         Default: %(default)s""")
 
     # # Remove Insertions
     optional.add("--remove_insertions", dest="remove_insertions",
@@ -296,11 +343,60 @@ def getParser():
                      minis['remove_min_length'],
                      maxis['remove_min_length']))
 
+    optional.add("--remove_short_retain", dest="retain_seqs_rs",
+                 action="append", default=None,
+                 help="""Do not remove the sequence with this name when \
+                         running the remove_divergent function.
+                         Sequence names must exactly match the FASTA infile. \
+                         Can be specified multiple times. \
+                         Default: %(default)s""")
+
+    optional.add("--remove_short_retain_str", dest="retain_seqs_rsS",
+                 action="append", default=None, type=str,
+                 help="""Do not remove the sequences with names containing \
+                         this word (character string) when \
+                         running the remove_short function. \
+                         Case sensitive. \
+                         Default: %(default)s""")
+
+    optional.add("--remove_short_retain_list", dest="retain_seqs_rsL",
+                 type=str, default=None,
+                 help="""Do not remove the sequences listed in this file when \
+                         running the remove_short function. \
+                         Sequence names must exactly match the FASTA infile. \
+                         Default: %(default)s""")
+
+    optional.add("--retain", dest="retain_seqs",
+                 action="append", default=None, type=str,
+                 help="""Do not remove the sequence with this name when \
+                         running any rowwise function \
+                         (currently remove_divergent and crop_ends). \
+                         Sequence names must exactly match the FASTA infile. \
+                         Can be specified multiple times. \
+                         Default: %(default)s""")
+
+    optional.add("--retain_str", dest="retain_seqsS",
+                 action="append", default=None,
+                 help="""Do not remove the sequences with names containing \
+                         this word (character string) when \
+                         running any rowwise function \
+                         (currently remove_divergent and crop_ends). \
+                         Case sensitive. \
+                         Default: %(default)s""")
+
+    optional.add("--retain_list", dest="retain_seqsL",
+                 type=str, default=None,
+                 help="""Do not remove the sequences listed in this file when \
+                         running any rowwise function \
+                         (currently remove_divergent and crop_ends). \
+                         Sequence names must exactly match the FASTA infile. \
+                         Default: %(default)s""")
     # keep gap only
     optional.add("--keep_gaponly", dest="remove_gaponly",
                  action="store_false",
                  help="Keep gap only columns in the alignment. Default: \
                        %(default)s")
+
 
     # Consensus
     optional.add("--make_consensus", dest="make_consensus",
