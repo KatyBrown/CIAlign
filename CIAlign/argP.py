@@ -127,11 +127,11 @@ def getParser():
     required.add("--infile", dest='infile', type=str,
                  help='Path to input alignment file in FASTA format')
     optional.add("--inifile", dest='inifile', type=str,
-                 default=None,
+                 default=None,  metavar="(string)",
                  help='Path to config file. Default: %(default)s',
                  is_config_file=True)
     optional.add("--outfile_stem", dest='outfile_stem', type=str,
-                 default="CIAlign",
+                 default="CIAlign", metavar="(string)",
                  help="Prefix for output files, including the path to the \
                      output directory. Default: %(default)s")
 
@@ -209,13 +209,14 @@ def getParser():
                      maxis['crop_ends_redefine_perc']))
 
     optional.add("--crop_ends_retain", dest="retain_seqs_ce",
-                 action="append", default=None,
+                 action="append", default=None, metavar="(string)",
                  help="""Do not crop the sequence with this name when \
                          running the crop_ends function. Can be specified \
                          multiple times. Default: %(default)s""")
 
     optional.add("--crop_ends_retain_str", dest="retain_seqs_ceS",
                  action="append", default=None, type=str,
+                 metavar="(string)",
                  help="""Do not crop sequences with names containing \
                          this word (character string) when \
                          running the crop_ends function. \
@@ -224,6 +225,7 @@ def getParser():
 
     optional.add("--crop_ends_retain_list", dest="retain_seqs_ceL",
                  type=str, default=None,
+                 metavar="(string)",
                  help="""Do not crop the sequences listed in this file when \
                          running the crop_ends function. \
                          Sequence names must exactly match the FASTA infile. \
@@ -252,6 +254,7 @@ def getParser():
 
     optional.add("--remove_divergent_retain", dest="retain_seqs_rd",
                  action="append", default=None, type=str,
+                 metavar="(string)",
                  help="""Do not remove the sequence with this name when \
                          running the remove_divergent function. \
                          Sequence names must exactly match the FASTA infile. \
@@ -261,6 +264,7 @@ def getParser():
 
     optional.add("--remove_divergent_retain_str", dest="retain_seqs_rdS",
                  action="append", default=None, type=str,
+                 metavar="(string)",
                  help="""Do not remove the sequences with names containing \
                          this word (character string) when \
                          running the remove_divergent function. \
@@ -269,6 +273,7 @@ def getParser():
 
     optional.add("--remove_divergent_retain_list", dest="retain_seqs_rdL",
                  type=str, default=None,
+                 metavar="(string)",
                  help="""Do not remove the sequences listed in this file when \
                          running the remove_divergent function. \
                          Sequence names must exactly match the FASTA infile. \
@@ -344,7 +349,7 @@ def getParser():
                      maxis['remove_min_length']))
 
     optional.add("--remove_short_retain", dest="retain_seqs_rs",
-                 action="append", default=None,
+                 action="append", default=None, metavar="(string)",
                  help="""Do not remove the sequence with this name when \
                          running the remove_divergent function.
                          Sequence names must exactly match the FASTA infile. \
@@ -352,7 +357,7 @@ def getParser():
                          Default: %(default)s""")
 
     optional.add("--remove_short_retain_str", dest="retain_seqs_rsS",
-                 action="append", default=None, type=str,
+                 action="append", default=None, type=str, metavar="(string)",
                  help="""Do not remove the sequences with names containing \
                          this word (character string) when \
                          running the remove_short function. \
@@ -360,14 +365,14 @@ def getParser():
                          Default: %(default)s""")
 
     optional.add("--remove_short_retain_list", dest="retain_seqs_rsL",
-                 type=str, default=None,
+                 type=str, default=None, metavar="(string)",
                  help="""Do not remove the sequences listed in this file when \
                          running the remove_short function. \
                          Sequence names must exactly match the FASTA infile. \
                          Default: %(default)s""")
 
     optional.add("--retain", dest="retain_seqs",
-                 action="append", default=None, type=str,
+                 action="append", default=None, type=str, metavar="(string)",
                  help="""Do not remove the sequence with this name when \
                          running any rowwise function \
                          (currently remove_divergent and crop_ends). \
@@ -376,7 +381,7 @@ def getParser():
                          Default: %(default)s""")
 
     optional.add("--retain_str", dest="retain_seqsS",
-                 action="append", default=None,
+                 action="append", default=None, metavar="(string)",
                  help="""Do not remove the sequences with names containing \
                          this word (character string) when \
                          running any rowwise function \
@@ -385,7 +390,7 @@ def getParser():
                          Default: %(default)s""")
 
     optional.add("--retain_list", dest="retain_seqsL",
-                 type=str, default=None,
+                 type=str, default=None, metavar="(string)",
                  help="""Do not remove the sequences listed in this file when \
                          running any rowwise function \
                          (currently remove_divergent and crop_ends). \
@@ -404,7 +409,7 @@ def getParser():
                  help="Make a consensus sequence based on the cleaned \
                        alignment. Default: %(default)s")
     optional.add("--consensus_type", dest="consensus_type", type=str,
-                 default="majority",
+                 default="majority", metavar="(string)",
                  help="Type of consensus sequence to make - can be majority, \
                        to use the most common character at each position in \
                        the consensus, even if this is a gap, or \
@@ -417,7 +422,7 @@ def getParser():
                        in the consensus (True) or should this position in \
                       the consensus be deleted (False). Default: %(default)s")
     optional.add("--consensus_name", dest="consensus_name",
-                 type=str, default="consensus",
+                 type=str, default="consensus", metavar="(string)",
                  help="Name to use for the consensus sequence in the output \
                        fasta file. Default: %(default)s")
 
@@ -436,17 +441,17 @@ def getParser():
                        rows which have been removed by each function marked \
                        up in corresponding colours. Default: %(default)s")
     optional.add("--plot_dpi", dest="plot_dpi",
-                 type=int, default=300,
+                 type=int, default=300, metavar="(int)",
                  help="DPI for mini alignments. Default: %(default)s")
     optional.add("--plot_format", dest="plot_format",
-                 type=str, default='png',
+                 type=str, default='png', metavar="(string)",
                  help="Image format for mini alignments - can be png, svg, \
                        tiff or jpg. Default: %(default)s")
     optional.add("--plot_width", dest="plot_width",
-                 type=int, default=5,
+                 type=int, default=5, metavar="(int)",
                  help="Mini alignment width in inches. Default: %(default)s")
     optional.add("--plot_height", dest="plot_height",
-                 type=int, default=3,
+                 type=int, default=3, metavar="(int)",
                  help="Mini alignment height in inches. Default: %(default)s")
     optional.add("--plot_keep_numbers", dest="plot_keep_numbers",
                  action="store_true",
@@ -466,29 +471,29 @@ def getParser():
                  action="store_true",
                  help="Draw a sequence logo. Default: %(default)s")
     optional.add("--sequence_logo_type", dest="sequence_logo_type",
-                 type=str, default='bar',
+                 type=str, default='bar', metavar="(string)",
                  help="Type of sequence logo - bar/text/both. \
                        Default: %(default)s")
     optional.add("--sequence_logo_dpi", dest="sequence_logo_dpi",
-                 type=int, default=300,
+                 type=int, default=300, metavar="(int)",
                  help="DPI for sequence logo image. Default: %(default)s")
     optional.add("--sequence_logo_font", dest="sequence_logo_font",
-                 type=str, default='monospace',
+                 type=str, default='monospace', metavar="(string)",
                  help="Font for text sequence logo. Default: %(default)s")
     optional.add("--sequence_logo_nt_per_row", dest='sequence_logo_nt_per_row',
-                 type=int, default=50,
+                 type=int, default=50, metavar="(int)",
                  help="Number of bases / amino acids to show per row in the \
                        sequence logo, where the logo is too large to show on \
                        a single line. Default: %(default)s")
     optional.add("--sequence_logo_filetype", dest='sequence_logo_filetype',
-                 type=str, default='png',
+                 type=str, default='png', metavar="(string)",
                  help="Image file type to use for the sequence logo - can be \
                        png, svg, tiff or jpg. Default: %(default)s")
     optional.add("--logo_start", dest="logo_start",
-                 type=int, default=0,
+                 type=int, default=0, metavar="(int)",
                  help="Start position of sequence logo. Default: %(default)s")
     optional.add("--logo_end", dest="logo_end",
-                 type=int, default=0,
+                 type=int, default=0, metavar="(int",
                  help="End position of sequence logo. Default: %(default)s")
     optional.add("--list_fonts_only", dest='list_fonts_only',
                  action="store_true",
@@ -505,22 +510,22 @@ def getParser():
                  help="Plot the coverage of the output MSA. Default: \
                        %(default)s")
     optional.add("--plot_coverage_dpi", dest="plot_coverage_dpi",
-                 type=int, default=300,
+                 type=int, default=300, metavar="(int)",
                  help="DPI for coverage plot. Default: %(default)s")
     optional.add("--plot_coverage_height", dest="plot_coverage_height",
-                 type=int, default=3,
+                 type=int, default=3, metavar="(int)",
                  help="Height for coverage plot (inches). Default: \
                        %(default)s")
     optional.add("--plot_coverage_width", dest="plot_coverage_width",
-                 type=int, default=5,
+                 type=int, default=5, metavar="(int)",
                  help="Width for coverage plot (inches). Default: \
                        %(default)s")
     optional.add("--plot_coverage_colour", dest="plot_coverage_colour",
-                 type=str, default='#007bf5',
+                 type=str, default='#007bf5', metavar="(string)",
                  help="Colour for coverage plot (hex code or name). \
                        Default: %(default)s")
     optional.add("--plot_coverage_filetype", dest="plot_coverage_filetype",
-                 type=str, default='png',
+                 type=str, default='png', metavar="(string)",
                  help="File type for coverage plot (png, svg, tiff, jpg). \
                        Default: %(default)s")
 
@@ -535,17 +540,17 @@ def getParser():
                  help="Make a similarity matrix for the output alignment. \
                        Default: %(default)s")
     optional.add("--make_simmatrix_dp", dest="make_simmatrix_dp",
-                 type=int, default=4,
+                 type=int, default=4, metavar="(int)",
                  help="Number of decimal places to display in the similarity \
                        matrix output file. Default: %(default)s")
     optional.add("--make_simmatrix_minoverlap",
                  dest="make_simmatrix_minoverlap",
-                 type=int, default=1,
+                 type=int, default=1, metavar="(int)",
                  help="Minimum overlap between two sequences to have non-zero \
                        similarity in the similarity matrix. \
                        Default: %(default)s")
     optional.add("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
-                 type=int, default=0,
+                 type=int, default=0, metavar="(int)",
                  help="Include positions with gaps in either or both \
                        sequences in the similarity matrix calculation. \
                        Can be 0 - exclude positions which are gaps in either \
@@ -564,7 +569,8 @@ def getParser():
                      gaps. Default: %(default)s")
 
     # Replace Us by Ts function
-    optional.add("--replace_input", dest="replace_input", action="store_true",
+    optional.add("--replace_input", dest="replace_input",
+                 action="store_true",
                  default=False,
                  help="Replaces all Us by Ts in input alignment. \
                      Default: %(default)s")
