@@ -23,6 +23,7 @@ def run(args, log):
     # Set up arrays of the sequence names and aligned sequences
     arr, nams, typ = setupArrays(args, log)
 
+    keeps = setupRetains(args, nams)
     # Make copies of the unedited arrays
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
@@ -32,7 +33,8 @@ def run(args, log):
         arr, nams, markupdict, removed = runCleaning(args,
                                                      log,
                                                      arr,
-                                                     nams)
+                                                     nams,
+                                                     keeps)
     else:
         markupdict = dict()
         removed = set()
@@ -233,6 +235,35 @@ def setupArrays(args, log):
 
     return (arr, nams, typ)
 
+
+def setupRetains(args, nams):
+    retain_args = [args.retain_seqs_rs,
+                   args.retain_seqs_rsS,
+                   args.retain_seqs_rsL,
+                   args.retain_seqs_rd,
+                   args.retain_seqs_rdS,
+                   args.retain_seqs_rdL,
+                   args.retain_seqs_ce,
+                   args.retain_seqs_ceS,
+                   args.retain_seqs_ceL,
+                   args.retain_seqs,
+                   args.retain_seqsS,
+                   args.retain_seqsL]
+    retain_args = np.array(retain_args, dtype=object)
+    keepD = dict()
+    titles = ['remove_short',
+              'remove_divergent',
+              'crop_ends',
+              'all_rowwise']
+    if any([arg is not None for arg in retain_args]):
+        rr = np.split(retain_args, 4)
+        for i, r in enumerate(rr):
+            keeps = utilityFunctions.configRetainSeqs(r[0],
+                                                      r[1],
+                                                      r[2],
+                                                      nams)
+            keepD[titles[i]] = keeps
+    return (keepD)
 
 def setupTrackers(args, arr):
     '''

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import warnings
 import matplotlib.font_manager
 import sys
+import os
 try:
     import CIAlign.palettes as palettes
 except ImportError:
@@ -439,3 +440,27 @@ def listFonts(outfile):
 
         f.tight_layout()
         f.savefig(outfile, dpi=200, bbox_inches='tight')
+
+def configRetainSeqs(retain, retainS, retainL, nams):
+    if retain is not None:
+        keeps = set(retain)
+    else:
+        keeps = set()
+    if retainL is not None:
+        if not os.path.exists(retainL):
+            raise FileNotFoundError("""
+List of sequences to retain %s not found""" % retainL)
+        keeps = keeps | set([line.strip()
+                             for line in open(retainL).readlines()])
+    if retainS is not None:
+        for nam in nams:
+            for rs in retainS:
+                if rs in nam:
+                    keeps.add(nam)
+    if len(keeps & set(nams)) != len(keeps):
+        raise RuntimeError("""
+Some sequences listed to be retained were not found: %s""" % (
+" ".join(keeps - set(nams))))
+    return (keeps)
+        
+    
