@@ -255,16 +255,16 @@ def setupRetains(args, nams, log):
               'remove_divergent',
               'crop_ends',
               'all_rowwise']
-    if any([arg is not None for arg in retain_args]):
-        rr = np.split(retain_args, 4)
-        for i, r in enumerate(rr):
-            keeps = utilityFunctions.configRetainSeqs(r[0],
-                                                      r[1],
-                                                      r[2],
-                                                      nams,
-                                                      titles[i],
-                                                      log)
-            keepD[titles[i]] = keeps
+
+    rr = np.split(retain_args, 4)
+    for i, r in enumerate(rr):
+        keeps = utilityFunctions.configRetainSeqs(r[0],
+                                                  r[1],
+                                                  r[2],
+                                                  nams,
+                                                  titles[i],
+                                                  log)
+        keepD[titles[i]] = keeps
     return (keepD)
 
 def setupTrackers(args, arr):

@@ -134,7 +134,7 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75, keeps=set()):
                         y += 1
                     t += 1
                 i += 1
-            if y / t > percidentity:
+            if y / t > percidentity or j in keeps['remove_divergent']:
                 keep.append(True)
             else:
                 keep.append(False)
