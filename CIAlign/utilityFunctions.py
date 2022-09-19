@@ -441,7 +441,7 @@ def listFonts(outfile):
         f.tight_layout()
         f.savefig(outfile, dpi=200, bbox_inches='tight')
 
-def configRetainSeqs(retain, retainS, retainL, nams):
+def configRetainSeqs(retain, retainS, retainL, nams, fname, log):
     if retain is not None:
         keeps = set(retain)
     else:
@@ -461,6 +461,12 @@ List of sequences to retain %s not found""" % retainL)
         raise RuntimeError("""
 Some sequences listed to be retained were not found: %s""" % (
 " ".join(keeps - set(nams))))
-    return (keeps)
+    nams_arr = np.array(nams)
+    keeps_arr = np.array(list(keeps))
+    if len(keeps_arr) != 0:
+        log.info("""The following sequences will not be processed with the \
+%s function: %s""" % (fname, ", ".join(sorted(list(keeps)))))
+    keep_arr = np.where(np.in1d(nams_arr, keeps_arr))[0]
+    return (keep_arr)
         
     

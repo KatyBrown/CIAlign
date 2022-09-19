@@ -8,7 +8,8 @@ except ImportError:
 matplotlib.use('Agg')
 
 
-def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
+def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc,
+             keeps):
     '''
     Removes poorly aligned ends from a multiple sequence alignment.
 
@@ -41,13 +42,17 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
     for i, row in enumerate(arr):
         start, end = cropSeq.determineStartEnd(row, nams[i], log,
                                                mingap, redefine_perc)
-        start = max(start - 1, 0)
-        end = end + 1
+        if i in keeps['crop_ends'] or i in keeps['all_rowwise']:
+            start = 0
+            end = len(row)
+        else:
+            start = max(start - 1, 0)
+            end = end + 1
         newseq = "-" * start + "".join(
                 row[start:end]) + "-" * (len(row) - end)
         newseq = np.array(list(newseq))
         s = sum(newseq != row)
-
+        print (s)
         if s != 0:
             nam = nams[i]
             non_gap_start = sum(row[0:start] != "-")
@@ -81,7 +86,7 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
     return (np.array(newarr), r)
 
 
-def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
+def removeDivergent(arr, nams, rmfile, log, percidentity=0.75, keeps=set()):
     '''
     Remove sequences which don't have the most common non-gap residue at
     > percidentity non-gap positions
@@ -267,7 +272,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     return (arr, set(rm_relative), relativePositions)
 
 
-def removeTooShort(arr, nams, rmfile, log, min_length):
+def removeTooShort(arr, nams, rmfile, log, min_length, keeps=set()):
     '''
     Removes sequences (rows) with fewer than min_length non-gap positions from
     the alignment.

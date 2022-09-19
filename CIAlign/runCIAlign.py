@@ -21,9 +21,8 @@ def run(args, log):
     # Basic checks before running
     prelimChecks(args, log)
     # Set up arrays of the sequence names and aligned sequences
-    arr, nams, typ = setupArrays(args, log)
+    arr, nams, typ, keeps = setupArrays(args, log)
 
-    keeps = setupRetains(args, nams)
     # Make copies of the unedited arrays
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
@@ -232,11 +231,12 @@ def setupArrays(args, log):
         log.info("Amino acid alignment detected")
     else:
         log.info("Nucleotide alignment detected")
+    keeps = setupRetains(args, nams, log)
 
-    return (arr, nams, typ)
+    return (arr, nams, typ, keeps)
 
 
-def setupRetains(args, nams):
+def setupRetains(args, nams, log):
     retain_args = [args.retain_seqs_rs,
                    args.retain_seqs_rsS,
                    args.retain_seqs_rsL,
@@ -261,7 +261,9 @@ def setupRetains(args, nams):
             keeps = utilityFunctions.configRetainSeqs(r[0],
                                                       r[1],
                                                       r[2],
-                                                      nams)
+                                                      nams,
+                                                      titles[i],
+                                                      log)
             keepD[titles[i]] = keeps
     return (keepD)
 
@@ -336,7 +338,7 @@ def setupOutfiles(args):
     return (outfile, rmfile)
 
 
-def runCleaning(args, log, arr, nams):
+def runCleaning(args, log, arr, nams, keeps):
     '''
     Run the cleaning functions
 
@@ -377,7 +379,7 @@ def runCleaning(args, log, arr, nams):
         minperc = args.remove_divergent_minperc
         arr, r = parsingFunctions.removeDivergent(arr, nams,
                                                   rmfile, log,
-                                                  minperc)
+                                                  minperc, keeps)
         # Track what has been removed
         markupdict['remove_divergent'] = r
         removed_seqs = removed_seqs | r
@@ -461,7 +463,8 @@ def runCleaning(args, log, arr, nams):
         arr, r = parsingFunctions.cropEnds(arr, nams, relativePositions,
                                            rmfile,
                                            log, args.crop_ends_mingap_perc,
-                                           args.crop_ends_redefine_perc)
+                                           args.crop_ends_redefine_perc,
+                                           keeps)
         # Track what has been removed
         markupdict['crop_ends'] = r
         removed_positions.update(r)
@@ -495,7 +498,8 @@ def runCleaning(args, log, arr, nams):
         if not args.silent:
             print("Removing short sequences")
         arr, r = parsingFunctions.removeTooShort(arr, nams, rmfile, log,
-                                                 args.remove_min_length)
+                                                 args.remove_min_length,
+                                                 keeps)
         # Track what has been removed
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r
