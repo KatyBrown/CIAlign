@@ -379,7 +379,8 @@ def runCleaning(args, log, arr, nams, keeps):
         minperc = args.remove_divergent_minperc
         arr, r = parsingFunctions.removeDivergent(arr, nams,
                                                   rmfile, log,
-                                                  minperc, keeps)
+                                                  keeps,
+                                                  minperc)
         # Track what has been removed
         markupdict['remove_divergent'] = r
         removed_seqs = removed_seqs | r
@@ -462,9 +463,9 @@ def runCleaning(args, log, arr, nams, keeps):
             print("Cropping ends")
         arr, r = parsingFunctions.cropEnds(arr, nams, relativePositions,
                                            rmfile,
-                                           log, args.crop_ends_mingap_perc,
-                                           args.crop_ends_redefine_perc,
-                                           keeps)
+                                           log, keeps,
+                                           args.crop_ends_mingap_perc,
+                                           args.crop_ends_redefine_perc)
         # Track what has been removed
         markupdict['crop_ends'] = r
         removed_positions.update(r)
@@ -498,8 +499,8 @@ def runCleaning(args, log, arr, nams, keeps):
         if not args.silent:
             print("Removing short sequences")
         arr, r = parsingFunctions.removeTooShort(arr, nams, rmfile, log,
-                                                 args.remove_min_length,
-                                                 keeps)
+                                                 keeps,
+                                                 args.remove_min_length)
         # Track what has been removed
         markupdict['remove_short'] = r
         removed_seqs = removed_seqs | r

@@ -8,8 +8,8 @@ except ImportError:
 matplotlib.use('Agg')
 
 
-def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc,
-             keeps):
+def cropEnds(arr, nams, relativePositions, rmfile, log, keeps,
+             mingap, redefine_perc):
     '''
     Removes poorly aligned ends from a multiple sequence alignment.
 
@@ -42,7 +42,7 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc,
     for i, row in enumerate(arr):
         start, end = cropSeq.determineStartEnd(row, nams[i], log,
                                                mingap, redefine_perc)
-        if i in keeps['crop_ends'] or i in keeps['all_rowwise']:
+        if nams[i] in keeps['crop_ends'] or nams[i] in keeps['all_rowwise']:
             start = 0
             end = len(row)
         else:
@@ -86,7 +86,8 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc,
     return (np.array(newarr), r)
 
 
-def removeDivergent(arr, nams, rmfile, log, percidentity=0.75, keeps=set()):
+def removeDivergent(arr, nams, rmfile, log,
+                    keeps, percidentity=0.75):
     '''
     Remove sequences which don't have the most common non-gap residue at
     > percidentity non-gap positions
@@ -134,8 +135,10 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75, keeps=set()):
                         y += 1
                     t += 1
                 i += 1
-            if y / t > percidentity or j in keeps['remove_divergent']:
-                keep.append(True)
+            if (y / t > percidentity or
+                nams[j] in keeps['remove_divergent'] or 
+                nams[j]in keeps['all_rowwise']):
+                    keep.append(True)
             else:
                 keep.append(False)
         else:
@@ -272,7 +275,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     return (arr, set(rm_relative), relativePositions)
 
 
-def removeTooShort(arr, nams, rmfile, log, min_length, keeps=set()):
+def removeTooShort(arr, nams, rmfile, log, keeps, min_length):
     '''
     Removes sequences (rows) with fewer than min_length non-gap positions from
     the alignment.
@@ -304,8 +307,16 @@ def removeTooShort(arr, nams, rmfile, log, min_length, keeps=set()):
     if len(arr) != 0:
         arrT = arr.transpose()
         sums = sum(arrT != "-")
-        arr = arr[sums > min_length]
+        keeps_rs = np.in1d(nams, keeps['remove_short'])
+        keeps_ar = np.in1d(nams, keeps['all_rowwise'])
+        print (keeps['remove_short'], keeps['all_rowwise'])
+        keeps_here = keeps['remove_short'] | keeps['all_rowwise']
+        print (sums[np.in1d(nams, keeps_here)])
+        sums[np.in1d(np.array(nams), keeps_here)] += min_length
+        arr = arr[(sums > min_length)]
+        
         rmnames = set(np.array(nams)[sums <= min_length])
+
         if len(rmnames) != 0:
             log.info("Removing too short sequences %s" % (
                 ", ".join(list(rmnames))))
