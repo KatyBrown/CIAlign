@@ -246,7 +246,7 @@ def setupRetains(args, nams, log):
     rowwise functions.
 
     Allows the user to specify sequences to keep regardless of whether
-    they pass or fail the rowwise cleaning operation thresholds. 
+    they pass or fail the rowwise cleaning operation thresholds.
 
     Sequence names can be specified individually on the command line with
     --retain, --crop_ends_retain, --remove_divergent_retain,
@@ -272,7 +272,7 @@ def setupRetains(args, nams, log):
     -------
     keepD: dict
         A dictionary listing sequences not to process for each function,
-        where the keys are function names.        
+        where the keys are function names.
     '''
     # These are all the arguments from the command line to retain
     # sequences, no suffix for directly specified, S for string, L for list,
@@ -302,7 +302,6 @@ def setupRetains(args, nams, log):
               'remove_divergent',
               'crop_ends',
               'all_rowwise']
-
 
     for i, r in enumerate(rr):
         # Make an array listing the sequences referenced by each variable

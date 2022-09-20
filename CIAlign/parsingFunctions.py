@@ -156,7 +156,7 @@ def removeDivergent(arr, nams, rmfile, log,
                 i += 1
             # keep sequences in the kk array
             if y / t > percidentity or nams[j] in kk:
-                    keep.append(True)
+                keep.append(True)
             else:
                 keep.append(False)
         else:
@@ -338,7 +338,7 @@ def removeTooShort(arr, nams, rmfile, log, keeps, min_length):
         # not removed but otherwise processed like all other sequences
         sums[keeps_here] += min_length
         arr = arr[(sums > min_length)]
-        
+
         rmnames = set(np.array(nams)[sums <= min_length])
 
         if len(rmnames) != 0:

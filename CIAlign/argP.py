@@ -168,14 +168,12 @@ def getParser():
                          unless others are specified. \
                          Default: %(default)s""")
 
-
     # parameter to create all mini alignments without having to type them in
     optional.add("--visualise", dest="visualise",
                  action="store_true",
                  help="""Plot all mini alignments, with default parameters \
                          unless others are specified. \
                          Default: %(default)s""")
-
 
     # parameter to run all interpreation functions except creating sequence
     # logos without having to type them in
@@ -184,7 +182,6 @@ def getParser():
                  help="""Use all interpretation functions, with default
                          parameters unless others are specified. \
                          Default: %(default)s""")
-
 
     # Runtime
     optional.add("--silent", dest='silent',
@@ -242,7 +239,6 @@ def getParser():
                          Sequence names must exactly match the FASTA infile. \
                          Default: %(default)s""")
 
-
     # Remove divergent sequences
     optional.add("--remove_divergent", dest="remove_divergent",
                  action="store_true",
@@ -262,7 +258,6 @@ def getParser():
                      minis['remove_divergent_minperc'],
                      maxis['remove_divergent_minperc']))
 
-
     optional.add("--remove_divergent_retain", dest="retain_seqs_rd",
                  action="append", default=None, type=str,
                  metavar="(string)",
@@ -271,7 +266,6 @@ def getParser():
                          Sequence names must exactly match the FASTA infile. \
                          Can be specified \
                          multiple times. Default: %(default)s""")
-
 
     optional.add("--remove_divergent_retain_str", dest="retain_seqs_rdS",
                  action="append", default=None, type=str,
@@ -413,7 +407,6 @@ def getParser():
                  action="store_false",
                  help="Keep gap only columns in the alignment. Default: \
                        %(default)s")
-
 
     # Consensus
     optional.add("--make_consensus", dest="make_consensus",

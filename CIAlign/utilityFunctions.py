@@ -443,7 +443,7 @@ def listFonts(outfile):
 
 
 def configRetainSeqs(retain, retainS, retainL, nams, fname, log, silent):
-    ''' 
+    '''
     Allows the user to specify sequences to keep regardless of whether
     they pass or fail the rowwise cleaning operation thresholds. This function
     works on the sequences specified for a single function or group of
@@ -528,8 +528,9 @@ List of sequences to retain %s not found""" % retainL)
     # not
     if len(keeps & set(nams)) != len(keeps):
         raise RuntimeError("""
-Some sequences listed to be retained were not found: %s""" % (
-" ".join(keeps - set(nams))))
+Some sequences listed to be retained were not found: %s""" % (" ".join(
+                                                              keeps - set(
+                                                                  nams))))
 
     # Convert the result to an array
     keeps_arr = np.array(list(keeps))
@@ -540,5 +541,3 @@ Some sequences listed to be retained were not found: %s""" % (
 %s function: %s""" % (fname, ", ".join(sorted(list(keeps)))))
 
     return (keeps_arr)
-
-    
