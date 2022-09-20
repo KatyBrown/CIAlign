@@ -490,13 +490,15 @@ def configRetainSeqs(retain, retainS, retainL, nams, fname, log, silent):
         function
     '''
     # First read the sequence names passed directly
-    if retain is not None:
+    # the len check is for users with an inifile - can't specify None
+    # so this will be an empty string
+    if retain is not None and len(retain[0].strip()) != 0:
         keeps = set(retain)
     else:
         keeps = set()
 
     # If a file is specified, read the sequence names in the file
-    if retainL is not None:
+    if retainL is not None and len(retainL.strip()) != 0:
         # Raise an error if the file is not found
         if not os.path.exists(retainL):
             raise FileNotFoundError("""
@@ -506,7 +508,7 @@ List of sequences to retain %s not found""" % retainL)
                              for line in open(retainL).readlines()])
 
     # If a string to match is specified
-    if retainS is not None:
+    if retainS is not None and len(retainS[0].strip()) != 0:
         # For each string
         for rs in retainS:
             rr = 0

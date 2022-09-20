@@ -34,7 +34,10 @@ def main():
             desc = desc.replace(" Required", "")
             d2 = "XXXXX"
         if "config" not in desc:
-            out.write("# %s\n%s = %s\n" % (desc, nam, d2))
+            if d2 != "None":
+                out.write("# %s\n%s = %s\n" % (desc, nam, d2))
+            else:
+                out.write("# %s\n%s =\n" % (desc, nam))
     out.close()
 
 if __name__ == "__main__":

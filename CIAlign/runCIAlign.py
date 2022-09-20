@@ -21,7 +21,7 @@ def run(args, log):
     # Basic checks before running
     prelimChecks(args, log)
     # Set up arrays of the sequence names and aligned sequences
-    arr, nams, typ, keeps = setupArrays(args, log)
+    arr, nams, typ = setupArrays(args, log)
 
     # Make copies of the unedited arrays
     orig_arr = copy.copy(arr)
@@ -29,6 +29,7 @@ def run(args, log):
     functions = whichFunctions(args)
 
     if "cleaning" in functions:
+        keeps = setupRetains(args, nams, log)
         arr, nams, markupdict, removed = runCleaning(args,
                                                      log,
                                                      arr,
@@ -231,9 +232,8 @@ def setupArrays(args, log):
         log.info("Amino acid alignment detected")
     else:
         log.info("Nucleotide alignment detected")
-    keeps = setupRetains(args, nams, log)
 
-    return (arr, nams, typ, keeps)
+    return (arr, nams, typ)
 
 
 def setupRetains(args, nams, log):

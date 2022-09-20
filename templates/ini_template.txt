@@ -1,6 +1,6 @@
 # CIAlign Parameters
 # Path to input alignment file in FASTA format. 
-infile = XXXXX
+infile = example1.fasta
 # (string) Prefix for output files, including the path to the output directory. 
 outfile_stem = CIAlign
 # Use all available functions, with default parameters unless others are specified. 
@@ -16,29 +16,29 @@ silent = False
 # Crop the ends of sequences if they are poorly aligned. 
 crop_ends = False
 # (float, 0..0.5) Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. 
-crop_ends_mingap_perc = 0.05.
+crop_ends_mingap_perc = 0.05
 # (float, 0..0.5) Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. 
 crop_ends_redefine_perc = 0.1
 # (string) Do not crop the sequence with this name when running the crop_ends function. Can be specified multiple times. 
-crop_ends_retain = None
+crop_ends_retain =
 # (string) Do not crop sequences with names containing this word (character string) when running the crop_ends function. Case sensitive. 
-crop_ends_retain_str = None
+crop_ends_retain_str =
 # (string) Do not crop the sequences listed in this file when running the crop_ends function. Sequence names must exactly match the FASTA infile. 
-crop_ends_retain_list = None
+crop_ends_retain_list =
 # Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present. 
 remove_divergent = False
 # (float, 0..1) Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved. 
-remove_divergent_minperc = 0.65)
+remove_divergent_minperc = 0.65
 # (string) Do not remove the sequence with this name when running the remove_divergent function. Sequence names must exactly match the FASTA infile. Can be specified multiple times. 
-remove_divergent_retain = None
+remove_divergent_retain =
 # (string) Do not remove the sequences with names containing this word (character string) when running the remove_divergent function. Case sensitive. 
-remove_divergent_retain_str = None
+remove_divergent_retain_str =
 # (string) Do not remove the sequences listed in this file when running the remove_divergent function. Sequence names must exactly match the FASTA infile. 
-remove_divergent_retain_list = None
+remove_divergent_retain_list =
 # Remove insertions found in <= insertion_min_perc percent of sequences from the alignment. 
 remove_insertions = False
 # (int, 1..n_col) Only remove insertions >= this number of residues. 
-insertion_min_size = 3.
+insertion_min_size = 3
 # (int, 1..1000) Only remove insertions <= this number of residues. 
 insertion_max_size = 200
 # (int, 0..n_col/2) Minimum number of bases on either side of an insertion to classify it as an insertion. 
@@ -50,17 +50,17 @@ remove_short = False
 # (int, 0..n_col) Sequences are removed if they are shorter than this minimum length, excluding gaps. 
 remove_min_length = 50
 # (string) Do not remove the sequence with this name when running the remove_divergent function. Sequence names must exactly match the FASTA infile. Can be specified multiple times. 
-remove_short_retain = None
+remove_short_retain =
 # (string) Do not remove the sequences with names containing this word (character string) when running the remove_short function. Case sensitive. 
-remove_short_retain_str = None
+remove_short_retain_str =
 # (string) Do not remove the sequences listed in this file when running the remove_short function. Sequence names must exactly match the FASTA infile. 
-remove_short_retain_list = None
+remove_short_retain_list =
 # (string)   Do not remove the sequence with this name when running any rowwise function (currently remove_divergent and crop_ends). Sequence names must exactly match the FASTA infile. Can be specified multiple times. 
-retain = None
+retain =
 # (string) Do not remove the sequences with names containing this word (character string) when running any rowwise function (currently remove_divergent and crop_ends). Case sensitive. 
-retain_str = None
+retain_str =
 # (string) Do not remove the sequences listed in this file when running any rowwise function (currently remove_divergent and crop_ends). Sequence names must exactly match the FASTA infile. 
-retain_list = None
+retain_list =
 # Keep gap only columns in the alignment. 
 keep_gaponly = True
 # Make a consensus sequence based on the cleaned alignment. 
@@ -86,7 +86,7 @@ plot_width = 5
 # (int)  Mini alignment height in inches. 
 plot_height = 3
 # If specified, for mini alignments based on CIAlign output with <10 sequences (or if force_numbers is switched on) the rows will be labelled based on the input alignment, rather than renumbered. 
-plot_keep_numbers = False)
+plot_keep_numbers = False
 # Force all rows to be numbered on the mini alignments rather than labelling e.g. every 10th row for larger plots. Will cause labels to overlap on large plots. 
 plot_force_numbers = False
 # Draw a sequence logo. 

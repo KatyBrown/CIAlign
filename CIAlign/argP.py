@@ -204,7 +204,7 @@ def getParser():
                  default=defs['crop_ends_mingap_perc'],
                  help="Minimum proportion of the sequence length (excluding \
                      gaps) that is the threshold for change in gap numbers. \
-                     Default: %(default)s.",
+                     Default: %(default)s",
                  metavar="(float, %s..%s)" % (minis['crop_ends_mingap_perc'],
                                               maxis['crop_ends_mingap_perc']))
 
@@ -257,7 +257,7 @@ def getParser():
                  help="Minimum proportion of positions which should be \
                        identical to the most common base / amino acid in \
                        order to be preserved. \
-                       Default: %(default)s)",
+                       Default: %(default)s",
                  metavar="(float, %s..%s)" % (
                      minis['remove_divergent_minperc'],
                      maxis['remove_divergent_minperc']))
@@ -303,7 +303,7 @@ def getParser():
                                 n_col),
                  default=defs['insertion_min_size'],
                  help="Only remove insertions >= this number of residues. \
-                       Default: %(default)s.",
+                       Default: %(default)s",
                  metavar="(int, %s..%s)" % (
                      minis['insertion_min_size'],
                      maxis['insertion_min_size']))
@@ -480,7 +480,7 @@ def getParser():
                        output with <10 sequences (or if force_numbers \
                        is switched on) the rows will be labelled \
                        based on the input alignment, rather \
-                       than renumbered. Default: %(default)s)")
+                       than renumbered. Default: %(default)s")
 
     optional.add("--plot_force_numbers", dest="plot_force_numbers",
                  action="store_true",
