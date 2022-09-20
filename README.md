@@ -1,3 +1,4 @@
+![CI](https://github.com/KatyBrown/CIAlign/actions/workflows/main.yml/badge.svg)
 # CIAlign
 ---
 
