@@ -237,6 +237,46 @@ def setupArrays(args, log):
 
 
 def setupRetains(args, nams, log):
+    '''
+    Sets up a dictionary of sequence names which the cleaning functions should
+    ignore.
+
+    These come from the "retain" command line arguments and can currently
+    be specified for crop_ends, remove_divergent, remove_short or all
+    rowwise functions.
+
+    Allows the user to specify sequences to keep regardless of whether
+    they pass or fail the rowwise cleaning operation thresholds. 
+
+    Sequence names can be specified individually on the command line with
+    --retain, --crop_ends_retain, --remove_divergent_retain,
+    --remove_short_retain
+
+    They can also be specified as a list in a text file with --retain_list,
+    --crop_ends_retain_list etc, in which case the value is the path to
+    the file.
+
+    Finally they can be specified by searching each name for a character
+    string, specified as --retain_str, --crop_ends_retain_str etc.
+
+    Parameters
+    ----------
+    args: configargparse.ArgumentParser
+        ArgumentParser object containing the specified parameters
+    nams: list
+        The names of the sequences in the alignment
+    log: logging.Logger
+        Open log file
+
+    Returns
+    -------
+    keepD: dict
+        A dictionary listing sequences not to process for each function,
+        where the keys are function names.        
+    '''
+    # These are all the arguments from the command line to retain
+    # sequences, no suffix for directly specified, S for string, L for list,
+    # rs = remove_short, rd = remove_divergent, ce = crop_ends
     retain_args = [args.retain_seqs_rs,
                    args.retain_seqs_rsS,
                    args.retain_seqs_rsL,
@@ -249,15 +289,23 @@ def setupRetains(args, nams, log):
                    args.retain_seqs,
                    args.retain_seqsS,
                    args.retain_seqsL]
+    # Turn the list into an array
     retain_args = np.array(retain_args, dtype=object)
     keepD = dict()
+
+    # Split the parameters into four batches of 3 variables
+    rr = np.split(retain_args, 4)
+
+    # These are the functions these parameters are used with, each corresponds
+    # to a batch in rr
     titles = ['remove_short',
               'remove_divergent',
               'crop_ends',
               'all_rowwise']
 
-    rr = np.split(retain_args, 4)
+
     for i, r in enumerate(rr):
+        # Make an array listing the sequences referenced by each variable
         keeps = utilityFunctions.configRetainSeqs(r[0],
                                                   r[1],
                                                   r[2],
@@ -265,8 +313,11 @@ def setupRetains(args, nams, log):
                                                   titles[i],
                                                   log,
                                                   args.silent)
+        # Store the resulting array in a dictionary where the key
+        # is the function name
         keepD[titles[i]] = keeps
     return (keepD)
+
 
 def setupTrackers(args, arr):
     '''

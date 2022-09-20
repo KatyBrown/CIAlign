@@ -441,40 +441,102 @@ def listFonts(outfile):
         f.tight_layout()
         f.savefig(outfile, dpi=200, bbox_inches='tight')
 
+
 def configRetainSeqs(retain, retainS, retainL, nams, fname, log, silent):
+    ''' 
+    Allows the user to specify sequences to keep regardless of whether
+    they pass or fail the rowwise cleaning operation thresholds. This function
+    works on the sequences specified for a single function or group of
+    functions - either all rowwise functions, crop ends, remove divergent
+    or remove short.
+
+    Sequence names can be specified individually on the command line with
+    --retain, --crop_ends_retain, --remove_divergent_retain,
+    --remove_short_retain - these are listed in the retain variable for
+    the specific function currently being processed.
+
+    They can also be specified as a list in a text file with --retain_list,
+    --crop_ends_retain_list etc, in which case the value is the path to
+    the file.
+
+    Finally they can be specified by searching each name for a character
+    string, specified as --retain_str, --crop_ends_retain_str etc.
+
+    retain, retainS and retainL are None if no sequences are specified.
+
+    Parameters
+    ----------
+    retain: list
+        List of sequence names to keep
+    retainS: str
+        Sequence names containing this string will be kept
+    retainL: str
+        Path to a text file containing a list of sequence names to keep
+    nams: np.array
+        Array containing the names of the sequences in the input fasta file
+    fname: str
+        The function currently being processed - all_rowwise, crop_ends,
+        remove_divergent or remove_short, used for logging only here.
+    log: logging.Logger
+        An open log file object
+    silent: bool
+        True if CIAlign is run in silent mode - nothing will be printed to
+        STDOUT
+
+    Returns
+    -------
+    keeps: np.array
+        An array containing all sequence names to be ignored by this
+        function
+    '''
+    # First read the sequence names passed directly
     if retain is not None:
         keeps = set(retain)
     else:
         keeps = set()
+
+    # If a file is specified, read the sequence names in the file
     if retainL is not None:
+        # Raise an error if the file is not found
         if not os.path.exists(retainL):
             raise FileNotFoundError("""
 List of sequences to retain %s not found""" % retainL)
+        # Add the sequence names to the keeps set
         keeps = keeps | set([line.strip()
                              for line in open(retainL).readlines()])
+
+    # If a string to match is specified
     if retainS is not None:
+        # For each string
         for rs in retainS:
             rr = 0
+            # check all the sequence names for this string
             for nam in nams:
                 if rs in nam:
                     keeps.add(nam)
                     rr += 1
             if rr == 0:
+                # Warn if there are no matches
                 log.warn("""No sequence names matching "%s" were found""" % rs)
                 if not silent:
                     print("""Warning: No sequence names matching \
 "%s" were found""" % rs)
 
+    # Check all the specified sequence names were found, raise an error if
+    # not
     if len(keeps & set(nams)) != len(keeps):
         raise RuntimeError("""
 Some sequences listed to be retained were not found: %s""" % (
 " ".join(keeps - set(nams))))
 
+    # Convert the result to an array
     keeps_arr = np.array(list(keeps))
+
+    # Log the sequence names identified
     if len(keeps_arr) != 0:
         log.info("""The following sequences will not be processed with the \
 %s function: %s""" % (fname, ", ".join(sorted(list(keeps)))))
-    
+
     return (keeps_arr)
-        
+
     
