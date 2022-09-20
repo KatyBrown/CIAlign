@@ -1,9 +1,13 @@
 # CIAlign Parameters
+
+[files]
 # Path to input alignment file in FASTA format. 
 infile = example1.fasta
 # (string) Prefix for output files, including the path to the output directory. 
 outfile_stem = CIAlign
-# Use all available functions, with default parameters unless others are specified. 
+# Use all available functions, with default parameters unless others are specified.
+
+[functions]
 all = False
 # Use all cleaning functions, with default parameters unless others are specified. 
 clean = False
@@ -11,8 +15,12 @@ clean = False
 visualise = False
 # Use all interpretation functions, with default parameters unless others are specified. 
 interpret = False
+
+[runtime]
 # Do not print progress to the screen. 
 silent = False
+
+[crop_ends]
 # Crop the ends of sequences if they are poorly aligned. 
 crop_ends = False
 # (float, 0..0.5) Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. 
@@ -25,6 +33,8 @@ crop_ends_retain =
 crop_ends_retain_str =
 # (string) Do not crop the sequences listed in this file when running the crop_ends function. Sequence names must exactly match the FASTA infile. 
 crop_ends_retain_list =
+
+[remove_divergent]
 # Remove sequences with <= N proportion of positions at which the most common base / amino acid in the alignment is present. 
 remove_divergent = False
 # (float, 0..1) Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved. 
@@ -35,6 +45,8 @@ remove_divergent_retain =
 remove_divergent_retain_str =
 # (string) Do not remove the sequences listed in this file when running the remove_divergent function. Sequence names must exactly match the FASTA infile. 
 remove_divergent_retain_list =
+
+[remove_insertions]
 # Remove insertions found in <= insertion_min_perc percent of sequences from the alignment. 
 remove_insertions = False
 # (int, 1..n_col) Only remove insertions >= this number of residues. 
@@ -45,6 +57,8 @@ insertion_max_size = 200
 insertion_min_flank = 5
 # (float, 0..1) Remove insertions which are present in less than this proportion of sequences. 
 insertion_min_perc = 0.5
+
+[remove_short]
 # Remove sequences <= N bases / amino acids from the alignment. 
 remove_short = False
 # (int, 0..n_col) Sequences are removed if they are shorter than this minimum length, excluding gaps. 
@@ -55,14 +69,20 @@ remove_short_retain =
 remove_short_retain_str =
 # (string) Do not remove the sequences listed in this file when running the remove_short function. Sequence names must exactly match the FASTA infile. 
 remove_short_retain_list =
+
+[retain]
 # (string)   Do not remove the sequence with this name when running any rowwise function (currently remove_divergent and crop_ends). Sequence names must exactly match the FASTA infile. Can be specified multiple times. 
 retain =
 # (string) Do not remove the sequences with names containing this word (character string) when running any rowwise function (currently remove_divergent and crop_ends). Case sensitive. 
 retain_str =
-# (string) Do not remove the sequences listed in this file when running any rowwise function (currently remove_divergent and crop_ends). Sequence names must exactly match the FASTA infile. 
+# (string) Do not remove the sequences listed in this file when running any rowwise function (currently remove_divergent, remove_short and crop_ends). Sequence names must exactly match the FASTA infile. 
 retain_list =
+
+[keep_gaponly]
 # Keep gap only columns in the alignment. 
 keep_gaponly = True
+
+[consensus]
 # Make a consensus sequence based on the cleaned alignment. 
 make_consensus = False
 # (string) Type of consensus sequence to make - can be majority, to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position. 
@@ -71,6 +91,8 @@ consensus_type = majority
 consensus_keep_gaps = False
 # (string) Name to use for the consensus sequence in the output fasta file. 
 consensus_name = consensus
+
+[mini_alignments]
 # Plot a mini alignment - an image representing the input alignment. 
 plot_input = False
 # Plot a mini alignment, an image representing the output alignment. 
@@ -89,6 +111,8 @@ plot_height = 3
 plot_keep_numbers = False
 # Force all rows to be numbered on the mini alignments rather than labelling e.g. every 10th row for larger plots. Will cause labels to overlap on large plots. 
 plot_force_numbers = False
+
+[sequence_logos]
 # Draw a sequence logo. 
 make_sequence_logo = False
 # (string) Type of sequence logo - bar/text/both. 
@@ -107,6 +131,8 @@ logo_start = 0
 logo_end = 0
 # Make a swatch showing available fonts. 
 list_fonts_only = False
+
+[coverage]
 # Plot the coverage of the input MSA. 
 plot_coverage_input = False
 # Plot the coverage of the output MSA. 
@@ -121,6 +147,8 @@ plot_coverage_width = 5
 plot_coverage_colour = #007bf5
 # (string) File type for coverage plot (png, svg, tiff, jpg). 
 plot_coverage_filetype = png
+
+[similarity_matrix]
 # Make a similarity matrix for the input alignment. 
 make_similarity_matrix_input = False
 # Make a similarity matrix for the output alignment. 
@@ -131,6 +159,8 @@ make_simmatrix_dp = 4
 make_simmatrix_minoverlap = 1
 # (int) Include positions with gaps in either or both sequences in the similarity matrix calculation. Can be 0 - exclude positions which are gaps in either or both sequences, 1 - exclude positions which are gaps in both sequences, 2 - consider all positions regardless of gaps. 
 make_simmatrix_keepgaps = 0
+
+[unalign]
 # Generate a copy of the input alignment with no gaps. 
 unalign_input = False
 # Generate a copy of the cleaned alignment with no gaps. 

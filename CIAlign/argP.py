@@ -404,7 +404,8 @@ def getParser():
                  type=str, default=None, metavar="(string)",
                  help="""Do not remove the sequences listed in this file when \
                          running any rowwise function \
-                         (currently remove_divergent and crop_ends). \
+                         (currently remove_divergent, remove_short and\
+                          crop_ends). \
                          Sequence names must exactly match the FASTA infile. \
                          Default: %(default)s""")
     # keep gap only
