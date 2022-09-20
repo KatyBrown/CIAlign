@@ -125,7 +125,8 @@ def getParser():
     # Files
     # not to confuse with inifile
     required.add("--infile", dest='infile', type=str,
-                 help='Path to input alignment file in FASTA format')
+                 help='Path to input alignment file in FASTA format. \
+                       Required')
     optional.add("--inifile", dest='inifile', type=str,
                  default=None,  metavar="(string)",
                  help='Path to config file. Default: %(default)s',
@@ -156,24 +157,34 @@ def getParser():
     # parameter to run all functions without having to type them in
     optional.add("--all", dest="all_options",
                  action="store_true",
-                 help="Use all available functions with default parameters.")
+                 help="""Use all available functions, with default parameters \
+                         unless others are specified. \
+                         Default: %(default)s""")
 
     # parameter to run all cleaning functions without having to type them in
     optional.add("--clean", dest="clean",
                  action="store_true",
-                 help="Use all cleaning functions with default parameters.")
+                 help="""Use all cleaning functions, with default parameters \
+                         unless others are specified. \
+                         Default: %(default)s""")
+
 
     # parameter to create all mini alignments without having to type them in
     optional.add("--visualise", dest="visualise",
                  action="store_true",
-                 help="Plot all mini alignments with default parameters.")
+                 help="""Plot all mini alignments, with default parameters \
+                         unless others are specified. \
+                         Default: %(default)s""")
+
 
     # parameter to run all interpreation functions except creating sequence
     # logos without having to type them in
     optional.add("--interpret", dest="interpret",
                  action="store_true",
-                 help="Use all interpreting functions with default \
-                 parameters.")
+                 help="""Use all interpretation functions, with default
+                         parameters unless others are specified. \
+                         Default: %(default)s""")
+
 
     # Runtime
     optional.add("--silent", dest='silent',
@@ -408,6 +419,7 @@ def getParser():
                  action="store_true",
                  help="Make a consensus sequence based on the cleaned \
                        alignment. Default: %(default)s")
+
     optional.add("--consensus_type", dest="consensus_type", type=str,
                  default="majority", metavar="(string)",
                  help="Type of consensus sequence to make - can be majority, \
@@ -415,12 +427,14 @@ def getParser():
                        the consensus, even if this is a gap, or \
                        majority_nongap, to use the most common non-gap \
                        character at each position. Default: %(default)s")
+
     optional.add("--consensus_keep_gaps", dest="consensus_keep_gaps",
                  action="store_true",
                  help="If there are gaps in the consensus (if majority_nongap \
                        is used as consensus_type), should these be included \
                        in the consensus (True) or should this position in \
                       the consensus be deleted (False). Default: %(default)s")
+
     optional.add("--consensus_name", dest="consensus_name",
                  type=str, default="consensus", metavar="(string)",
                  help="Name to use for the consensus sequence in the output \
@@ -431,70 +445,87 @@ def getParser():
                  action="store_true",
                  help="Plot a mini alignment - an image representing the \
                        input alignment. Default: %(default)s")
+
     optional.add("--plot_output", dest="plot_output",
                  action="store_true",
                  help="Plot a mini alignment, an image representing the \
                        output alignment. Default: %(default)s")
+
     optional.add("--plot_markup", dest="plot_markup",
                  action="store_true",
                  help="Draws the input alignment but with the columns and \
                        rows which have been removed by each function marked \
                        up in corresponding colours. Default: %(default)s")
+
     optional.add("--plot_dpi", dest="plot_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for mini alignments. Default: %(default)s")
+
     optional.add("--plot_format", dest="plot_format",
                  type=str, default='png', metavar="(string)",
                  help="Image format for mini alignments - can be png, svg, \
                        tiff or jpg. Default: %(default)s")
+
     optional.add("--plot_width", dest="plot_width",
                  type=int, default=5, metavar="(int)",
                  help="Mini alignment width in inches. Default: %(default)s")
+
     optional.add("--plot_height", dest="plot_height",
                  type=int, default=3, metavar="(int)",
                  help="Mini alignment height in inches. Default: %(default)s")
+
     optional.add("--plot_keep_numbers", dest="plot_keep_numbers",
                  action="store_true",
                  help="If specified, for mini alignments based on CIAlign \
                        output with <10 sequences (or if force_numbers \
                        is switched on) the rows will be labelled \
                        based on the input alignment, rather \
-                       than renumbered")
+                       than renumbered. Default: %(default)s)")
+
     optional.add("--plot_force_numbers", dest="plot_force_numbers",
                  action="store_true",
                  help="Force all rows to be numbered on the mini alignments \
                  rather than labelling e.g. every 10th row for larger plots. \
-                 Will cause labels to overlap on large plots")
+                 Will cause labels to overlap on large plots. \
+                 Default: %(default)s")
 
     # Sequence logos
     optional.add("--make_sequence_logo", dest="make_sequence_logo",
                  action="store_true",
                  help="Draw a sequence logo. Default: %(default)s")
+
     optional.add("--sequence_logo_type", dest="sequence_logo_type",
                  type=str, default='bar', metavar="(string)",
                  help="Type of sequence logo - bar/text/both. \
                        Default: %(default)s")
+
     optional.add("--sequence_logo_dpi", dest="sequence_logo_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for sequence logo image. Default: %(default)s")
+
     optional.add("--sequence_logo_font", dest="sequence_logo_font",
                  type=str, default='monospace', metavar="(string)",
                  help="Font for text sequence logo. Default: %(default)s")
+
     optional.add("--sequence_logo_nt_per_row", dest='sequence_logo_nt_per_row',
                  type=int, default=50, metavar="(int)",
                  help="Number of bases / amino acids to show per row in the \
                        sequence logo, where the logo is too large to show on \
                        a single line. Default: %(default)s")
+
     optional.add("--sequence_logo_filetype", dest='sequence_logo_filetype',
                  type=str, default='png', metavar="(string)",
                  help="Image file type to use for the sequence logo - can be \
                        png, svg, tiff or jpg. Default: %(default)s")
+
     optional.add("--logo_start", dest="logo_start",
                  type=int, default=0, metavar="(int)",
                  help="Start position of sequence logo. Default: %(default)s")
+
     optional.add("--logo_end", dest="logo_end",
                  type=int, default=0, metavar="(int",
                  help="End position of sequence logo. Default: %(default)s")
+
     optional.add("--list_fonts_only", dest='list_fonts_only',
                  action="store_true",
                  help="Make a swatch showing available fonts. \
@@ -505,25 +536,31 @@ def getParser():
                  action="store_true",
                  help="Plot the coverage of the input MSA. Default: \
                        %(default)s")
+
     optional.add("--plot_coverage_output", dest="plot_coverage_output",
                  action="store_true",
                  help="Plot the coverage of the output MSA. Default: \
                        %(default)s")
+
     optional.add("--plot_coverage_dpi", dest="plot_coverage_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for coverage plot. Default: %(default)s")
+
     optional.add("--plot_coverage_height", dest="plot_coverage_height",
                  type=int, default=3, metavar="(int)",
                  help="Height for coverage plot (inches). Default: \
                        %(default)s")
+
     optional.add("--plot_coverage_width", dest="plot_coverage_width",
                  type=int, default=5, metavar="(int)",
                  help="Width for coverage plot (inches). Default: \
                        %(default)s")
+
     optional.add("--plot_coverage_colour", dest="plot_coverage_colour",
                  type=str, default='#007bf5', metavar="(string)",
                  help="Colour for coverage plot (hex code or name). \
                        Default: %(default)s")
+
     optional.add("--plot_coverage_filetype", dest="plot_coverage_filetype",
                  type=str, default='png', metavar="(string)",
                  help="File type for coverage plot (png, svg, tiff, jpg). \
@@ -534,21 +571,25 @@ def getParser():
                  action="store_true",
                  help="Make a similarity matrix for the input alignment. \
                        Default: %(default)s")
+
     optional.add("--make_similarity_matrix_output",
                  dest="make_simmatrix_output",
                  action="store_true",
                  help="Make a similarity matrix for the output alignment. \
                        Default: %(default)s")
+
     optional.add("--make_simmatrix_dp", dest="make_simmatrix_dp",
                  type=int, default=4, metavar="(int)",
                  help="Number of decimal places to display in the similarity \
                        matrix output file. Default: %(default)s")
+
     optional.add("--make_simmatrix_minoverlap",
                  dest="make_simmatrix_minoverlap",
                  type=int, default=1, metavar="(int)",
                  help="Minimum overlap between two sequences to have non-zero \
                        similarity in the similarity matrix. \
                        Default: %(default)s")
+
     optional.add("--make_simmatrix_keepgaps", dest="make_simmatrix_keepgaps",
                  type=int, default=0, metavar="(int)",
                  help="Include positions with gaps in either or both \
@@ -563,6 +604,7 @@ def getParser():
                  action="store_true", default=False,
                  help="Generate a copy of the input alignment with no gaps. \
                        Default: %(default)s")
+
     optional.add("--unalign_output", dest="unalign_output",
                  action="store_true", default=False,
                  help="Generate a copy of the cleaned alignment with no \
@@ -574,6 +616,7 @@ def getParser():
                  default=False,
                  help="Replaces all Us by Ts in input alignment. \
                      Default: %(default)s")
+
     optional.add("--replace_output", dest="replace_output",
                  action="store_true", default=False,
                  help="Replaces all Us by Ts in output alignment. \
