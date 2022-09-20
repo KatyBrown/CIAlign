@@ -263,7 +263,8 @@ def setupRetains(args, nams, log):
                                                   r[2],
                                                   nams,
                                                   titles[i],
-                                                  log)
+                                                  log,
+                                                  args.silent)
         keepD[titles[i]] = keeps
     return (keepD)
 

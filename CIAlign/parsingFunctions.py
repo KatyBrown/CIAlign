@@ -42,7 +42,8 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, keeps,
     for i, row in enumerate(arr):
         start, end = cropSeq.determineStartEnd(row, nams[i], log,
                                                mingap, redefine_perc)
-        if nams[i] in keeps['crop_ends'] or nams[i] in keeps['all_rowwise']:
+        kk = set(keeps['crop_ends']) | set(keeps['all_rowwise'])
+        if nams[i] in kk:
             start = 0
             end = len(row)
         else:
@@ -52,7 +53,6 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, keeps,
                 row[start:end]) + "-" * (len(row) - end)
         newseq = np.array(list(newseq))
         s = sum(newseq != row)
-        print (s)
         if s != 0:
             nam = nams[i]
             non_gap_start = sum(row[0:start] != "-")
@@ -117,6 +117,8 @@ def removeDivergent(arr, nams, rmfile, log,
         print('file is closed')
     j = 0
     keep = []
+    kk = set(keeps['remove_divergent']) | set(keeps['all_rowwise'])
+
     for a in arr:
         i = 0
         y = 0
@@ -135,9 +137,7 @@ def removeDivergent(arr, nams, rmfile, log,
                         y += 1
                     t += 1
                 i += 1
-            if (y / t > percidentity or
-                nams[j] in keeps['remove_divergent'] or 
-                nams[j]in keeps['all_rowwise']):
+            if y / t > percidentity or nams[j] in kk:
                     keep.append(True)
             else:
                 keep.append(False)
@@ -309,10 +309,9 @@ def removeTooShort(arr, nams, rmfile, log, keeps, min_length):
         sums = sum(arrT != "-")
         keeps_rs = np.in1d(nams, keeps['remove_short'])
         keeps_ar = np.in1d(nams, keeps['all_rowwise'])
-        print (keeps['remove_short'], keeps['all_rowwise'])
-        keeps_here = keeps['remove_short'] | keeps['all_rowwise']
-        print (sums[np.in1d(nams, keeps_here)])
-        sums[np.in1d(np.array(nams), keeps_here)] += min_length
+        keeps_here = keeps_rs | keeps_ar
+
+        sums[keeps_here] += min_length
         arr = arr[(sums > min_length)]
         
         rmnames = set(np.array(nams)[sums <= min_length])

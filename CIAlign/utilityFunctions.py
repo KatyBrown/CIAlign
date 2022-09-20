@@ -441,7 +441,7 @@ def listFonts(outfile):
         f.tight_layout()
         f.savefig(outfile, dpi=200, bbox_inches='tight')
 
-def configRetainSeqs(retain, retainS, retainL, nams, fname, log):
+def configRetainSeqs(retain, retainS, retainL, nams, fname, log, silent):
     if retain is not None:
         keeps = set(retain)
     else:
@@ -453,10 +453,18 @@ List of sequences to retain %s not found""" % retainL)
         keeps = keeps | set([line.strip()
                              for line in open(retainL).readlines()])
     if retainS is not None:
-        for nam in nams:
-            for rs in retainS:
+        for rs in retainS:
+            rr = 0
+            for nam in nams:
                 if rs in nam:
                     keeps.add(nam)
+                    rr += 1
+            if rr == 0:
+                log.warn("""No sequence names matching "%s" were found""" % rs)
+                if not silent:
+                    print("""Warning: No sequence names matching \
+"%s" were found""" % rs)
+
     if len(keeps & set(nams)) != len(keeps):
         raise RuntimeError("""
 Some sequences listed to be retained were not found: %s""" % (
