@@ -8,6 +8,7 @@ To add a parameter:
 * Add the parameter to the [CIAlign/argP.py](https://github.com/KatyBrown/CIAlign/blob/master/CIAlign/argP.py) help documentation, following the style of the other parameters
 * Add the parameter the function call in [CIAlign/runCIAlign.py](https://github.com/KatyBrown/CIAlign/blob/master/CIAlign/runCIAlign.py)
 * Edit the function itself in the relevant module file, including adding the parameter to the function definition and describing it in the docstring, add comments if needed to explain your steps
+* Update templates/ini_template.ini
 * Edit the unit tests for the appropriate module file to include the new parameter
 * Run unit tests in the root directoy as `python -m unittest tests/*py` and ensure that they pass
 * Check the code is pep8 compliant by running `pep8 CIAlign/*`

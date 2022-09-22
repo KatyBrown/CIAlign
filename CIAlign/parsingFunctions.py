@@ -8,7 +8,8 @@ except ImportError:
 matplotlib.use('Agg')
 
 
-def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
+def cropEnds(arr, nams, relativePositions, rmfile, log, keeps,
+             mingap, redefine_perc):
     '''
     Removes poorly aligned ends from a multiple sequence alignment.
 
@@ -18,12 +19,21 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
         The alignment stored as a numpy array
     nams: list
         The names of the sequences in the alignment
+    relativePositions: list
+        A list of integers representing columns in the alignment, from which
+        values are removed as columns are removed from the alignment.
     rmfile: str
         Path to a file in which to store a list of removed sequences
     log: logging.Logger
         An open log file object
+    keeps: dict
+        A dictionary listing sequences not to process for each function,
+        where the keys are function names.
     mingap: int
         Minimum gap size to crop from ends.
+    redefine_perc: float
+        Proportion of the sequence length (excluding gaps) that is being
+        checked for change in gap numbers to redefine start/end.
 
     Returns
     -------
@@ -41,13 +51,20 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
     for i, row in enumerate(arr):
         start, end = cropSeq.determineStartEnd(row, nams[i], log,
                                                mingap, redefine_perc)
-        start = max(start - 1, 0)
-        end = end + 1
+        # Find the sequences the user specified to keep in either
+        # crop ends or all rowwise functions
+        kk = set(keeps['crop_ends']) | set(keeps['all_rowwise'])
+        # Don't redefine the start and end for the "retain" seqs
+        if nams[i] in kk:
+            start = 0
+            end = len(row)
+        else:
+            start = max(start - 1, 0)
+            end = end + 1
         newseq = "-" * start + "".join(
                 row[start:end]) + "-" * (len(row) - end)
         newseq = np.array(list(newseq))
         s = sum(newseq != row)
-
         if s != 0:
             nam = nams[i]
             non_gap_start = sum(row[0:start] != "-")
@@ -81,7 +98,8 @@ def cropEnds(arr, nams, relativePositions, rmfile, log, mingap, redefine_perc):
     return (np.array(newarr), r)
 
 
-def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
+def removeDivergent(arr, nams, rmfile, log,
+                    keeps, percidentity=0.75):
     '''
     Remove sequences which don't have the most common non-gap residue at
     > percidentity non-gap positions
@@ -96,6 +114,9 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
         Path to a file in which to store a list of removed sequences
     log: logging.Logger
         An open log file object
+    keeps: dict
+        A dictionary listing sequences not to process for each function,
+        where the keys are function names.
     percidentity: float
         Minimum percentage identity to majority to not be removed
 
@@ -111,6 +132,10 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
         print('file is closed')
     j = 0
     keep = []
+    # Find which sequence names the user specified not to process
+    # with this function
+    kk = set(keeps['remove_divergent']) | set(keeps['all_rowwise'])
+
     for a in arr:
         i = 0
         y = 0
@@ -129,7 +154,8 @@ def removeDivergent(arr, nams, rmfile, log, percidentity=0.75):
                         y += 1
                     t += 1
                 i += 1
-            if y / t > percidentity:
+            # keep sequences in the kk array
+            if y / t > percidentity or nams[j] in kk:
                 keep.append(True)
             else:
                 keep.append(False)
@@ -267,7 +293,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     return (arr, set(rm_relative), relativePositions)
 
 
-def removeTooShort(arr, nams, rmfile, log, min_length):
+def removeTooShort(arr, nams, rmfile, log, keeps, min_length):
     '''
     Removes sequences (rows) with fewer than min_length non-gap positions from
     the alignment.
@@ -282,6 +308,9 @@ def removeTooShort(arr, nams, rmfile, log, min_length):
         Path to a file in which to store a list of removed sequences
     log: logging.Logger
         An open log file object
+    keeps: dict
+        A dictionary listing sequences not to process for each function,
+        where the keys are function names.
     min_length: int
         Minimum length sequence to keep.
 
@@ -299,8 +328,19 @@ def removeTooShort(arr, nams, rmfile, log, min_length):
     if len(arr) != 0:
         arrT = arr.transpose()
         sums = sum(arrT != "-")
-        arr = arr[sums > min_length]
+        # Find which sequence names the user specified not to process
+        # with this function
+        keeps_rs = np.in1d(nams, keeps['remove_short'])
+        keeps_ar = np.in1d(nams, keeps['all_rowwise'])
+        keeps_here = keeps_rs | keeps_ar
+        # Artificially raise the number of non-gap residues in
+        # the sequences listed in the "keeps" list so that they are
+        # not removed but otherwise processed like all other sequences
+        sums[keeps_here] += min_length
+        arr = arr[(sums > min_length)]
+
         rmnames = set(np.array(nams)[sums <= min_length])
+
         if len(rmnames) != 0:
             log.info("Removing too short sequences %s" % (
                 ", ".join(list(rmnames))))
