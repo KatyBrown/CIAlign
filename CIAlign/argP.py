@@ -11,7 +11,7 @@ except ImportError:
     from _version import __version__
 
 
-def float_range(mini, maxi):
+def float_range(mini, maxi, default):
     '''
     Defines a type for argparse of a float with a fixed range
 
@@ -34,14 +34,14 @@ def float_range(mini, maxi):
     # Based on solution from @georg-w stack overflow qu. 55324449
     mini = float(mini)
     maxi = float(maxi)
-
+    default = float(default)
     def float_range_checker(arg):
         try:
             f = float(arg)
         except ValueError:
             raise configargparse.ArgumentTypeError(
                 "Must be a floating point number")
-        if f < mini or f > maxi:
+        if (f < mini or f > maxi) and not f == default:
             raise configargparse.ArgumentTypeError(
                 "Must be in range [%s .. %s]" % (mini, maxi))
         return (f)
@@ -49,7 +49,7 @@ def float_range(mini, maxi):
     return (float_range_checker)
 
 
-def int_range(mini, maxi, n_col):
+def int_range(mini, maxi, n_col, default):
     '''
     Defines a type for argparse of an integer with a fixed range, where
     the maximum value is a function of the number of columns
@@ -76,14 +76,17 @@ def int_range(mini, maxi, n_col):
         maxi_val = eval(maxi)
     except TypeError:
         maxi_val = int(maxi)
-
+    try:
+        default_val = eval(default)
+    except TypeError:
+        default_val = int(default)
     def int_range_checker(arg):
         try:
             f = int(arg)
         except ValueError:
             raise configargparse.ArgumentTypeError("Must be an integer")
 
-        if f < mini or f > maxi_val:
+        if (f < mini or f > maxi_val) and not f == default_val:
             raise configargparse.ArgumentTypeError(
                 "Must be in range [%s .. %s (%s)]" % (mini, maxi, maxi_val))
         return (f)
@@ -197,7 +200,8 @@ def getParser():
 
     optional.add("--crop_ends_mingap_perc", dest='crop_ends_mingap_perc',
                  type=float_range(minis['crop_ends_mingap_perc'],
-                                  maxis['crop_ends_mingap_perc']),
+                                  maxis['crop_ends_mingap_perc'],
+                                  defs['crop_ends_mingap_perc']),
                  default=defs['crop_ends_mingap_perc'],
                  help="Minimum proportion of the sequence length (excluding \
                      gaps) that is the threshold for change in gap numbers. \
@@ -207,7 +211,8 @@ def getParser():
 
     optional.add("--crop_ends_redefine_perc", dest='crop_ends_redefine_perc',
                  type=float_range(minis['crop_ends_redefine_perc'],
-                                  maxis['crop_ends_redefine_perc']),
+                                  maxis['crop_ends_redefine_perc'],
+                                  defs['crop_ends_redefine_perc']),
                  default=defs['crop_ends_redefine_perc'],
                  help="Proportion of the sequence length (excluding gaps) \
                        that is being checked for change in gap numbers to \
@@ -249,7 +254,8 @@ def getParser():
     optional.add("--remove_divergent_minperc", dest="remove_divergent_minperc",
                  default=defs['remove_divergent_minperc'],
                  type=float_range(minis['remove_divergent_minperc'],
-                                  maxis['remove_divergent_minperc']),
+                                  maxis['remove_divergent_minperc'],
+                                  defs['remove_divergent_minperc']),
                  help="Minimum proportion of positions which should be \
                        identical to the most common base / amino acid in \
                        order to be preserved. \
@@ -293,8 +299,8 @@ def getParser():
 
     optional.add("--insertion_min_size", dest="insertion_min_size",
                  type=int_range(minis['insertion_min_size'],
-                                maxis['insertion_max_size'],
-                                n_col),
+                                maxis['insertion_min_size'],
+                                n_col, defs['insertion_min_size']),
                  default=defs['insertion_min_size'],
                  help="Only remove insertions >= this number of residues. \
                        Default: %(default)s",
@@ -305,7 +311,8 @@ def getParser():
     optional.add("--insertion_max_size", dest="insertion_max_size",
                  type=int_range(minis['insertion_max_size'],
                                 maxis['insertion_max_size'],
-                                n_col),
+                                n_col,
+                                defs['insertion_max_size']),
                  default=defs['insertion_max_size'],
                  help="Only remove insertions <= this number of residues. \
                        Default: %(default)s",
@@ -316,7 +323,8 @@ def getParser():
     optional.add("--insertion_min_flank", dest="insertion_min_flank",
                  type=int_range(minis['insertion_min_flank'],
                                 maxis['insertion_min_flank'],
-                                n_col),
+                                n_col,
+                                defs['insertion_min_flank']),
                  default=defs['insertion_min_flank'],
                  help="Minimum number of bases on either side of an insertion \
                        to classify it as an insertion.\
@@ -327,7 +335,8 @@ def getParser():
 
     optional.add("--insertion_min_perc", dest="insertion_min_perc",
                  type=float_range(minis['insertion_min_perc'],
-                                  maxis['insertion_min_perc']),
+                                  maxis['insertion_min_perc'],
+                                  defs['insertion_min_perc']),
                  default=defs['insertion_min_perc'],
                  help="Remove insertions which are present in less than this \
                        proportion of sequences.\
@@ -345,7 +354,8 @@ def getParser():
     optional.add("--remove_min_length", dest="remove_min_length",
                  type=int_range(minis['remove_min_length'],
                                 maxis['remove_min_length'],
-                                n_col),
+                                n_col,
+                                defs['remove_min_length']),
                  default=defs['remove_min_length'],
                  help="Sequences are removed if they are shorter than this \
                        minimum length, excluding gaps. Default: %(default)s",
