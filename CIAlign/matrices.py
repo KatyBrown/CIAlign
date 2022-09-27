@@ -187,8 +187,8 @@ def makePFM(arr, typ):
 def makePPM(PFM, alpha):
     '''
     Make a position probability matrix - a matrix showing the frequency
-    of each residue in each column of the alignment, normalised by alignment
-    size. 
+    of each residue in each column of the alignment, normalised by background
+    frequency and including pseudocounts.
     Alpha is a pseudocount - a small number added to avoid zero counts. It
     can be provided directly as an integer or calculated as a transformation
     of the input data as described in the getFreq function docstring.
@@ -258,3 +258,102 @@ def makePWM(PPM, freq):
     '''
     PWM = np.log2(np.divide(PPM, freq))
     return (PWM.round(4))
+
+
+def arrToPWM(arr, typ, freqtype, alphatype, outfile_stem, arr2,
+             log, silent,
+             fimo=False, blamm=False, alignment_name='alignment',
+             motif_name='motif'):
+    '''
+    Converts an alignment array into a PFM, PPM and PWM.
+
+    PFM - position frequency matrix - a matrix showing the number of
+    each residue in each column of the alignment.
+    PPM - position probability matrix - normalised by background
+    frequency and including pseudocounts.
+    PWM - position weight matrix - a matrix which shows the log-likelihood
+    ratio of observing character i at position j in a site
+    compared with a random sequence (from 10.1186/s12859-020-3348-6)
+    
+    Parameters
+    ----------
+    arr: np.array
+        The alignment the PFM is for, stored as a numpy array    
+    typ: str
+        nt for nucleotide or aa for amino acid
+    freqtype: str or dict
+        Can be 'equal', assume all residues are equally common, 'calc',
+        frequency is calculated using the PFM, 'calc2', frequency is
+        calculated using a second PFM (e.g. the full alignment vs a section),
+        or a dictionary with user defined frequencies for each residue.
+    alphatype: str or int or float or None
+        If alphatype is "calc", alpha is calculated as
+        frequency(base) * (square root(number of rows in alignment)),
+        as described in Dave Tang's blog here:
+        https://davetang.org/muse/2013/10/01/position-weight-matrix/,
+        which recreates the method used in doi.org/10.1038/nrg1315, if
+        alphatype is an integer or float, this number is used as the value of
+        alpha is used for all positions.
+    outfile_stem: str
+        Prefix for output files, including the path to the output directory.
+    arr2: np.array
+        A second alignment which can be used to calculated background
+        frequencies, stored as a numpy array.
+    log: logging.Logger
+        An open log file object
+    silent: bool
+        If True, nothing is printed to STDOUT (to the screen).
+    fimo: bool
+        If True, output the PPM in the format required for input to FIMO
+        https://meme-suite.org/meme/tools/fimo
+    blamm: bool
+        If True, output the PFM in the format required for input to BLAMM
+        https://github.com/biointec/blamm
+    '''
+    log.info("Generating position frequency matrix")
+    if not silent:
+        print ("Generating position frequency matrix")
+    # Make the position frequency matrix
+    PFM = makePFM(arr, typ)
+    # Make the second matrix where needed
+    if arr2 is not None and freqtype == 'calc2':
+        PFM2 = makePFM(arr2, typ)
+    else:
+        PFM2 = None
+
+    # Calculate the frequency and the alpha matrices
+    freq = getFreq(freqtype, typ,  PFM2)
+    alpha = getAlpha(alphatype, typ, PFM, freq)
+
+    log.info("Generating position probability matrix")
+    if not silent:
+        print ("Generating position probability matrix")
+    # Calculate the PPM from the PFM
+    PPM = makePPM(PFM, alpha=alpha)
+
+    log.info("Generating position weight matrix")
+    if not silent:
+        print ("Generating position weight matrix")
+
+    # Calculate the PWM from the PPM
+    PWM = makePWM(PPM, typ, freq)
+    
+    # Save all the matrices
+    PFM.to_csv("%s_pfm.txt" % outfile_stem, sep="\t")
+    PPM.to_csv("%s_ppm.txt" % outfile_stem, sep="\t")
+    PWM.to_csv("%s_pwm.txt" % outfile_stem, sep="\t")
+    
+    if fimo:
+        # Save the PPM matrix in the format required for FIMO input
+        # https://meme-suite.org/meme/tools/fimo
+        PPM.T.to_csv("%s_ppm_fimo.txt" % outfile_stem, sep="\t", index=None,
+                     header=None)
+    if blamm:
+        # Save the PFM matrix in the format required for BLAMM input
+        # https://github.com/biointec/blamm
+        out = open("%s_pfm_blamm.txt", "w")
+        out.write(">%s\t%s\n" % (alignment_name, motif_name))
+        for ind, row in zip(PFM.index.values, PFM.values):
+            out.write("%s\t[\t%s\t]\n" % (ind,
+                                          "\t".join([str(x) for x in row])))
+        out.close()
