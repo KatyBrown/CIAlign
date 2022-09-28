@@ -2,6 +2,7 @@
 import os
 import copy
 import numpy as np
+import pandas as pd
 try:
     import CIAlign.utilityFunctions as utilityFunctions
     import CIAlign.parsingFunctions as parsingFunctions
@@ -54,9 +55,9 @@ def run(args, log):
         # Make consensus sequences
         runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_r)
 
-    if "coverage" in functions:
+    if "stats" in functions:
         # Plot coverage plots
-        runCoverage(args, log, orig_arr, orig_nams, arr, nams)
+        runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ)
 
     if "logos" in functions:
         # Draw sequence logos
@@ -156,11 +157,11 @@ def whichFunctions(args):
         which_functions.append("consensus")
 
     # Coverage Plots
-    if any([args.plot_coverage_input,
-            args.plot_coverage_output,
+    if any([args.plot_stats_input,
+            args.plot_stats_output,
             args.interpret,
             args.all_options]):
-        which_functions.append("coverage")
+        which_functions.append("stats")
 
     # Sequence Logos
     if any([args.make_sequence_logo,
@@ -794,9 +795,9 @@ def runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
                                       removed_seqs)
 
 
-def runCoverage(args, log, orig_arr, orig_nams, arr, nams):
+def runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ):
     '''
-    Draw coverage plots
+    Draw plots of different statistics about the alignment.
 
     Parameters
     ----------
@@ -812,28 +813,48 @@ def runCoverage(args, log, orig_arr, orig_nams, arr, nams):
         Array containing the cleaned alignment
     nams: list
         List of sequence names in the cleaned alignment
+    typ: str
+        Either 'aa' - amino acid - or 'nt' - nucleotide
     '''
-    # Coverage plot for CIAlign input
-    if args.plot_coverage_input or args.all_options or args.interpret:
-        log.info("Plotting coverage for input")
-        if not args.silent:
-            print("Plotting coverage for input")
-        coverage_file = "%s_input_coverage.%s" % (args.outfile_stem,
-                                                  args.plot_coverage_filetype)
-        consx, coverage = consensusSeq.findConsensus(orig_arr,
+    to_plot = []
+    if args.plot_stats_input or args.all_options or args.interpret:
+        to_plot.append("input")
+    if args.plot_stats_output or args.all_options or args.interpret:
+        to_plot.append("output")
+    
+    
+    for inout in to_plot:
+        if inout == 'input':
+            c_arr = copy.deepcopy(orig_arr)
+        else:
+            c_arr = copy.deepcopy(arr)
+        rowD = dict()
+        consx, coverage = consensusSeq.findConsensus(c_arr,
                                                      args.consensus_type)
-        consensusSeq.makeCoveragePlot(coverage, coverage_file)
-
-    # Coverage plot for CIAlign output
-    # todo: what if only interpret functions are called?
-    if args.plot_coverage_output or args.all_options or args.interpret:
+        rowD['coverage'] = coverage
+        bit_scores, ents = consensusSeq.calcConservationAli(c_arr, typ)
+        rowD['information_content'] = bit_scores
+        rowD['shannon_entropy'] = ents
+        
+        log.info("Plotting coverage for %s" % inout)
         if not args.silent:
-            print("Plotting coverage for output")
-        log.info("Plotting coverage for output")
-        coverage_file = "%s_output_coverage.%s" % (args.outfile_stem,
-                                                   args.plot_coverage_filetype)
-        consx, coverage = consensusSeq.findConsensus(arr, args.consensus_type)
-        consensusSeq.makeCoveragePlot(coverage, coverage_file)
+            print("Plotting coverage for %s" % inout)
+        for stat in rowD:
+            outfile = "%s_%s_%s.%s" % (args.outfile_stem, inout,
+                                       stat, args.plot_stats_filetype)
+    
+            consensusSeq.makeLinePlot(rowD[stat],
+                                      outfile,
+                                      stat.replace("_", " ").title(),
+                                      dpi=args.plot_stats_dpi, 
+                                      height=args.plot_stats_height,
+                                      width=args.plot_stats_width,
+                                      colour=args.plot_stats_colour)
+
+        stats_tab = pd.DataFrame(rowD.values()).T.round(4)
+        stats_tab.columns = rowD.keys()
+        stats_tab.to_csv("%s_%s_column_stats.tsv" % (args.outfile_stem,
+                                                     inout), sep="\t")
 
 
 def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
@@ -862,7 +883,6 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
         figrowlength = args.sequence_logo_nt_per_row
         logo_start, logo_end = utilityFunctions.updateStartEnd(
             args.logo_start, args.logo_end, removed)
-        print (logo_start, logo_end)
         if logo_end < logo_start:
             print("Error! The start should be smaller than the end for the \
                   sequence logo!")

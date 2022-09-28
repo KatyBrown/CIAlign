@@ -535,39 +535,39 @@ def getParser():
                  help="Make a swatch showing available fonts. \
                        Default: %(default)s")
 
-    # Coverage
-    optional.add("--plot_coverage_input", dest="plot_coverage_input",
+    # Plots
+    optional.add("--plot_stats_input", dest="plot_stats_input",
                  action="store_true",
-                 help="Plot the coverage of the input MSA. Default: \
+                 help="Plot statistics about the input MSA. Default: \
                        %(default)s")
 
-    optional.add("--plot_coverage_output", dest="plot_coverage_output",
+    optional.add("--plot_stats_output", dest="plot_stats_output",
                  action="store_true",
-                 help="Plot the coverage of the output MSA. Default: \
+                 help="Plot statistics about the output MSA. Default: \
                        %(default)s")
 
-    optional.add("--plot_coverage_dpi", dest="plot_coverage_dpi",
+    optional.add("--plot_stats_dpi", dest="plot_stats_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for coverage plot. Default: %(default)s")
 
-    optional.add("--plot_coverage_height", dest="plot_coverage_height",
+    optional.add("--plot_stats_height", dest="plot_stats_height",
                  type=int, default=3, metavar="(int)",
-                 help="Height for coverage plot (inches). Default: \
+                 help="Height for statistics plots (inches). Default: \
                        %(default)s")
 
-    optional.add("--plot_coverage_width", dest="plot_coverage_width",
+    optional.add("--plot_stats_width", dest="plot_stats_width",
                  type=int, default=5, metavar="(int)",
-                 help="Width for coverage plot (inches). Default: \
+                 help="Width for statistics plots (inches). Default: \
                        %(default)s")
 
-    optional.add("--plot_coverage_colour", dest="plot_coverage_colour",
+    optional.add("--plot_stats_colour", dest="plot_stats_colour",
                  type=str, default='#007bf5', metavar="(string)",
-                 help="Colour for coverage plot (hex code or name). \
+                 help="Colour for statistics plots (hex code or name). \
                        Default: %(default)s")
 
-    optional.add("--plot_coverage_filetype", dest="plot_coverage_filetype",
+    optional.add("--plot_stats_filetype", dest="plot_stats_filetype",
                  type=str, default='png', metavar="(string)",
-                 help="File type for coverage plot (png, svg, tiff, jpg). \
+                 help="File type for statistics plots (png, svg, tiff, jpg). \
                        Default: %(default)s")
 
     # Similarity Matrix
