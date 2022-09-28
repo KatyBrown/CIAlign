@@ -363,6 +363,51 @@ def getParser():
                      minis['remove_min_length'],
                      maxis['remove_min_length']))
 
+    # Crop Divergent
+    optional.add("--crop_divergent", dest="crop_divergent",
+                 help="""Crop ends of sequences which are highly
+                         divergent. Default %(default)s""",
+                 action="store_true")
+
+    optional.add("--crop_divergent_min_prop_ident",
+                 dest="divergent_min_prop_ident",
+                 type=float_range(minis['divergent_min_prop_ident'],
+                                  maxis['divergent_min_prop_ident']),
+                 default=defs['divergent_min_prop_ident'],
+                 help="""The minimum proportion of sequences which should \
+                         have the same residue in each column for crop \
+                         divergent. Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['divergent_min_prop_ident'],
+                     maxis['divergent_min_prop_ident']))
+
+    optional.add("--crop_divergent_min_prop_nongap",
+                 dest="divergent_min_prop_nongap",
+
+                 type=float_range(minis['divergent_min_prop_nongap'],
+                                  maxis['divergent_min_prop_nongap']),
+                 default=defs['divergent_min_prop_nongap'],
+                 help="""The minimum proportion of sequences which should \
+                         have the non-gap residues in each column \
+                         for crop divergent. Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['divergent_min_prop_nongap'],
+                     maxis['divergent_min_prop_nongap']))
+
+    optional.add("--crop_divergent_buffer_size",
+                 dest="divergent_buffer_size",
+                 type=int_range(minis['divergent_buffer_size'],
+                                maxis['divergent_buffer_size'],
+                                n_col),
+                 default=defs['divergent_buffer_size'],
+                 help="""The number of consecutive columns which should meet \
+                         the min_prop_ident and min_prop_nongap criteria \
+                         to pass filtering by crop_divergent. \
+                         Default: %(default)s""",
+                 metavar="(int, %s..%s)" % (
+                     minis['divergent_buffer_size'],
+                     maxis['divergent_buffer_size']))
+
     optional.add("--remove_short_retain", dest="retain_seqs_rs",
                  action="append", default=None, metavar="(string)",
                  help="""Do not remove the sequence with this name when \
@@ -412,6 +457,7 @@ def getParser():
                           crop_ends). \
                          Sequence names must exactly match the FASTA infile. \
                          Default: %(default)s""")
+
     # keep gap only
     optional.add("--keep_gaponly", dest="remove_gaponly",
                  action="store_false",

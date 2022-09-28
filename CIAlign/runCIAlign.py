@@ -131,6 +131,7 @@ def whichFunctions(args):
             args.crop_ends,
             args.remove_short,
             args.remove_gaponly,
+            args.crop_divergent,
             args.clean,
             args.all_options]):
         which_functions.append("cleaning")
@@ -589,11 +590,33 @@ def runCleaning(args, log, arr, nams, keeps):
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
+    # Crop divergent
+    if args.crop_divergent:
+        log.info("Removing divergent sequence ends")
+        if not args.silent:
+            print("Removing divergent sequence ends")
+
+        A = parsingFunctions.cropDivergent(arr,
+                                           relativePositions,
+                                           rmfile,
+                                           log,
+                                           args.divergent_min_prop_ident,
+                                           args.divergent_min_prop_nongap,
+                                           args.divergent_buffer_size)
+
+        # Track what has been removed
+        arr, r, relativePositions = A
+        markupdict['crop_divergent'] = r
+        removed_cols = removed_cols | r
+        # Check there are some columns left
+        utilityFunctions.checkArrLength(arr, log)
+
     if args.remove_gaponly and not (args.all_options or
                                     args.remove_divergent or
                                     args.remove_insertions or
                                     args.crop_ends or
                                     args.remove_short or
+                                    args.crop_divergent or
                                     args.clean):
         log.info("Removing gap only columns")
         if not args.silent:
