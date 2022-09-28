@@ -22,6 +22,10 @@ class CleaningFunctionsTests(unittest.TestCase):
         self.in_array, self.nams = readMSA("./tests/test_files/example1.fasta")
         self.relativePositions = list(range(0, len(self.in_array[0])))
         self.rm_file = 'mock_rmfile.txt'
+        self.keeps = {'all_rowwise': np.array(['Seq7']),
+                      'crop_ends': np.array([]),
+                      'remove_divergent': np.array([]),
+                      'remove_short': np.array([])}
 
     def tearDown(self):
         os.remove(self.rm_file)
@@ -36,7 +40,7 @@ class CleaningFunctionsTests(unittest.TestCase):
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
-            result_ali, names = parsingFunctions.cropEnds(self.in_array, self.nams, self.relativePositions, self.rm_file, mock_debug, mingap, redefine_perc)
+            result_ali, names = parsingFunctions.cropEnds(self.in_array, self.nams, self.relativePositions, self.rm_file, mock_debug, self.keeps, mingap, redefine_perc)
 
         self.assertEqual(result_ali[0,:].size, exp_array[0,:].size)
         self.assertEqual(len(self.in_array), len(result_ali))
@@ -68,7 +72,7 @@ class CleaningFunctionsTests(unittest.TestCase):
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
-            result_ali, r = parsingFunctions.removeDivergent(self.in_array, self.nams, self.rm_file, mock_debug, percidentity)
+            result_ali, r = parsingFunctions.removeDivergent(self.in_array, self.nams, self.rm_file, mock_debug, self.keeps, percidentity)
 
         self.assertEqual(result_ali[0,:].size, exp_array[0,:].size)
         self.assertEqual(result_ali[:,0].size, exp_array[:,0].size)
@@ -84,7 +88,7 @@ class CleaningFunctionsTests(unittest.TestCase):
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
-            result_ali, r = parsingFunctions.removeTooShort(self.in_array, self.nams, self.rm_file, mock_debug, min_length)
+            result_ali, r = parsingFunctions.removeTooShort(self.in_array, self.nams, self.rm_file, mock_debug, self.keeps, min_length)
 
         self.assertTrue((result_ali == exp_array).all())
         self.assertGreaterEqual(len(self.in_array), len(result_ali))

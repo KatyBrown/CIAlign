@@ -30,8 +30,9 @@ def main():
     os.system(statement)
     
     statement = """\
-    pandoc -o user_guide.pdf user_guide.md 
-    echo '# CIAlign' > ../README.md
+    pandoc -o user_guide.pdf user_guide.md
+    echo '![CI](https://github.com/KatyBrown/CIAlign/actions/workflows/main.yml/badge.svg)' > ../README.md
+    echo '# CIAlign' >> ../README.md
     awk 'NR > 7' user_guide.md >> ../README.md"""
     os.system(statement)
 

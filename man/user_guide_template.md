@@ -114,6 +114,10 @@ remove_divergent, remove_insertions, crop_ends and crop divergent require three 
 | **`--remove_divergent`** |  Remove sequences with <= `remove_divergent_minperc` positions at which the most common base / amino acid in the alignment is present | False | NA | NA |
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | remove_divergent_minperc_def | remove_divergent_minperc_min | remove_divergent_minperc_max |
 | **`--remove_insertions`** |  Remove insertions found in <= `insertion_min_perc` of sequences from the alignment | False | NA | NA |
+| *`--remove_divergent_retain`* | Do not remove sequences with this name when running the remove divergent function | None | NA | NA |
+| *`--remove_divergent_retain_str`* | Do not remove sequences with names containing this character string when running the remove divergent function | None | NA | NA |
+| *`--remove_divergent_retain_list`* | Do not remove sequences with names listed in this file when running the remove divergent function | None | NA | NA |
+| **`--remove_insertions`** |  Remove insertions found in <= insertion_min_perc of sequences from the alignment | False | NA | NA |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | insertion_min_size_def | insertion_min_size_min | insertion_min_size_max |
 | *`--insertion_max_size`* |  Only remove insertions <= this number of residues | insertion_max_size_def | insertion_max_size_min | insertion_max_size_max |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | insertion_min_flank_def | insertion_min_flank_min | insertion_min_flank_max |
@@ -121,13 +125,22 @@ remove_divergent, remove_insertions, crop_ends and crop divergent require three 
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False | NA | NA |
 | *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | crop_ends_mingap_perc_def | crop_ends_mingap_perc_min | crop_ends_mingap_perc_max |
 | *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. |  crop_ends_redefine_perc_def | crop_ends_redefine_perc_min | crop_ends_redefine_perc_max |
+| *`--crop_ends_retain`* | Do not crop sequences with this name when running the crop ends function | None | NA | NA |
+| *`--crop_ends_retain_str`* | Do not crop sequences with names containing this character string when running the crop ends function | None | NA | NA |
+| *`--crop_ends_retain_list`* | Do not crop sequences with names listed in this file when running the crop ends function | None | NA | NA |
 | *`--crop_divergent`* |  Crop either end of the alignment until > `crop_divergent_min_prop_ident` residues in a column are identical and > `crop_divergent_min_prop_nongap` residues are not gaps, over `buffer_size` consecutive columns |  False | NA | NA |
 | *`--crop_divergent_min_prop_ident`* |  Minumum proportion of identical residues in a column to be retained by crop_divergent |  divergent_min_prop_ident_def | divergent_min_prop_ident_min | divergent_min_prop_ident_max |
 | *`--crop_divergent_min_prop_nongap`* |  Minumum proportion of non gap residues in a column to be retained by crop_divergent |  divergent_min_prop_nongap_def | divergent_min_prop_nongap_min | divergent_min_prop_nongap_max |
 | *`--crop_divergent_buffer_size`* |  Minumum number of consecutive columns which must meet the criteria for crop_divergent to be retained |  divergent_buffer_size_def | divergent_buffer_size_min | divergent_buffer_size_max |
 | **`--remove_short`** | Remove sequences <= `remove_min_length`  amino acids from the alignment | False | NA | NA |
 | *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | remove_min_length_def | remove_min_length_min | remove_min_length_max |
+| *`--remove_short_retain`* | Do not remove sequences with this name when running the remove short function | None | NA | NA |
+| *`--remove_short_retain_str`* | Do not remove sequences with names containing this character string when running the remove short function | None | NA | NA |
+| *`--remove_short_retain_list`* | Do not remove sequences with names listed in this file when running the remove short function | None | NA | NA |
 | **`--keep_gaponly`** | Keep gap only columns in the alignment | False | NA | NA |
+| **`--retain`** | Do not edit or remove sequences with this name when running any rowwise function (currently remove divergent, crop ends and remove short) | None | NA | NA |
+| **`--retain_str`** | Do not edit or remove sequences with names containing this character string when running any rowwise function | None | NA | NA |
+| **`--retain_list`** | Do not edit or remove sequences with names listed in this file when running any rowwise function | None | NA | NA |
 
 Note: if the sequences are short (e.g. < 100), a low crop_ends_mingap_perc (e.g. 0.01) will result in a change of gap numbers that is too low (e.g. 0). If this happens, the change in gap numbers will be set to 2 and a warning will be printed.
 
