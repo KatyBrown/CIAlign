@@ -8,12 +8,14 @@ try:
     import CIAlign.miniAlignments as miniAlignments
     import CIAlign.similarityMatrix as similarityMatrix
     import CIAlign.consensusSeq as consensusSeq
+    import CIAlign.matrices as matrices
 except ImportError:
     import utilityFunctions
     import parsingFunctions
     import miniAlignments
     import similarityMatrix
     import consensusSeq
+    import matrices
 
 
 def run(args, log):
@@ -30,15 +32,15 @@ def run(args, log):
 
     if "cleaning" in functions:
         keeps = setupRetains(args, nams, log)
-        arr, nams, markupdict, removed = runCleaning(args,
-                                                     log,
-                                                     arr,
-                                                     nams,
-                                                     keeps)
+        arr, nams, markupdict, removed_r, removed_c = runCleaning(args,
+                                                                  log,
+                                                                  arr,
+                                                                  nams,
+                                                                  keeps)
     else:
         markupdict = dict()
-        removed = set()
-
+        removed_c = set()
+        removed_r = set()
     if "matrices" in functions:
         # Make similarity matrices
         runMatrix(args, log, orig_arr, orig_nams, arr, nams)
@@ -50,7 +52,7 @@ def run(args, log):
 
     if "consensus" in functions:
         # Make consensus sequences
-        runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed)
+        runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_r)
 
     if "coverage" in functions:
         # Plot coverage plots
@@ -58,15 +60,19 @@ def run(args, log):
 
     if "logos" in functions:
         # Draw sequence logos
-        runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ)
+        runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed_c)
 
     if "unalign" in functions:
         # Make an unaligned copy of the input or output
-        runUnalign(args, log, orig_arr, orig_nams, arr, nams, removed)
+        runUnalign(args, log, orig_arr, orig_nams, arr, nams, removed_r)
 
     if "ttou" in functions:
         # Convert T to U in the input or output
-        runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed)
+        runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r)
+
+    if "pwm" in functions:
+        # Generate position matrices
+        runPWM(args, log, orig_arr, arr, typ, removed_c)
 
 
 def prelimChecks(args, log):
@@ -172,6 +178,10 @@ def whichFunctions(args):
             args.replace_output]):
         which_functions.append("ttou")
 
+    if any([args.pwm_input,
+            args.pwm_output]):
+        which_functions.append("pwm")
+        
     return (which_functions)
 
 
@@ -606,7 +616,7 @@ def runCleaning(args, log, arr, nams, keeps):
     utilityFunctions.writeOutfile(outfile, arr, orig_nams,
                                   removed_seqs, rmfile)
 
-    return (arr, nams, markupdict, removed_seqs)
+    return (arr, nams, markupdict, removed_seqs, removed_cols)
 
 
 def runMatrix(args, log, orig_arr, orig_nams, arr, nams):
@@ -826,7 +836,7 @@ def runCoverage(args, log, orig_arr, orig_nams, arr, nams):
         consensusSeq.makeCoveragePlot(coverage, coverage_file)
 
 
-def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
+def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
     '''
     Plot sequence logos
 
@@ -850,8 +860,9 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
     if args.make_sequence_logo or args.all_options:
         figdpi = args.sequence_logo_dpi
         figrowlength = args.sequence_logo_nt_per_row
-        logo_start = args.logo_start
-        logo_end = args.logo_end
+        logo_start, logo_end = utilityFunctions.updateStartEnd(
+            args.logo_start, args.logo_end, removed)
+        print (logo_start, logo_end)
         if logo_end < logo_start:
             print("Error! The start should be smaller than the end for the \
                   sequence logo!")
@@ -992,3 +1003,115 @@ def runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
         utilityFunctions.writeOutfile(outf, T_arr,
                                       orig_nams,
                                       removed_seqs)
+
+
+def runPWM(args, log, orig_arr, arr, typ, removed):
+    '''
+    Converts an alignment array into a PFM, PPM and PWM.
+
+    PFM - position frequency matrix - a matrix showing the number of
+    each residue in each column of the alignment.
+    PPM - position probability matrix - normalised by background
+    frequency and including pseudocounts.
+    PWM - position weight matrix - a matrix which shows the log-likelihood
+    ratio of observing character i at position j in a site
+    compared with a random sequence (from 10.1186/s12859-020-3348-6)
+    
+    Parameters
+    ----------
+    args: configargparse.ArgumentParser
+        ArgumentParser object containing the specified parameters
+    log: logging.Logger
+        An open log file object
+    arr: np.array
+        The alignment the PFM is for, stored as a numpy array
+    typ: str
+        nt for nucleotide or aa for amino acid
+    '''
+    runs = []
+    if args.pwm_input:
+        runs.append('input')
+    if args.pwm_output:
+        runs.append('output')
+    for run in runs:
+        if run == 'input':
+            c_arr = copy.deepcopy(orig_arr)
+        elif run == 'output':
+            c_arr = copy.deepcopy(arr)
+        if args.pwm_start is not None and args.pwm_end is not None:
+            start = args.pwm_start
+            end = args.pwm_end        
+
+            if run == 'input':
+                pstart, pend = start, end
+            elif run == 'output':
+                pstart, pend = utilityFunctions.updateStartEnd(start,
+                                                               end, removed)
+            else:
+                pstart = 0
+                pend = len(arr[0, :])
+
+            if end < start:
+                    print("Error! The start position should be less \
+than the end position for the position weight matrix")
+                    exit()
+            log.info("Position matrices will show between positions \
+%i and %i" % (start, end))
+        else:
+            pstart = 0
+            pend = len(c_arr[0, :])
+            
+
+        log.info("Generating position frequency matrix")
+        if not args.silent:
+            print ("Generating position frequency matrix")
+        
+        subarr = c_arr[:, pstart:pend]
+        # Make the position frequency matrix
+        PFM = matrices.makePFM(subarr, typ)
+        # Make the second matrix where needed
+        if args.pwm_freqtype == 'calc2':
+            PFM2 = matrices.makePFM(c_arr, typ)
+        else:
+            PFM2 = None
+    
+        # Calculate the frequency and the alpha matrices
+        freq = matrices.getFreq(args.pwm_freqtype, log, typ, PFM, PFM2)
+        alpha = matrices.getAlpha(args.pwm_alphatype, log, PFM, freq,
+                                  args.pwm_alphaval)
+    
+        log.info("Generating position probability matrix")
+        if not args.silent:
+            print ("Generating position probability matrix")
+        # Calculate the PPM from the PFM
+        PPM = matrices.makePPM(PFM, alpha=alpha)
+    
+        log.info("Generating position weight matrix")
+        if not args.silent:
+            print ("Generating position weight matrix")
+    
+        # Calculate the PWM from the PPM
+        PWM = matrices.makePWM(PPM, freq)
+    
+        # Save all the matrices
+        PFM.to_csv("%s_pfm_%s.txt" % (args.outfile_stem, run),  sep="\t")
+        PPM.to_csv("%s_ppm_%s.txt" % (args.outfile_stem, run),   sep="\t")
+        PWM.to_csv("%s_pwm_%s.txt" % (args.outfile_stem, run),   sep="\t")
+        
+        if args.pwm_output_fimo:
+            # Save the PPM matrix in the format required for FIMO input
+            # https://meme-suite.org/meme/tools/fimo
+            PPM.T.to_csv("%s_ppm_fimo_%s.txt" % (args.outfile_stem, run),
+                         sep="\t",
+                         index=None,
+                         header=None)
+    
+        if args.pwm_output_blamm:
+            # Save the PFM matrix in the format required for BLAMM input
+            # https://github.com/biointec/blamm
+            out = open("%s_pfm_blamm_%s.txt" % (args.outfile_stem, run), "w")
+            out.write(">alignment\tmotif\n")
+            for ind, row in zip(PFM.index.values, PFM.values):
+                out.write("%s\t[\t%s\t]\n" % (ind,
+                                              "\t".join([str(x) for x in row])))
+            out.close()

@@ -541,3 +541,16 @@ Some sequences listed to be retained were not found: %s""" % (" ".join(
 %s function: %s""" % (fname, ", ".join(sorted(list(keeps)))))
 
     return (keeps_arr)
+
+
+def updateStartEnd(start, end, removed):
+    newstart = start
+    newend = end
+    if len(removed) != 0:
+        for r in sorted(removed):
+            if r < newstart:
+                newstart -= 1
+                newend -= 1
+            elif r < newend:
+                newend -= 1
+    return (newstart, newend)
