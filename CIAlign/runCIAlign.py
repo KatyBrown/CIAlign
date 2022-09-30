@@ -729,7 +729,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                          outf, typ, args.plot_dpi,
                                          False, args.plot_width,
                                          args.plot_height,
-                                         force_numbers=fn)
+                                         force_numbers=fn,
+                                         palette=args.palette)
     # Mini alignment of CIAlign output
     # todo: what if only interpret functions are called?
     if args.plot_output or args.all_options or args.visualise:
@@ -744,7 +745,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                              False,
                                              args.plot_width,
                                              args.plot_height,
-                                             force_numbers=fn)
+                                             force_numbers=fn,
+                                             palette=args.palette)
         else:
             miniAlignments.drawMiniAlignment(arr, nams, log,
                                              outf, typ,
@@ -754,7 +756,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                              args.plot_height,
                                              orig_nams=orig_nams,
                                              keep_numbers=True,
-                                             force_numbers=fn)
+                                             force_numbers=fn,
+                                             palette=args.palette)
     # Markup plot
     # todo: what if only interpret functions are called?
     if args.plot_markup or args.all_options or args.visualise:
@@ -770,7 +773,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                          args.plot_height,
                                          markup=True,
                                          markupdict=markupdict,
-                                         force_numbers=fn)
+                                         force_numbers=fn,
+                                         palette=args.palette)
 
 
 def runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
@@ -911,7 +915,8 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
                   sequence logo!")
             exit()
         # Sequence logo bar chart
-        if args.sequence_logo_type == 'bar':
+        if (args.sequence_logo_type == 'bar' or
+            args.sequence_logo_type == 'both'):
             log.info("Generating sequence logo bar chart")
             if not args.silent:
                 print("Generating sequence logo bar chart")
@@ -920,8 +925,10 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
             consensusSeq.sequence_bar_logo(arr, out, typ=typ,
                                            figdpi=figdpi,
                                            figrowlength=figrowlength,
-                                           start=logo_start, end=logo_end)
-        elif args.sequence_logo_type == 'text':
+                                           start=logo_start, end=logo_end,
+                                           palette=args.palette)
+        if (args.sequence_logo_type == 'text' or
+            args.sequence_logo_type == 'both'):
             # Text sequence logo
             log.info("Generating text sequence logo")
             if not args.silent:
@@ -932,28 +939,8 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
                                        figdpi=figdpi,
                                        figfontname=args.sequence_logo_font,
                                        figrowlength=figrowlength,
-                                       start=logo_start, end=logo_end)
-        elif args.sequence_logo_type == 'both':
-            # Plot both types of sequence logo
-            log.info("Generating sequence logo bar chart")
-            if not args.silent:
-                print("Generating sequence logo bar chart")
-            out = "%s_logo_bar.%s" % (args.outfile_stem,
-                                      args.sequence_logo_filetype)
-            consensusSeq.sequence_bar_logo(arr, out, typ=typ,
-                                           figdpi=figdpi,
-                                           figrowlength=figrowlength,
-                                           start=logo_start, end=logo_end)
-            log.info("Generating text sequence logo")
-            if not args.silent:
-                print("Generating text sequence logo")
-            out = "%s_logo_text.%s" % (args.outfile_stem,
-                                       args.sequence_logo_filetype)
-            consensusSeq.sequence_logo(arr, out, typ=typ,
-                                       figdpi=figdpi,
-                                       figfontname=args.sequence_logo_font,
-                                       figrowlength=figrowlength,
-                                       start=logo_start, end=logo_end)
+                                       start=logo_start, end=logo_end,
+                                       palette=args.palette)
 
 
 def runUnalign(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):

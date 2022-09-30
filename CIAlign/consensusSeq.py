@@ -112,7 +112,7 @@ def PixelsToPoints(pixels, dpi):
     return (points)
 
 
-def getLetters(typ='nt', fontname='monospace', dpi=500):
+def getLetters(typ='nt', fontname='monospace', dpi=500, palette="CBS"):
     '''
     Generates a temporary image file for every letter (4 nt or 20 aa)
     Each letter extends to the full length of both axes
@@ -134,12 +134,12 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
     '''
     # obtain color scheme depending on nt or aa alignment
     if typ == 'nt':
-        colours = utilityFunctions.getNtColours()
+        colours = utilityFunctions.getNtColours(palette)
     elif typ == 'aa':
-        colours = utilityFunctions.getAAColours()
+        colours = utilityFunctions.getAAColours(palette)
     # for each possible base/aa create temporary plot
     for base in colours.keys():
-        f = plt.figure(figsize=(1, 1), dpi=dpi, edgecolor='black')
+        f = plt.figure(figsize=(0.8, 1), dpi=dpi, edgecolor='black')
         a = f.add_subplot(1, 1, 1)
         a.set_xlim(0, 1)
         a.set_ylim(0, 1)
@@ -311,7 +311,8 @@ def sequence_logo(alignment,
                   figdpi=300,
                   figrowlength=50,
                   start=0,
-                  end=0):
+                  end=0,
+                  palette='CBS'):
     '''
     Creates a sequence logo based on an entropy calculation using letters
     Scales the letters according to the information content of the alignment
@@ -358,9 +359,9 @@ def sequence_logo(alignment,
     if alignment_width < figrowlength:
         figrowlength = alignment_width
     nsegs = math.ceil(alignment_width / figrowlength)
-    f = plt.figure(figsize=(figrowlength, nsegs*2), dpi=figdpi)
+    f = plt.figure(figsize=(figrowlength, nsegs*4), dpi=figdpi)
     gs = gridspec.GridSpec(ncols=1, nrows=nsegs)
-    getLetters(typ=typ, fontname=figfontname, dpi=figdpi)
+    getLetters(typ=typ, fontname=figfontname, dpi=figdpi, palette=palette)
     rstart = start
     rend = rstart + figrowlength
 
@@ -384,9 +385,8 @@ def sequence_logo(alignment,
             unique, counts = np.unique(alignment[:, i],
                                        return_counts=True)
             count = dict(zip(unique, counts))
-            height_per_base, info_per_base = calc_entropy(count,
-                                                          len(alignment[:, 0]),
-                                                          typ=typ)
+            height_per_base, info_per_base, fq = calc_entropy(
+                count, len(alignment[:, 0]), typ=typ)
             height_sum_higher = 0
             Z = zip(height_per_base.keys(), height_per_base.values())
             Z = sorted(Z, key=lambda x: x[1])
@@ -400,9 +400,14 @@ def sequence_logo(alignment,
 
                     height_sum_higher += height
         a.axis(limits)
-        a.set_xticks([rstart, rend])
-        a.set_xticklabels([rstart, rend])
 
+        if rend - start < 25:
+            a.set_xticks(np.arange(rstart-0.5, rend, 1))
+            a.set_xticklabels([int(x) for x in np.arange(rstart, rend+0.5, 1)])
+        else:        
+            a.set_xticks([rstart, rend])
+            a.set_xticklabels([rstart, rend])
+        a.set_xlim(rstart, rstart+figrowlength)
         a.spines['right'].set_visible(False)
         a.spines['top'].set_visible(False)
         if n == (nsegs - 1):
@@ -410,11 +415,12 @@ def sequence_logo(alignment,
         a.set_ylabel("Bit Score")
         rstart += figrowlength
         rend += figrowlength
+
     # obtain colours
     if typ == 'nt':
-        allbases = utilityFunctions.getNtColours()
+        allbases = utilityFunctions.getNtColours(palette=palette)
     elif typ == 'aa':
-        allbases = utilityFunctions.getAAColours()
+        allbases = utilityFunctions.getAAColours(palette=palette)
     for base in allbases:
         b = base.replace("*", "stop")
         os.unlink("%s_temp.png" % b)
@@ -429,7 +435,8 @@ def sequence_bar_logo(alignment,
                       figdpi=300,
                       figrowlength=50,
                       start=0,
-                      end=0):
+                      end=0,
+                      palette='CBS'):
     '''
     Creates a sequence logo based on an entropy calculation using bars
     Scales the bars according to the information content of the alignment
@@ -497,11 +504,11 @@ def sequence_bar_logo(alignment,
         ind = np.arange(rstart, rend)
 
         if typ == "nt":
-            element_list = utilityFunctions.getNtColours()
-            colours = utilityFunctions.getNtColours()
+            element_list = utilityFunctions.getNtColours(palette=palette)
+            colours = utilityFunctions.getNtColours(palette=palette)
         elif typ == "aa":
-            element_list = utilityFunctions.getAAColours()
-            colours = utilityFunctions.getAAColours()
+            element_list = utilityFunctions.getAAColours(palette=palette)
+            colours = utilityFunctions.getAAColours(palette=palette)
         height_list = {}
 
         for element in element_list:

@@ -10,7 +10,7 @@ import math
 matplotlib.use('Agg')
 
 
-def arrNumeric(arr, typ):
+def arrNumeric(arr, typ, palette='CBS'):
     '''
     Converts the sequence array into a numerical matrix and a colour map
     which matplotlib can interpret as an image (similar to
@@ -26,6 +26,9 @@ def arrNumeric(arr, typ):
     typ: str
         Either 'aa' - amino acid - or 'nt' - nucleotide
 
+    palette: str
+        Colour palette, CBS or Bright
+
     Returns
     -------
     arr2: np.array
@@ -37,9 +40,9 @@ def arrNumeric(arr, typ):
     # turn the array upside down
     arr = np.flip(arr, axis=0)
     if typ == 'nt':
-        D = utilityFunctions.getNtColours()
+        D = utilityFunctions.getNtColours(palette)
     else:
-        D = utilityFunctions.getAAColours()
+        D = utilityFunctions.getAAColours(palette)
 
     # retrieve the colours for the colour map
     keys = list(D.keys())
@@ -66,7 +69,8 @@ def arrNumeric(arr, typ):
     return (arr2, cmap)
 
 
-def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
+def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
+                  palette='CBS'):
     '''
     Add the "markup" to the mini alignment - on the input alignment image
     use coloured lines to show which rows, columns and positions have
@@ -93,12 +97,14 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
         The number of columns in the input alignment
     ali_height: int
         The number of rows (sequences) in the input alignment
+    palette: str
+        Colour palette, CBS or Bright
 
     Returns
     -------
 
     '''
-    colD = utilityFunctions.getMarkupColours()
+    colD = utilityFunctions.getMarkupColours(palette)
     lineweight_h = 5 / ali_height
     # removes single positions
     if "crop_ends" in markupdict:
@@ -187,7 +193,7 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                          lw=lineweight_h)
 
 
-def drawMarkUpLegend(outfile):
+def drawMarkUpLegend(outfile, palette="CBS"):
     '''
     Draws a small legend (in a seperate image) showing which parsing step
     each colour represents in the marked up mini alignment.
@@ -206,7 +212,7 @@ def drawMarkUpLegend(outfile):
     '''
     legend = plt.figure(figsize=(2, 2), dpi=100)
     leg = legend.add_subplot(1, 1, 1)
-    colours = utilityFunctions.getMarkupColours()
+    colours = utilityFunctions.getMarkupColours(palette)
 
     functions = {'crop_ends': 'Cropped Ends',
                  'remove_divergent': 'Too Divergent',

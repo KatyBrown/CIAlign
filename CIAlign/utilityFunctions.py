@@ -119,11 +119,12 @@ def getPalette(palette='CBS'):
     '''
     if palette.lower() == 'cbs':
         p = palettes.CBSafe()
-
+    if palette.lower() == 'bright':
+        p = palettes.Bright()
     return (p)
 
 
-def getAAColours(pal='CBS'):
+def getAAColours(palette='CBS'):
     '''
     Generates a dictionary which assigns a colour to each amino acid.
     Based on the "RasmMol" amino colour scheme and the table here:
@@ -143,7 +144,7 @@ def getAAColours(pal='CBS'):
         Dictionary where keys are single letter amino acid codes and
         values are hexadecimal codes for colours
     '''
-    pal = getPalette(palette=pal)
+    pal = getPalette(palette=palette)
     return {'D': pal['red_aa'],
             'E': pal['red_aa'],
             'C': pal['yellow_aa'],
@@ -175,7 +176,7 @@ def getAAColours(pal='CBS'):
             }
 
 
-def getNtColours(pal='CBS'):
+def getNtColours(palette='CBS'):
     '''
     Generates a dictionary which assigns a colour to each nucleotide (plus grey
     for "N" and white for "-")
@@ -191,7 +192,7 @@ def getNtColours(pal='CBS'):
         Dictionary where keys are single letter nucleotide codes and
         values are hexadecimal codes for colours
     '''
-    pal = getPalette(palette=pal)
+    pal = getPalette(palette=palette)
     return {'A': pal['green_nt'],
             'G': pal['yellow_nt'],
             'T': pal['red_nt'],

@@ -372,7 +372,8 @@ def getParser():
     optional.add("--crop_divergent_min_prop_ident",
                  dest="divergent_min_prop_ident",
                  type=float_range(minis['divergent_min_prop_ident'],
-                                  maxis['divergent_min_prop_ident']),
+                                  maxis['divergent_min_prop_ident'],
+                                  defs['divergent_min_prop_ident']),
                  default=defs['divergent_min_prop_ident'],
                  help="""The minimum proportion of sequences which should \
                          have the same residue in each column for crop \
@@ -385,7 +386,8 @@ def getParser():
                  dest="divergent_min_prop_nongap",
 
                  type=float_range(minis['divergent_min_prop_nongap'],
-                                  maxis['divergent_min_prop_nongap']),
+                                  maxis['divergent_min_prop_nongap'],
+                                  defs['divergent_min_prop_nongap']),
                  default=defs['divergent_min_prop_nongap'],
                  help="""The minimum proportion of sequences which should \
                          have the non-gap residues in each column \
@@ -398,7 +400,8 @@ def getParser():
                  dest="divergent_buffer_size",
                  type=int_range(minis['divergent_buffer_size'],
                                 maxis['divergent_buffer_size'],
-                                n_col),
+                                n_col,
+                                defs['divergent_buffer_size']),
                  default=defs['divergent_buffer_size'],
                  help="""The number of consecutive columns which should meet \
                          the min_prop_ident and min_prop_nongap criteria \
@@ -733,6 +736,12 @@ def getParser():
                  action="store_true", default=False,
                  help="Replaces all Us by Ts in output alignment. \
                      Default: %(default)s")
+
+    # Colours
+    optional.add("--palette", dest="palette", type=str,
+                 default="CBS", metavar="(str",
+                 help="Colour palette. Currently implemented \
+                       CBS (colour blind safe) or bright. Default %(default)s")
 
     # Help function
     optional.add('-h', '--help', action='help',
