@@ -70,7 +70,7 @@ def arrNumeric(arr, typ, palette='CBS'):
 
 
 def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
-                  palette='CBS'):
+               palette='CBS'):
     '''
     Add the "markup" to the mini alignment - on the input alignment image
     use coloured lines to show which rows, columns and positions have
@@ -106,6 +106,19 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
     '''
     colD = utilityFunctions.getMarkupColours(palette)
     lineweight_h = 5 / ali_height
+    
+    # removes columns
+    if "user" in markupdict:
+        colour = colD['user']
+        for col in markupdict['user']:
+
+            a.add_patch(matplotlib.patches.Rectangle(
+                    (col-0.5, -0.5), 1, ali_height, color=colour, zorder=60,
+                    lw=0))
+            for row in np.arange(ali_height):
+                a.hlines(row, col-0.5, col+0.5, zorder=61, color='black',
+                         lw=lineweight_h)
+
     # removes single positions
     if "crop_ends" in markupdict:
         colour = colD['crop_ends']
@@ -180,6 +193,7 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
                     color=colour, zorder=44, lw=0))
             a.hlines(y+0.5, -0.5, ali_width-0.5, zorder=45, color='black',
                      lw=lineweight_h)
+
     # removes whole columns
     if "remove_gaponly" in markupdict:
         colour = colD['remove_gaponly']
@@ -205,7 +219,8 @@ def drawMarkUpLegend(outfile, palette="CBS"):
     ----------
     outfile: str
         Path to the output file
-
+    palette: str
+        Colour palette, CBS or Bright
     Returns
     -------
     None
@@ -219,12 +234,14 @@ def drawMarkUpLegend(outfile, palette="CBS"):
                  'remove_insertions': 'Insertions',
                  'remove_short': 'Too Short',
                  'remove_gaponly': 'Gap Only',
-                 'crop_divergent': 'Crop Divergent'}
+                 'crop_divergent': 'Crop Divergent',
+                 'user': 'User'}
+    L = len(functions)
     for i, (func, txt) in enumerate(functions.items()):
-        leg.plot(1, 5-i, marker='.', color=colours[func], markersize=20)
-        leg.text(2, 5-i, txt)
+        leg.plot(1, L-i, marker='.', color=colours[func], markersize=20)
+        leg.text(1.5, L-i, txt, va='center', ha='left')
     leg.set_xlim(0.5, 3)
-    leg.set_ylim(-1, 6)
+    leg.set_ylim(L-i-1, L+1)
     leg.set_axis_off()
     legend.gca().set_axis_off()
     leg.margins(0, 0)
@@ -235,7 +252,7 @@ def drawMarkUpLegend(outfile, palette="CBS"):
 def drawMiniAlignment(arr, nams, log, outfile, typ,
                       dpi=300, title=None, width=5, height=3, markup=False,
                       markupdict=None, ret=False, orig_nams=[],
-                      keep_numbers=False, force_numbers=False):
+                      keep_numbers=False, force_numbers=False, palette="CBS"):
     '''
     Draws a "mini alignment" image showing a small representation of the
     whole alignment so that gaps and poorly aligned regions are visible.
@@ -274,7 +291,8 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     keep_numbers: bool
         Number the sequences (rows) based on the original CIAlign input rather
         than renumbering.
-
+    palette: str
+        Colour palette, CBS or Bright
     Returns
     -------
     None
@@ -303,7 +321,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     a.set_ylim(-0.5, ali_height-0.5)
 
     # generate the numeric version of the array
-    arr2, cm = arrNumeric(arr, typ)
+    arr2, cm = arrNumeric(arr, typ, palette)
     # display it on the axis
     a.imshow(arr2, cmap=cm, aspect='auto', interpolation='nearest')
 
@@ -343,8 +361,8 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
         a.set_yticklabels(np.arange(0, ali_height, tickint), fontsize=fontsize)
 
     if markup:
-        a = drawMarkUp(a, markupdict, nams, ali_width, ali_height)
-        drawMarkUpLegend(outfile.replace(".png", ""))
+        a = drawMarkUp(a, markupdict, nams, ali_width, ali_height, palette)
+        drawMarkUpLegend(outfile.replace(".png", ""), palette)
     f.tight_layout()
     f.savefig(outfile, dpi=dpi, bbox_inches='tight')
     if ret:

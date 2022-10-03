@@ -743,6 +743,29 @@ def getParser():
                  help="Colour palette. Currently implemented \
                        CBS (colour blind safe) or bright. Default %(default)s")
 
+    # Section
+    optional.add("--get_section", dest="get_section",
+                 action="store_true", default=False,
+                 help="Retrieve and process a section of the alignment, \
+                       requires the \
+                       section_start and section_end parameters. All \
+                       processing and logging will be relative to the section \
+                       start and end. \
+                       Default: %(default)s")
+
+    optional.add("--section_start", dest="section_start",
+                 type=int, default=None, metavar="(int",
+                 help="Start position (column) for a section of the alignment \
+                 to be isolated. 0-based - the first column is column 0. \
+                 Default: %(default)s")
+                 
+                 
+    optional.add("--section_end", dest="section_end",
+                 type=int, default=None, metavar="(int",
+                 help="End position (column) for a section of the alignment \
+                 to be isolated. 0-based - the first column is column 0. \
+                 Default: %(default)s")
+
     # Help function
     optional.add('-h', '--help', action='help',
                  default=configargparse.SUPPRESS,

@@ -234,7 +234,8 @@ def getMarkupColours(pal='CBS'):
             'remove_gaponly': pal['remove_gaponly'],
             'remove_short': pal['remove_short'],
             'remove_divergent': pal['remove_divergent'],
-            'crop_divergent': pal['crop_divergent']}
+            'crop_divergent': pal['crop_divergent'],
+            'user': pal['user']}
 
 
 def writeOutfile(outfile, arr, nams, removed, rmfile=None):

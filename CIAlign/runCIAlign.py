@@ -30,18 +30,27 @@ def run(args, log):
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
     functions = whichFunctions(args)
+    
+
+    if "section" in functions:
+        arr, removed_c = setupSection(args, log, arr)
+    else:
+        removed_c = set()
 
     if "cleaning" in functions:
         keeps = setupRetains(args, nams, log)
         arr, nams, markupdict, removed_r, removed_c = runCleaning(args,
                                                                   log,
+                                                                  orig_arr,
                                                                   arr,
                                                                   nams,
-                                                                  keeps)
+                                                                  keeps,
+                                                                  removed_c)
     else:
         markupdict = dict()
         removed_c = set()
         removed_r = set()
+
     if "matrices" in functions:
         # Make similarity matrices
         runMatrix(args, log, orig_arr, orig_nams, arr, nams)
@@ -183,7 +192,10 @@ def whichFunctions(args):
     if any([args.pwm_input,
             args.pwm_output]):
         which_functions.append("pwm")
-        
+    
+    if args.get_section:
+        which_functions.append("section")
+
     return (which_functions)
 
 
@@ -214,7 +226,7 @@ def setupArrays(args, log):
     # sequence names so the order can be maintained
     arr, nams = utilityFunctions.FastaToArray(args.infile, log,
                                               args.outfile_stem)
-    # check if names are unique
+    # check if names are unique.append(
     if len(nams) > len(set(nams)):
         print("Error! Your input alignmnent has duplicate names!")
         exit()
@@ -330,7 +342,7 @@ def setupRetains(args, nams, log):
     return (keepD)
 
 
-def setupTrackers(args, arr):
+def setupTrackers(args, arr, removed_cols, rmfile):
     '''
     Sets up variables to store the rows, columns and postions removed
     by the cleaning functions.
@@ -367,9 +379,15 @@ def setupTrackers(args, arr):
     relativePositions = list(range(0, len(arr[0])))
 
     removed_seqs = set()
-    removed_cols = set()
+    for col in removed_cols:
+        relativePositions.remove(col)
+    if len(removed_cols) != 0:
+        markupdict['user'] = removed_cols
     removed_positions = dict()
-
+    out = open(rmfile, "a")
+    out.write("user_defined\t%s\n" % (",".join(
+        [str(r) for r in removed_cols])))
+    out.close()
     return (markupdict, relativePositions,
             [removed_seqs, removed_cols, removed_positions])
 
@@ -401,7 +419,42 @@ def setupOutfiles(args):
     return (outfile, rmfile)
 
 
-def runCleaning(args, log, arr, nams, keeps):
+def setupSection(args, log, arr):
+    '''
+    Extracts a subset of columns from the alignment for processing, as
+    specified by the user.
+    
+    Parameters
+    ----------
+    args: configargparse.ArgumentParser
+        ArgumentParser object containing the specified parameters
+    log: logging.Logger
+        Open log file
+    arr: np.array
+        Array containing the original alignment
+    
+    Returns
+    -------
+    arr: np.array
+        Array containing only the specified section of the alignment
+    removed_c: set
+        Set containing the indices of the removed columns
+    '''
+    orig_width = np.shape(arr)[1]
+    log.info("Cropping alignment to keep columns %i to %i" % (
+        args.section_start, args.section_end))
+    if not args.silent:
+        print ("Cropping alignment to keep columns %i to %i" % (
+            args.section_start, args.section_end))
+
+    arr = copy.copy(arr[:, args.section_start:args.section_end+1])
+    removed_c = list(np.arange(0, args.section_start))
+    removed_c += list(np.arange(args.section_end+1, orig_width))
+    removed_c = set(removed_c)
+    return (arr, removed_c)
+    
+    
+def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
     '''
     Run the cleaning functions
 
@@ -430,8 +483,10 @@ def runCleaning(args, log, arr, nams, keeps):
     '''
     # Set everything up
     orig_nams = copy.copy(nams)
-    markupdict, relativePositions, R = setupTrackers(args, arr)
     outfile, rmfile = setupOutfiles(args)
+    markupdict, relativePositions, R = setupTrackers(args, orig_arr,
+                                                     removed_c, rmfile)
+
     removed_seqs, removed_cols, removed_positions = R
 
     # Remove divergent sequences
@@ -635,7 +690,7 @@ def runCleaning(args, log, arr, nams, keeps):
         removed_cols = removed_cols | r
         # Check there are some columns left
         utilityFunctions.checkArrLength(arr, log)
-
+    
     # Write the output file
     utilityFunctions.writeOutfile(outfile, arr, orig_nams,
                                   removed_seqs, rmfile)
