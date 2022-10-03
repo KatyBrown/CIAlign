@@ -117,6 +117,11 @@ def prelimChecks(args, log):
     if not os.path.isfile(args.infile):
         print("Error! Your input alignmnent path could not be found.")
         exit()
+    if args.get_section:
+        if args.section_start is None or args.section_end is None:
+            print ("Error! Start (--section_start) and end \
+(--section_end) positions must be provided with --get_section")
+            exit()
 
 
 def whichFunctions(args):

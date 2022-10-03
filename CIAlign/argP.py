@@ -749,8 +749,7 @@ def getParser():
                  help="Retrieve and process a section of the alignment, \
                        requires the \
                        section_start and section_end parameters. All \
-                       processing and logging will be relative to the section \
-                       start and end. \
+                       logging is relative to the original start position. \
                        Default: %(default)s")
 
     optional.add("--section_start", dest="section_start",
