@@ -78,8 +78,8 @@ def Bright():
     '''
     b = base()
     b.update({'yellow_nt': "#ffd500",
-              'red_nt': "#64bc3c",
-              'green_nt': "#f20707",
+              'red_nt': "#f20707",
+              'green_nt': "#64bc3c",
               'blue_nt': "#0907f2",
               'grey_nt': "#c7d1d0",
               'red_aa': "#f20707",
