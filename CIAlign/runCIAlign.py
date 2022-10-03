@@ -1128,19 +1128,17 @@ than the end position for the position weight matrix")
         PPM.to_csv("%s_ppm_%s.txt" % (args.outfile_stem, run),   sep="\t")
         PWM.to_csv("%s_pwm_%s.txt" % (args.outfile_stem, run),   sep="\t")
         
-        if args.pwm_output_fimo:
-            # Save the PPM matrix in the format required for FIMO input
-            # https://meme-suite.org/meme/tools/fimo
-            PPM.T.to_csv("%s_ppm_fimo_%s.txt" % (args.outfile_stem, run),
-                         sep="\t",
-                         index=None,
-                         header=None)
-    
+        if args.pwm_output_meme:
+            # Save the PPM matrix in the format required for MEME input
+            # https://meme-suite.org/meme/doc/meme-format.html
+            matrices.memeFormat(PPM, typ, freq, "%s_ppm_meme_%s.txt" % (
+                args.outfile_stem, run), args.outfile_stem)
+
         if args.pwm_output_blamm:
             # Save the PFM matrix in the format required for BLAMM input
             # https://github.com/biointec/blamm
             out = open("%s_pfm_blamm_%s.txt" % (args.outfile_stem, run), "w")
-            out.write(">alignment\tmotif\n")
+            out.write(">alignment_motif\n")
             for ind, row in zip(PFM.index.values, PFM.values):
                 out.write("%s\t[\t%s\t]\n" % (ind,
                                               "\t".join([str(x) for x in row])))

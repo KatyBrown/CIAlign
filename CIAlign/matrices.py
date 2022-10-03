@@ -251,3 +251,45 @@ def makePWM(PPM, freq):
     '''
     PWM = np.log2(np.divide(PPM, freq))
     return (PWM.round(4))
+
+
+def memeFormat(ppm, typ, freq, outfile, stem):
+    '''
+    Formats a PPM into MEME motif format (version 4+) as described
+    here: https://meme-suite.org/meme/doc/meme-format.html
+    The "background frequencies" line is determined using the same method
+    used to caluclate frequencies for the PPM in the getFreq function
+    above.
+    The key value pairs after "letter-probability matrix" are left blank
+    for MEME to automatically calculate, except alength - number of sequences
+    - and w - number of columns.
+    
+    Parameters
+    ----------
+    ppm: pd.DataFrame
+        The position probability matrix to output
+    typ: str
+        nt nucleotide or aa amino acid
+    freq: pd.DataFrame
+        A dataframe of residue frequencies calculated using the getFreq
+        function
+    outfile: str
+        Path to output file
+    stem: str
+        Prefix to use to name the motfif in the output file
+    '''
+    core = getCoreRes(typ)
+    out = open(outfile, "w")
+    out.write("MEME version 4\n\n")
+    out.write("ALPHABET= %s\n\n" % ("".join(core)))
+    out.write("Background letter frequencies\n")
+    ff = freq[:,0]
+    for res, freq in zip(core, ff):
+        out.write("%s %.4f " % (res, freq))
+    out.write("\n")
+    out.write("MOTIF %s\n" % (stem.split("/")[-1]))
+    out.write("letter-probability matrix: alength= %i w= %i\n" % (np.shape(ppm)))
+    ppm_vals = ppm.values
+    for i in np.arange(np.shape(ppm_vals)[1]):
+        out.write("%s\n" % (" ".join([str(x) for x in ppm_vals[:, i]])))
+    out.close()

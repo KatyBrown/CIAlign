@@ -708,10 +708,10 @@ def getParser():
                        https://github.com/biointec/blamm. \
                        Default: %(default)s")
 
-    optional.add("--pwm_output_fimo", dest="pwm_output_fimo",
+    optional.add("--pwm_output_meme", dest="pwm_output_meme",
                  action="store_true", default=False,
-                 help="Output PPM formatted for FIMO software \
-                       https://meme-suite.org/meme/tools/fimo \
+                 help="Output PPM formatted for MEME software \
+                       https://meme-suite.org/meme \
                        Default: %(default)s")
 
     # Unalign function
