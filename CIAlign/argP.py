@@ -726,17 +726,27 @@ def getParser():
                      gaps. Default: %(default)s")
 
     # Replace Us by Ts function
-    optional.add("--replace_input", dest="replace_input",
+    optional.add("--replace_input_ut", dest="replace_input_ut",
                  action="store_true",
                  default=False,
                  help="Replaces all Us by Ts in input alignment. \
                      Default: %(default)s")
 
-    optional.add("--replace_output", dest="replace_output",
+    optional.add("--replace_output_ut", dest="replace_output_ut",
                  action="store_true", default=False,
                  help="Replaces all Us by Ts in output alignment. \
                      Default: %(default)s")
+    # Replace Ts by Us function
+    optional.add("--replace_input_tu", dest="replace_input_tu",
+                 action="store_true",
+                 default=False,
+                 help="Replaces all Ts by Us in input alignment. \
+                     Default: %(default)s")
 
+    optional.add("--replace_output_tu", dest="replace_output_tu",
+                 action="store_true", default=False,
+                 help="Replaces all Ts by Us in output alignment. \
+                     Default: %(default)s")
     # Colours
     optional.add("--palette", dest="palette", type=str,
                  default="CBS", metavar="(str",

@@ -13,7 +13,7 @@ except ImportError:
 matplotlib.use('Agg')
 
 
-def replaceUbyT(arr):
+def replaceUbyT(arr, rev):
     '''
     Replaces all Us by Ts in the alignment.
 
@@ -27,8 +27,10 @@ def replaceUbyT(arr):
     arr: np.array
         2D numpy array of sequences with Ts instead of Us.
     '''
-
-    arr = np.where(arr == "U", "T", arr)
+    if rev:
+        arr = np.where(arr == "T", "U", arr)
+    else:
+        arr = np.where(arr == "U", "T", arr)
     return (arr)
 
 

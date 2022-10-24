@@ -78,6 +78,11 @@ def run(args, log):
 
     if "ttou" in functions:
         # Convert T to U in the input or output
+        runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r, rev=True)
+
+    if "utot" in functions:
+        print ("hi")
+        # Convert U to T in the input or output
         runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r)
 
     if "pwm" in functions:
@@ -190,9 +195,14 @@ def whichFunctions(args):
         which_functions.append("unalign")
 
     # Replace T with U in input or output
-    if any([args.replace_input,
-            args.replace_output]):
+    if any([args.replace_input_tu,
+            args.replace_output_tu]):
         which_functions.append("ttou")
+
+    # Replace T with U in input or output
+    if any([args.replace_input_ut,
+            args.replace_output_ut]):
+        which_functions.append("utou")
 
     if any([args.pwm_input,
             args.pwm_output]):
@@ -616,6 +626,28 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         # Check there are still some positions left
         utilityFunctions.checkArrLength(arr, log)
 
+    # Crop divergent
+    if args.crop_divergent:
+        log.info("Removing divergent sequence ends")
+        if not args.silent:
+            print("Removing divergent sequence ends")
+
+        A = parsingFunctions.cropDivergent(arr,
+                                           relativePositions,
+                                           rmfile,
+                                           log,
+                                           args.divergent_min_prop_ident,
+                                           args.divergent_min_prop_nongap,
+                                           args.divergent_buffer_size)
+
+        # Track what has been removed
+        arr, r, relativePositions = A
+        markupdict['crop_divergent'] = r
+        removed_cols = removed_cols | r
+        # Check there are some columns left
+        utilityFunctions.checkArrLength(arr, log)
+
+
     # Remove short
     if args.remove_short or args.all_options or args.clean:
         log.info("Removing short sequences")
@@ -650,26 +682,6 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
-    # Crop divergent
-    if args.crop_divergent:
-        log.info("Removing divergent sequence ends")
-        if not args.silent:
-            print("Removing divergent sequence ends")
-
-        A = parsingFunctions.cropDivergent(arr,
-                                           relativePositions,
-                                           rmfile,
-                                           log,
-                                           args.divergent_min_prop_ident,
-                                           args.divergent_min_prop_nongap,
-                                           args.divergent_buffer_size)
-
-        # Track what has been removed
-        arr, r, relativePositions = A
-        markupdict['crop_divergent'] = r
-        removed_cols = removed_cols | r
-        # Check there are some columns left
-        utilityFunctions.checkArrLength(arr, log)
 
     if args.remove_gaponly and not (args.all_options or
                                     args.remove_divergent or
@@ -1048,7 +1060,7 @@ def runUnalign(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
                                       removed_seqs)
 
 
-def runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
+def runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_seqs, rev=False):
     '''
     Make a copy of the alignment with T replaced by U
 
@@ -1068,27 +1080,29 @@ def runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
         List of sequence names in the cleaned alignment
     removed_seqs: set
         Set of sequence names which have been removed
+    rev: bool
+        If True, do the opposite, change T to U
     '''
     # Replace T with U in the input
-    if args.replace_input:
+    if args.replace_input_tu or args.replace_input_ut:
         log.info("Generating a T instead of U version of the input alignment")
         if not args.silent:
             print("Generating a T instead of U version of the input alignment")
         outf = "%s_T_input.fasta" % (args.outfile_stem)
-        T_arr = utilityFunctions.replaceUbyT(orig_arr)
+        T_arr = utilityFunctions.replaceUbyT(orig_arr, rev=rev)
         # Write to file
         utilityFunctions.writeOutfile(outf, T_arr,
                                       orig_nams,
                                       removed_seqs)
     # Rpleace T with U in the output
-    if args.replace_output:
+    if args.replace_output_tu or args.replace_output_ut:
         log.info("Generating a T instead of U version of\
                  the output alignment")
         if not args.silent:
             print("Generating a T instead of U version of\
                   the output alignment")
         outf = "%s_T_output.fasta" % (args.outfile_stem)
-        T_arr = utilityFunctions.replaceUbyT(arr)
+        T_arr = utilityFunctions.replaceUbyT(arr, rev=rev)
         # Write to file
         utilityFunctions.writeOutfile(outf, T_arr,
                                       orig_nams,

@@ -597,12 +597,15 @@ def calc_entropy(count, seq_count, typ):
         entropy_per_base[element] = 0
 
     # correct for small sample sizes
-    sample_size_correction = (1/log(s, 2)) * ((s-1)/(2*seq_count))
+
+    sample_size_correction = (s-1) / (2 * np.log(2) * seq_count)
+    #print (sample_size_correction)
     gap_correction = seq_count
     if count.get("-"):
         seq_count -= count.get("-")
     # correct for gaps, since they lower the information content
     gap_correction = seq_count/gap_correction
+
     entropy = 0
     if seq_count == 0:
         return height_per_base, info_per_base
@@ -616,6 +619,7 @@ def calc_entropy(count, seq_count, typ):
             info_per_base[base] = max_entropy + frequency*log(frequency, 2)
             entropy_per_base[base] = -frequency * log(frequency, 2)
             freqs.append(frequency)
+
     information_per_column = max_entropy - entropy - sample_size_correction
 
     # if the information content is constant throughout the column,
