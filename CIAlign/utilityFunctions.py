@@ -559,3 +559,62 @@ def updateStartEnd(start, end, removed):
             elif r < newend:
                 newend -= 1
     return (newstart, newend)
+
+
+def removeColumns(rmAbsolute, relativePositions,
+                  arr, log, rmfile, function_name):
+    '''
+    Function to remove a column from an array shared by removeInsertions,
+    removeGapOnly. Removes the columns, calculates the
+    positions of these columns in the input alignment, writes positions
+    removed to the log file and the removed file.
+    
+    Parameters
+    ----------
+    rmAbsolute: list
+        List of absolute positions (positions in current alignment) to
+        be removed
+    relativePositions: list
+        A list of integers representing columns in the alignment, from which
+        values are removed as columns are removed from the alignment.
+    arr: np.array
+        The alignment stored as a numpy array
+    log: logging.Logger
+        An open log file object
+    rmfile: str
+        Path to a file in which to store a list of removed sequences
+    function_name: str
+        The name of the function which removed these columns for logging
+    Returns
+    -------
+    arr: np.array
+        The cleaned alignment stored as a numpy array
+    relativePositions: list
+        A list of integers representing columns in the alignment, from which
+        values are removed as columns are removed from the alignment, minus
+        the columns removed using this function.
+    r: set
+        A set of column numbers of sequences which have been removed
+    '''
+    outrm = open(rmfile, "a")
+    if outrm.closed:
+        print('file is closed')
+    # make a list of positions to remove
+    rm_relative = set()
+    for n in rmAbsolute:
+        rm_relative.add(relativePositions[n])
+    for n in rm_relative:
+        relativePositions.remove(n)
+    # for n in absolutePositions:
+    #     relativePositions.remove(n)
+    rmpos = np.array(list(rmAbsolute))
+
+    keeppos = np.arange(0, np.shape(arr)[1])
+    keeppos = np.invert(np.in1d(keeppos, rmpos))
+    if len(rmpos) != 0:
+        rmpos_str = [str(x) for x in rm_relative]
+        log.info("Removing sites %s" % (", ".join(rmpos_str)))
+        outrm.write("%s\t%s\n" % (function_name, ",".join(rmpos_str)))
+    outrm.close()
+    arr = arr[:, keeppos]
+    return (arr, relativePositions, rm_relative)

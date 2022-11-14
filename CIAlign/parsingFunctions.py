@@ -4,10 +4,13 @@ import matplotlib
 try:
     import CIAlign.cropSeq as cropSeq
     import CIAlign.cropDiv as cropDiv
+    import CIAlign.insertions as insertions
+    import CIAlign.utilityFunctions as utilityFunctions
 except ImportError:
     import cropSeq
     import cropDiv
-
+    import insertions
+    import utilityFunctions
 
 matplotlib.use('Agg')
 
@@ -219,81 +222,29 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         values are removed as columns are removed from the alignment, minus
         the columns removed using this function.
     '''
-    log.info("Removing insertions\n")
-    out = open(rmfile, "a")
-    if out.closed:
-        print('file is closed')
     # record which sites are not "-"
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
     sums = sum(boolarr)
-    # run a sliding window along the alignment and check for regions
-    # which have higher coverage at the ends of the window than in the
-    # middle - store these in put_indels
-    put_indels = []
-    for size in range(min_size, max_size, 1):
-        for i in range(0, len(sums)+1 - size, 1):
-            these_sums = sums[i:i+size]
-            # take the number of non gap positions
-            # for each column in this window
-            ns = np.arange(i, i+size)
-            left = these_sums[0]
-            right = these_sums[-1]
-            # record sites with lower coverage than their flanking seqs
-            # and less than mincov total coverage
-            x = set(ns[(these_sums < left) &
-                       (these_sums < right)])
-            if len(x) >= min_size:
-                put_indels += list(x)
-    put_indels = set(put_indels)
-    put_indels = np.array(sorted(list(put_indels)))
+    
+    height, width = np.shape(arr)
 
-    # for the putative indels, check if there are more sequences
-    # with a gap at this position (but with sequence on either side)
-    # than with no gap (but with sequence on either side)
-    rmpos = set()
-    absolutePositions = set()
-    i = 0
+    low_coverage = insertions.findLowCoverage(boolarr,
+                                              sums, height, width,
+                                              min_size, max_size)
 
-    for p in put_indels:
-        left = boolarr[:, :p]
-        right = boolarr[:, p+1:]
-        pcol = boolarr[:, p]
-        pcol_nongaps = pcol
-        pcol_gaps = np.invert(pcol)
-        leftsum = np.sum(left, 1)
-        rightsum = np.sum(right, 1)
-        covers_region = (sum((pcol_nongaps) & (
-                leftsum >= min_flank) & (rightsum >= min_flank)))
-        lacks_region = (sum((pcol_gaps) & (
-                leftsum >= min_flank) & (rightsum >= min_flank)))
+    put_indels = insertions.getPutativeIndels(boolarr, sums, width,
+                                              low_coverage, min_size,
+                                              max_size)
+    good_indels = insertions.findGoodInsertions(put_indels,
+                                                boolarr,
+                                                min_size, max_size, min_flank)
+    absolutePositions = insertions.finalCheck(good_indels, min_size, max_size)
 
-        if lacks_region + covers_region != 0:
-            prop_with_insertion = covers_region / (lacks_region +
-                                                   covers_region)
-            if prop_with_insertion <= min_perc:
-                absolutePositions.add(p)
-        i += 1
+    arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
+        absolutePositions, relativePositions, arr, log, rmfile,
+        "remove_insertions")
 
-    # make a list of positions to remove
-    rm_relative = set()
-    for n in absolutePositions:
-        rm_relative.add(relativePositions[n])
-    for n in rm_relative:
-        relativePositions.remove(n)
-    # for n in absolutePositions:
-    #     relativePositions.remove(n)
-    rmpos = np.array(list(absolutePositions))
-
-    keeppos = np.arange(0, len(sums))
-    keeppos = np.invert(np.in1d(keeppos, rmpos))
-    if len(rmpos) != 0:
-        rmpos_str = [str(x) for x in rm_relative]
-        log.info("Removing sites %s" % (", ".join(rmpos_str)))
-        out.write("remove_insertions\t%s\n" % (",".join(rmpos_str)))
-    out.close()
-    arr = arr[:, keeppos]
-    # return (arr, set(rmpos), relativePositions)
     return (arr, set(rm_relative), relativePositions)
 
 
@@ -382,29 +333,16 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
         values are removed as columns are removed from the alignment, minus
         the columns removed using this function.
     '''
-    out = open(rmfile, "a")
-    if out.closed:
-        print('file is closed')
     if len(arr) != 0:
         sums = sum(arr == "-")
         absolutePositions = set(np.where(sums == len(arr[:, 0]))[0])
-        rmpos = []
-        for n in absolutePositions:
-            rmpos.append(relativePositions[n])
-        # remove deleted columns from relativePositions
-        for n in rmpos:
-            relativePositions.remove(n)
-        rmpos = set(rmpos)
-        arr = arr[:, sums != len(arr[:, 0])]
-        if len(rmpos) != 0:
-            rmpos_str = [str(x) for x in rmpos]
-            log.info("Removing gap only sites %s" % (
-                    ", ".join(rmpos_str)))
-            out.write("remove_gap_only\t%s\n" % (",".join(rmpos_str)))
+        
+        arr, relativePositions, rmpos = utilityFunctions.removeColumns(
+            absolutePositions, relativePositions, arr, log, rmfile,
+            "remove_gaponly")
     else:
         rmpos = set()
 
-    out.close()
     return (arr, rmpos, relativePositions)
 
 
