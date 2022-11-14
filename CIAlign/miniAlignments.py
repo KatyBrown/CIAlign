@@ -151,6 +151,19 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height):
                 a.hlines(row, col-0.5, col+0.5, zorder=47, color='black',
                          lw=lineweight_h)
 
+    # removes whole columns
+    if "crop_divergent" in markupdict:
+        colour = colD['crop_divergent']
+
+        for col in markupdict['crop_divergent']:
+
+            a.add_patch(matplotlib.patches.Rectangle(
+                    (col-0.5, -0.5), 1, ali_height, color=colour, zorder=46,
+                    lw=0))
+            for row in np.arange(ali_height):
+                a.hlines(row, col-0.5, col+0.5, zorder=47, color='black',
+                         lw=lineweight_h)
+
     # removes whole rows
     if "remove_short" in markupdict:
         colour = colD['remove_short']
@@ -199,7 +212,8 @@ def drawMarkUpLegend(outfile):
                  'remove_divergent': 'Too Divergent',
                  'remove_insertions': 'Insertions',
                  'remove_short': 'Too Short',
-                 'remove_gaponly': 'Gap Only'}
+                 'remove_gaponly': 'Gap Only',
+                 'crop_divergent': 'Crop Divergent'}
     for i, (func, txt) in enumerate(functions.items()):
         leg.plot(1, 5-i, marker='.', color=colours[func], markersize=20)
         leg.text(2, 5-i, txt)
