@@ -93,8 +93,8 @@ class ConsensusSeqTests(unittest.TestCase):
 
     @parameterized.expand([
             [{'-': 1, 'C': 1, 'G': 3, 'U': 1}, 6, 'nt',
-            {'A': 0.0, 'G': 0.25, 'T': 0.0, 'C': 0.08,
-            'N': 0.0, '-': 0.0, 'U': 0.08, 'R': 0.0, 'Y': 0.0, 'S': 0.0,
+            {'A': 0.0, 'G': 0.13, 'T': 0.0, 'C': 0.04,
+            'N': 0.0, '-': 0.0, 'U': 0.04, 'R': 0.0, 'Y': 0.0, 'S': 0.0,
             'W': 0.0, 'K': 0.0, 'M': 0.0, 'B': 0.0, 'D': 0.0, 'H': 0.0, 'V': 0.0, 'X': 0.0},
             {'A': 0, 'G': 1.56, 'T': 0, 'C': 1.54, 'N': 0, '-': 0, 'U': 1.54,
             'R': 0, 'Y': 0, 'S': 0, 'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0, 'X': 0}],
@@ -102,14 +102,14 @@ class ConsensusSeqTests(unittest.TestCase):
             [{'V': 32}, 32, 'aa',
             {'D': 0.0, 'E': 0.0, 'C': 0.0, 'M': 0.0, 'K': 0.0, 'R': 0.0,
             'S': 0.0, 'T': 0.0, 'F': 0.0, 'Y': 0.0, 'N': 0.0, 'Q': 0.0, 'G': 0.0,
-            'L': 0.0, 'V': 4.25, 'I': 0.0, 'A': 0.0, 'W': 0.0, 'H': 0.0, 'P': 0.0,
+            'L': 0.0, 'V': 3.89, 'I': 0.0, 'A': 0.0, 'W': 0.0, 'H': 0.0, 'P': 0.0,
              'X': 0.0, '-': 0.0, 'B': 0.0, 'Z': 0.0, 'J': 0.0, '*': 0.0, 'U': 0.0, 'O': 0.0},
             {'D': 0, 'E': 0, 'C': 0, 'M': 0, 'K': 0, 'R': 0, 'S': 0, 'T': 0,
              'F': 0, 'Y': 0, 'N': 0, 'Q': 0, 'G': 0, 'L': 0, 'V': 4.32, 'I': 0,
               'A': 0, 'W': 0, 'H': 0, 'P': 0, 'X': 0, '-': 0, 'B': 0, 'Z': 0, 'J': 0, '*': 0, 'U': 0, 'O': 0}],
     ])
     def test_calc_entropy(self, count, seq_count, type, expected_height, expected_info):
-        height, info = consensusSeq.calc_entropy(count, seq_count, type)
+        height, info, freq = consensusSeq.calc_entropy(count, seq_count, type)
         height_rounded = dict([key, round(value, 2)] for key, value in height.items())
         info_rounded = dict([key, round(value, 2)] for key, value in info.items())
         self.assertEqual(height_rounded, expected_height)
@@ -159,8 +159,8 @@ class ConsensusSeqCoveragePlotTest(unittest.TestCase):
     def tearDown(self):
         os.remove(self.dest)
 
-    def testMakeCoveragePlot(self):
-        consensusSeq.makeCoveragePlot([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.03, 0.03, 0.03, 0.03, 0.03], self.dest)
+    def testMakeLinePlot(self):
+        consensusSeq.makeLinePlot([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.03, 0.03, 0.03, 0.03, 0.03], self.dest, "x")
         self.assertTrue(os.path.isfile(self.dest))
 
 class ConsensusSeqSequenceLogoTest(unittest.TestCase):

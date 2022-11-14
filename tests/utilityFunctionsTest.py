@@ -44,7 +44,7 @@ class UtilityFunctionsMSAInputTests(unittest.TestCase):
         pass
 
     def testReplaceUbyT(self):
-        result_ali = utilityFunctions.replaceUbyT(self.in_array)
+        result_ali = utilityFunctions.replaceUbyT(self.in_array, rev=False)
         findU = np.where(result_ali == "U")
         findu = np.where(result_ali == "u")
 
