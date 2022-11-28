@@ -288,7 +288,7 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     keeppos = np.arange(0, len(sums))
     keeppos = np.invert(np.in1d(keeppos, rmpos))
     if len(rmpos) != 0:
-        rmpos_str = [str(x) for x in rm_relative]
+        rmpos_str = [str(x) for x in sorted(rm_relative)]
         log.info("Removing sites %s" % (", ".join(rmpos_str)))
         out.write("remove_insertions\t%s\n" % (",".join(rmpos_str)))
     out.close()
