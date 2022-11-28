@@ -60,17 +60,12 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size):
     # Gives a list of ranges  - the ranges with length > 1 are the 
     # low coverage sections of the input
     pos = np.split(positions, breaks)
-    
     # np.split returns a list, turn it into an array
     # it has to be an object array or it raises a warning
     ranges = np.array(pos, dtype=object)
     
-    # The ranges with >1 are the low coverage sections
-    keep = np.array([(len(r) > min_size) &
-                     (len(r) <= max_size) for r in ranges])
-    
     # Add one to line up the indices
-    puts = ranges[keep] + 1
+    puts = ranges + 1
     return (puts)
 
 
@@ -111,14 +106,14 @@ def getPutativeIndels(boolarr, sums, width, puts,
     pp = []
     for put in puts:
         current_start = put[0]
-        current_size = np.min([len(put), max_size])
+        current_size = min_size
         current_end = put[-1] - 1
         # Test if the full length low coverage region is lower coverage than
         # the columns on either side
         # If not, keep making it smaller until you get a hit or reach min_size
         # - then move to the end of the hit and start again
         while (current_end <= put[-1]):
-            while (current_size >= min_size):
+            while (current_size <= max_size):
                 wi = sums[current_start:current_end]
                 # Find the indices immediately either side of the low coverage
                 # regions
@@ -140,22 +135,25 @@ def getPutativeIndels(boolarr, sums, width, puts,
                         current_end = current_start + current_size
                         break
                     else:
-                        # try the next smaller size
-                        current_size -= 1
+                        # try the next bigger size
+                        current_size += 1
                 else:
-                    # try the next smaller size
-                    current_size -= 1
+                    # try the next bigger size
+                    current_size += 1
                 current_end = current_start + current_size
             
             current_start += 1
             # Reset the current size to be the maximum which will fit in
             # the remaining sequence
-            current_size =  np.min([len(put) - current_start - 2, max_size])
+           # current_size =  np.min([len(put) - current_start - 2, max_size])
+            current_size =  min_size
+
             # Reset the current end based on the current size and start
             current_end = current_start + current_size
             if current_size < min_size:
                 break
     return (pp)
+
 
 def findGoodInsertions(pp, boolarr, min_size, max_size, min_flank):
     '''
@@ -214,6 +212,7 @@ def findGoodInsertions(pp, boolarr, min_size, max_size, min_flank):
                 absolutePositions.add(p-1)
     return (absolutePositions)
 
+
 def finalCheck(absolutePositions, min_size, max_size):
     '''
     Check all the insertions are between min_size and max_size and remove
@@ -237,11 +236,9 @@ def finalCheck(absolutePositions, min_size, max_size):
     # Find the consecutive positions and split the array at these points
     diffs = np.where(np.diff(abso) != 1)[0] + 1
     splits = np.array(np.split(abso, diffs), dtype=object)
-    
     # Filter to keep only the insertions which are within the size limit
-    keep = splits[np.array([(len(r) > min_size) &
+    keep = splits[np.array([(len(r) >= min_size) &
                             (len(r) <= max_size) for r in splits])]
-    
     # Flatten the array
     absolutePositions_final = set()
     for k in keep:

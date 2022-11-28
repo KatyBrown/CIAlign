@@ -544,6 +544,28 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
+
+    # Crop divergent
+    if args.crop_divergent:
+        log.info("Removing divergent sequence ends")
+        if not args.silent:
+            print("Removing divergent sequence ends")
+
+        A = parsingFunctions.cropDivergent(arr,
+                                           relativePositions,
+                                           rmfile,
+                                           log,
+                                           args.divergent_min_prop_ident,
+                                           args.divergent_min_prop_nongap,
+                                           args.divergent_buffer_size)
+
+        # Track what has been removed
+        arr, r, relativePositions = A
+        markupdict['crop_divergent'] = r
+        removed_cols = removed_cols | r
+        # Check there are some columns left
+        utilityFunctions.checkArrLength(arr, log)
+
     # Remove insertions
     if args.remove_insertions or args.all_options or args.clean:
         log.info("Removing insertions")
@@ -624,27 +646,6 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
             markupdict['remove_gaponly'] = r
         removed_cols = removed_cols | r
         # Check there are still some positions left
-        utilityFunctions.checkArrLength(arr, log)
-
-    # Crop divergent
-    if args.crop_divergent:
-        log.info("Removing divergent sequence ends")
-        if not args.silent:
-            print("Removing divergent sequence ends")
-
-        A = parsingFunctions.cropDivergent(arr,
-                                           relativePositions,
-                                           rmfile,
-                                           log,
-                                           args.divergent_min_prop_ident,
-                                           args.divergent_min_prop_nongap,
-                                           args.divergent_buffer_size)
-
-        # Track what has been removed
-        arr, r, relativePositions = A
-        markupdict['crop_divergent'] = r
-        removed_cols = removed_cols | r
-        # Check there are some columns left
         utilityFunctions.checkArrLength(arr, log)
 
 

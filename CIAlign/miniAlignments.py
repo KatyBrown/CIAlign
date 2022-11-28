@@ -118,7 +118,6 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
             for row in np.arange(ali_height):
                 a.hlines(row, col-0.5, col+0.5, zorder=61, color='black',
                          lw=lineweight_h)
-
     # removes single positions
     if "crop_ends" in markupdict:
         colour = colD['crop_ends']
@@ -145,7 +144,6 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
                 a.hlines(y, boundary[1][0]-0.5, boundary[1][-1]+0.5,
                          zorder=51, color='black',
                          lw=lineweight_h)
-
     # removes whole rows
     if "remove_divergent" in markupdict:
         colour = colD['remove_divergent']
@@ -166,9 +164,8 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
             a.add_patch(matplotlib.patches.Rectangle(
                     (col-0.5, -0.5), 1, ali_height, color=colour, zorder=46,
                     lw=0))
-            for row in np.arange(ali_height):
-                a.hlines(row, col-0.5, col+0.5, zorder=47, color='black',
-                         lw=lineweight_h)
+            a.hlines(np.arange(ali_height), col-0.5, col+0.5, zorder=47, color='black',
+                     lw=lineweight_h)
 
     # removes whole columns
     if "crop_divergent" in markupdict:
@@ -179,9 +176,9 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
             a.add_patch(matplotlib.patches.Rectangle(
                     (col-0.5, -0.5), 1, ali_height, color=colour, zorder=46,
                     lw=0))
-            for row in np.arange(ali_height):
-                a.hlines(row, col-0.5, col+0.5, zorder=47, color='black',
-                         lw=lineweight_h)
+            a.hlines(np.arange(ali_height), col-0.5, col+0.5, zorder=47,
+                     color='black',
+                     lw=lineweight_h)
 
     # removes whole rows
     if "remove_short" in markupdict:
@@ -193,7 +190,6 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
                     color=colour, zorder=44, lw=0))
             a.hlines(y+0.5, -0.5, ali_width-0.5, zorder=45, color='black',
                      lw=lineweight_h)
-
     # removes whole columns
     if "remove_gaponly" in markupdict:
         colour = colD['remove_gaponly']

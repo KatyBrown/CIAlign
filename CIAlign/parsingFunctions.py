@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
 import matplotlib
+import copy
 try:
     import CIAlign.cropSeq as cropSeq
     import CIAlign.cropDiv as cropDiv
@@ -11,7 +12,6 @@ except ImportError:
     import cropDiv
     import insertions
     import utilityFunctions
-
 matplotlib.use('Agg')
 
 
@@ -222,6 +222,9 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         values are removed as columns are removed from the alignment, minus
         the columns removed using this function.
     '''
+    # parr = np.zeros([0, 0])
+    # i = 0
+    # while np.shape(arr) != np.shape(parr):
     # record which sites are not "-"
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
@@ -232,19 +235,20 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     low_coverage = insertions.findLowCoverage(boolarr,
                                               sums, height, width,
                                               min_size, max_size)
-
+ 
     put_indels = insertions.getPutativeIndels(boolarr, sums, width,
                                               low_coverage, min_size,
                                               max_size)
     good_indels = insertions.findGoodInsertions(put_indels,
-                                                boolarr,
-                                                min_size, max_size, min_flank)
+                                                 boolarr,
+                                                 min_size, max_size, min_flank)
     absolutePositions = insertions.finalCheck(good_indels, min_size, max_size)
-
+    parr = copy.deepcopy(arr)
     arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
         absolutePositions, relativePositions, arr, log, rmfile,
         "remove_insertions")
-
+    # i += 1
+    
     return (arr, set(rm_relative), relativePositions)
 
 
