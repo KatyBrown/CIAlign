@@ -42,8 +42,8 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size):
 
     # Create a boolean array with True if columns have >50% coverage
     # and False otherwise
-    low_cov = np.array(sums < thresh)
-    
+    low_cov = np.array(sums <= thresh)
+
     # Calculate the cumulative sum of the number of columns with <50% coverage
     # - the numbers only increment for regions with coverage below the
     # threshold
@@ -51,22 +51,11 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size):
 
     # Find the positions where the cumulative array changes from 0 to 1 - the
     # breakpoints between coverage above and below the threshold
-    breaks = np.where(np.diff(cumarr) == 0)[0] + 1
+    puts = np.where(np.diff(cumarr) == 1)[0] + 1
 
-    # Make an array from 0 to the total number of columns
-    positions = np.arange(width)    
-
-    # Split the positions array at the positions specified in the breaks array
-    # Gives a list of ranges  - the ranges with length > 1 are the 
-    # low coverage sections of the input
-    pos = np.split(positions, breaks)
-    # np.split returns a list, turn it into an array
-    # it has to be an object array or it raises a warning
-    ranges = np.array(pos, dtype=object)
-    
-    # Add one to line up the indices
-    puts = ranges + 1
-    return (puts)
+    diffs = np.where(np.diff(puts) != 1)[0] + 1
+    splits = np.split(puts, diffs)
+    return (splits)
 
 
 def getPutativeIndels(boolarr, sums, width, puts,
@@ -107,10 +96,10 @@ def getPutativeIndels(boolarr, sums, width, puts,
     for put in puts:
         current_start = put[0]
         current_size = min_size
-        current_end = put[-1] - 1
+        current_end = put[-1]
         # Test if the full length low coverage region is lower coverage than
         # the columns on either side
-        # If not, keep making it smaller until you get a hit or reach min_size
+        # If not, keep making it bigger until you get a hit or reach max_size
         # - then move to the end of the hit and start again
         while (current_end <= put[-1]):
             while (current_size <= max_size):
@@ -145,13 +134,11 @@ def getPutativeIndels(boolarr, sums, width, puts,
             current_start += 1
             # Reset the current size to be the maximum which will fit in
             # the remaining sequence
-           # current_size =  np.min([len(put) - current_start - 2, max_size])
+            # current_size =  np.min([len(put) - current_start - 2, max_size])
             current_size =  min_size
 
             # Reset the current end based on the current size and start
             current_end = current_start + current_size
-            if current_size < min_size:
-                break
     return (pp)
 
 
@@ -185,31 +172,22 @@ def findGoodInsertions(pp, boolarr, min_size, max_size, min_flank):
 
     '''
     absolutePositions = set()
+    width = np.shape(boolarr)[1]
+  #  print (width)
     for put in pp:
-        for p in put:
-            # extract columns on either side of this position
-            left = boolarr[:, :p-1]
-            right = boolarr[:, p:]
-    
-            # which positions in this row are gaps and non-gaps
-            pcol = boolarr[:, p-1]
-            pcol_nongaps = pcol
-            pcol_gaps = np.invert(pcol)
-    
-            # count the coverage in each row to the left of this position
-            leftsum = np.sum(left, 1)
-            # count the coverage in each row to the right of this position
-            rightsum = np.sum(right, 1)
-    
-            # how many rows have coverage at this position and on either side
-            covers_region = (sum((pcol_nongaps) & (
-                    leftsum >= min_flank) & (rightsum >= min_flank)))
-    
-            # how many rows have a gap at this position but coverage on either side
-            lacks_region = (sum((pcol_gaps) & (
-                    leftsum >= min_flank) & (rightsum >= min_flank)))
-            if lacks_region > covers_region:
-                absolutePositions.add(p-1)
+        pstart, pend = put[0], put[-1]
+        left_lim = pstart - min_flank
+        right_lim = pend + min_flank
+        if left_lim >= 0 and right_lim <= width:
+            left_seg = boolarr[:, left_lim:pstart]
+            centre_seg = boolarr[:, pstart:pend]
+            right_seg = boolarr[:, pend:right_lim]
+            mm = np.max(np.sum(centre_seg, 0))
+            leftsum = np.sum(left_seg, 0)
+            rightsum = np.sum(right_seg, 0)
+            if all(leftsum > mm) and all(rightsum > mm):
+                for p in put[:-1]:
+                    absolutePositions.add(p)
     return (absolutePositions)
 
 
