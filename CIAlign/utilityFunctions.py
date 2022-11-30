@@ -562,7 +562,7 @@ def updateStartEnd(start, end, removed):
 
 
 def removeColumns(rmAbsolute, relativePositions,
-                  arr, log, rmfile, function_name):
+                  arr, log, rmfile, function_name, write=True):
     '''
     Function to remove a column from an array shared by removeInsertions,
     removeGapOnly. Removes the columns, calculates the
@@ -611,7 +611,7 @@ def removeColumns(rmAbsolute, relativePositions,
 
     keeppos = np.arange(0, np.shape(arr)[1])
     keeppos = np.invert(np.in1d(keeppos, rmpos))
-    if len(rmpos) != 0:
+    if len(rmpos) != 0 and write:
         rmpos_str = [str(x) for x in sorted(rm_relative)]
         log.info("Removing sites %s" % (", ".join(rmpos_str)))
         outrm.write("%s\t%s\n" % (function_name, ",".join(rmpos_str)))

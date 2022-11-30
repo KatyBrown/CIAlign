@@ -222,33 +222,43 @@ def removeInsertions(arr, relativePositions, rmfile, log,
         values are removed as columns are removed from the alignment, minus
         the columns removed using this function.
     '''
-    # parr = np.zeros([0, 0])
-    # i = 0
-    # while np.shape(arr) != np.shape(parr):
-    # record which sites are not "-"
-    boolarr = arr != "-"
-    # array of the number of non-gap sites in each column
-    sums = sum(boolarr)
-    
-    height, width = np.shape(arr)
+    parr = np.zeros([0, 0])
+    i = 0
+    rm_rel = set()
 
-    low_coverage = insertions.findLowCoverage(boolarr,
-                                              sums, height, width,
-                                              min_size, max_size)
- 
-    put_indels = insertions.getPutativeIndels(boolarr, sums, width,
-                                              low_coverage, min_size,
-                                              max_size)
-    good_indels = insertions.findGoodInsertions(put_indels,
-                                                 boolarr,
-                                                 min_size, max_size, min_flank)
-    absolutePositions = insertions.finalCheck(good_indels, min_size, max_size)
-    parr = copy.deepcopy(arr)
-    arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
-        absolutePositions, relativePositions, arr, log, rmfile,
-        "remove_insertions")
-    # i += 1
+    while np.shape(arr) != np.shape(parr):
+        # record which sites are not "-"
+        boolarr = arr != "-"
+        # array of the number of non-gap sites in each column
+        sums = sum(boolarr)
+        
+        height, width = np.shape(arr)
     
+        low_coverage = insertions.findLowCoverage(boolarr,
+                                                  sums, height, width,
+                                                  min_size, max_size)
+     
+        put_indels = insertions.getPutativeIndels(boolarr, sums, width,
+                                                  low_coverage, min_size,
+                                                  max_size, min_flank)
+        good_indels = insertions.findGoodInsertions(put_indels,
+                                                     boolarr,
+                                                     min_size, max_size,
+                                                     min_flank)
+        absolutePositions = insertions.finalCheck(good_indels, min_size,
+                                                  max_size)
+        parr = copy.deepcopy(arr)
+        arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
+            absolutePositions, relativePositions, arr, log, rmfile,
+            "remove_insertions", write=False)
+        rm_rel = rm_rel | rm_relative
+        i += 1
+    outrm = open(rmfile, "a")
+    if len(rm_rel) != 0:
+        rmpos_str = [str(x) for x in sorted(rm_rel)]
+        log.info("Removing sites %s" % (", ".join(rmpos_str)))
+        outrm.write("%s\t%s\n" % ("remove_insertions", ",".join(rmpos_str)))
+    outrm.close()
     return (arr, set(rm_relative), relativePositions)
 
 

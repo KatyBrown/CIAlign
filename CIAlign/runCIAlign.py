@@ -399,10 +399,11 @@ def setupTrackers(args, arr, removed_cols, rmfile):
     if len(removed_cols) != 0:
         markupdict['user'] = removed_cols
     removed_positions = dict()
-    out = open(rmfile, "a")
-    out.write("user_defined\t%s\n" % (",".join(
-        [str(r) for r in removed_cols])))
-    out.close()
+    if len(removed_cols) != 0:
+        out = open(rmfile, "a")
+        out.write("user_defined\t%s\n" % (",".join(
+            [str(r) for r in removed_cols])))
+        out.close()
     return (markupdict, relativePositions,
             [removed_seqs, removed_cols, removed_positions])
 

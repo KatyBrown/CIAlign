@@ -59,7 +59,7 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size):
 
 
 def getPutativeIndels(boolarr, sums, width, puts,
-                      min_size, max_size):
+                      min_size, max_size, min_flank):
     '''
     Narrows down the low coverage regions to keep only low coverage regions
     flanked by higher coverage regions. Regions which don't meet these
@@ -94,51 +94,59 @@ def getPutativeIndels(boolarr, sums, width, puts,
     # Store the results
     pp = []
     for put in puts:
-        current_start = put[0]
-        current_size = min_size
-        current_end = put[-1]
-        # Test if the full length low coverage region is lower coverage than
-        # the columns on either side
-        # If not, keep making it bigger until you get a hit or reach max_size
-        # - then move to the end of the hit and start again
-        while (current_end <= put[-1]):
-            while (current_size <= max_size):
-                wi = sums[current_start:current_end]
-                # Find the indices immediately either side of the low coverage
-                # regions
-                left_pos = current_start - 1
-                right_pos = current_end + 1
-                # If the low coverage region isn't at the end of the alignment
-                if left_pos >= 0 and right_pos <= width-1:
-    
-                    # Get the number of gaps in the columns on either side
-                    before = np.sum(boolarr[:, left_pos])
-                    after = np.sum(boolarr[:, right_pos])
-                    
-                    if np.all(wi < before) & np.all(wi < after):
-                        # if coverage is higher on either side of the region than
-                        # inside it, it's already a candidate indel
-                        pp.append(np.arange(current_start, current_end+2))
-                        # move on to the next one
-                        current_start += current_size
-                        current_end = current_start + current_size
-                        break
+        if len(put) != 0:
+            current_start = put[0]
+            current_size = min_size
+            current_end = put[-1]
+            # Test if the full length low coverage region is lower coverage than
+            # the columns on either side
+            # If not, keep making it bigger until you get a hit or reach max_size
+            # - then move to the end of the hit and start again
+            while (current_end <= put[-1]):
+                while (current_size <= max_size):
+                    wi = sums[current_start:current_end]
+                    # Find the indices immediately either side of the low coverage
+                    # regions
+                    left_pos = current_start - 1
+                    left_lim = current_start - min_flank
+                    right_pos = current_end + 1
+                    right_lim = current_end + min_flank + 1
+                    # If the low coverage region isn't at the end of the alignment
+                    if left_lim >= 0 and right_lim <= width:
+                        # Get the number of gaps in the columns on either side
+                        before_pos = np.sum(boolarr[:, left_pos])
+                        after_pos = np.sum(boolarr[:, right_pos])
+
+                        left_seg = boolarr[:, :current_start]
+                        right_seg = boolarr[:, current_end:]
+                        leftsum = np.sum(left_seg, 0)
+                        rightsum = np.sum(right_seg, 0)
+
+                        if np.all(wi < before_pos) & np.all(wi < after_pos):
+                            # if coverage is higher on either side of the region than
+                            # inside it, it's already a candidate indel
+                            if sum(leftsum > 0) >= min_flank and sum(rightsum > 0) >= min_flank:
+                                pp.append(np.arange(current_start, current_end+2))
+                                # move on to the next one
+                                current_start += current_size
+                                current_end = current_start + current_size
+                                break
+                        else:
+                            # try the next bigger size
+                            current_size += 1
                     else:
                         # try the next bigger size
                         current_size += 1
-                else:
-                    # try the next bigger size
-                    current_size += 1
+                    current_end = current_start + current_size
+                
+                current_start += 1
+                # Reset the current size to be the maximum which will fit in
+                # the remaining sequence
+                # current_size =  np.min([len(put) - current_start - 2, max_size])
+                current_size =  min_size
+    
+                # Reset the current end based on the current size and start
                 current_end = current_start + current_size
-            
-            current_start += 1
-            # Reset the current size to be the maximum which will fit in
-            # the remaining sequence
-            # current_size =  np.min([len(put) - current_start - 2, max_size])
-            current_size =  min_size
-
-            # Reset the current end based on the current size and start
-            current_end = current_start + current_size
     return (pp)
 
 
@@ -172,22 +180,9 @@ def findGoodInsertions(pp, boolarr, min_size, max_size, min_flank):
 
     '''
     absolutePositions = set()
-    width = np.shape(boolarr)[1]
-  #  print (width)
     for put in pp:
-        pstart, pend = put[0], put[-1]
-        left_lim = pstart - min_flank
-        right_lim = pend + min_flank
-        if left_lim >= 0 and right_lim <= width:
-            left_seg = boolarr[:, left_lim:pstart]
-            centre_seg = boolarr[:, pstart:pend]
-            right_seg = boolarr[:, pend:right_lim]
-            mm = np.max(np.sum(centre_seg, 0))
-            leftsum = np.sum(left_seg, 0)
-            rightsum = np.sum(right_seg, 0)
-            if all(leftsum > mm) and all(rightsum > mm):
-                for p in put[:-1]:
-                    absolutePositions.add(p)
+        for p in put[:-1]:
+            absolutePositions.add(p)
     return (absolutePositions)
 
 
