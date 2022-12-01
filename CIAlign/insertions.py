@@ -98,21 +98,23 @@ def getPutativeIndels(boolarr, sums, width, puts,
             current_start = put[0]
             current_size = min_size
             current_end = put[-1]
+            ms = min(max_size, len(put))
             # Test if the full length low coverage region is lower coverage than
             # the columns on either side
             # If not, keep making it bigger until you get a hit or reach max_size
             # - then move to the end of the hit and start again
             while (current_end <= put[-1]):
-                while (current_size <= max_size):
+                while (current_size <= ms):
                     wi = sums[current_start:current_end]
                     # Find the indices immediately either side of the low coverage
                     # regions
                     left_pos = current_start - 1
-                    left_lim = current_start - min_flank
+                    left_lim = current_start - min_flank + 1
                     right_pos = current_end + 1
                     right_lim = current_end + min_flank + 1
                     # If the low coverage region isn't at the end of the alignment
                     if left_lim >= 0 and right_lim <= width:
+                        
                         # Get the number of gaps in the columns on either side
                         before_pos = np.sum(boolarr[:, left_pos])
                         after_pos = np.sum(boolarr[:, right_pos])
@@ -121,7 +123,6 @@ def getPutativeIndels(boolarr, sums, width, puts,
                         right_seg = boolarr[:, current_end:]
                         leftsum = np.sum(left_seg, 0)
                         rightsum = np.sum(right_seg, 0)
-
                         if np.all(wi < before_pos) & np.all(wi < after_pos):
                             # if coverage is higher on either side of the region than
                             # inside it, it's already a candidate indel
@@ -131,6 +132,9 @@ def getPutativeIndels(boolarr, sums, width, puts,
                                 current_start += current_size
                                 current_end = current_start + current_size
                                 break
+                            else:
+                                # try the next bigger size
+                                current_size += 1
                         else:
                             # try the next bigger size
                             current_size += 1
@@ -138,15 +142,17 @@ def getPutativeIndels(boolarr, sums, width, puts,
                         # try the next bigger size
                         current_size += 1
                     current_end = current_start + current_size
-                
                 current_start += 1
+                #ms = np.min([len(put) - current_start - 2, max_size])
+                
                 # Reset the current size to be the maximum which will fit in
                 # the remaining sequence
                 # current_size =  np.min([len(put) - current_start - 2, max_size])
-                current_size =  min_size
+                current_size = min_size
     
                 # Reset the current end based on the current size and start
                 current_end = current_start + current_size
+
     return (pp)
 
 
