@@ -225,8 +225,11 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     parr = np.zeros([0, 0])
     i = 0
     rm_rel = set()
+    absolutePositions = set()
+    pufD = dict()
+    abso = list(np.arange(np.shape(arr)[1]))
 
-    while np.shape(arr) != np.shape(parr):
+    while not np.array_equal(arr, parr):
         # record which sites are not "-"
         boolarr = arr != "-"
         # array of the number of non-gap sites in each column
@@ -236,21 +239,28 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     
         low_coverage = insertions.findLowCoverage(boolarr,
                                                   sums, height, width,
-                                                  min_size, max_size)
+                                                  min_size, max_size,
+                                                  min_flank)
      
-        put_indels = insertions.getPutativeIndels(boolarr, sums, width,
+        put_indels, ufD = insertions.getPutativeIndels(boolarr, sums, width,
                                                   low_coverage, min_size,
-                                                  max_size, min_flank)
+                                                  max_size, min_flank, pas=i, pufD=pufD, abso=abso)
+
         good_indels = insertions.findGoodInsertions(put_indels,
                                                      boolarr,
                                                      min_size, max_size,
                                                      min_flank)
+
         absolutePositions = insertions.finalCheck(good_indels, min_size,
                                                   max_size)
+        if i == 0:
+            pufD = copy.deepcopy(ufD)
         parr = copy.deepcopy(arr)
         arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
             absolutePositions, relativePositions, arr, log, rmfile,
             "remove_insertions", write=False)
+        for r in rm_relative:
+            abso.remove(r)
         rm_rel = rm_rel | rm_relative
         i += 1
     outrm = open(rmfile, "a")
@@ -353,7 +363,7 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
         
         arr, relativePositions, rmpos = utilityFunctions.removeColumns(
             absolutePositions, relativePositions, arr, log, rmfile,
-            "remove_gaponly")
+            "remove_gap_only")
     else:
         rmpos = set()
 
