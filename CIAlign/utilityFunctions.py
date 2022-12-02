@@ -233,7 +233,7 @@ def getMarkupColours(pal='CBS'):
     pal = getPalette(palette=pal)
     return {'remove_insertions': pal['remove_insertions'],
             'crop_ends': pal['crop_ends'],
-            'remove_gaponly': pal['remove_gaponly'],
+            'remove_gap_only': pal['remove_gaponly'],
             'remove_short': pal['remove_short'],
             'remove_divergent': pal['remove_divergent'],
             'crop_divergent': pal['crop_divergent'],
