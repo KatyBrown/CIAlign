@@ -230,39 +230,37 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     abso = list(np.arange(np.shape(arr)[1]))
 
     while not np.array_equal(arr, parr):
-        # record which sites are not "-"
-        boolarr = arr != "-"
-        # array of the number of non-gap sites in each column
-        sums = sum(boolarr)
+        if i < 1:
+            # record which sites are not "-"
+            boolarr = arr != "-"
+            # array of the number of non-gap sites in each column
+            sums = sum(boolarr)
+            
+            height, width = np.shape(arr)
         
-        height, width = np.shape(arr)
+            low_coverage = insertions.findLowCoverage(boolarr,
+                                                      sums, height, width,
+                                                      min_size, max_size,
+                                                      min_flank)
+         
+            put_indels, ufD = insertions.getPutativeIndels(boolarr, sums, width,
+                                                      low_coverage, min_size,
+                                                      max_size, min_flank, pas=i, pufD=pufD, abso=abso)
     
-        low_coverage = insertions.findLowCoverage(boolarr,
-                                                  sums, height, width,
-                                                  min_size, max_size,
-                                                  min_flank)
-     
-        put_indels, ufD = insertions.getPutativeIndels(boolarr, sums, width,
-                                                  low_coverage, min_size,
-                                                  max_size, min_flank, pas=i, pufD=pufD, abso=abso)
-
-        good_indels = insertions.findGoodInsertions(put_indels,
-                                                     boolarr,
-                                                     min_size, max_size,
-                                                     min_flank)
-
-        absolutePositions = insertions.finalCheck(good_indels, min_size,
-                                                  max_size)
-        if i == 0:
-            pufD = copy.deepcopy(ufD)
-        parr = copy.deepcopy(arr)
-        arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
-            absolutePositions, relativePositions, arr, log, rmfile,
-            "remove_insertions", write=False)
-        for r in rm_relative:
-            abso.remove(r)
-        rm_rel = rm_rel | rm_relative
-        i += 1
+            absolutePositions = insertions.finalCheck(put_indels, sums, min_size,
+                                                      max_size)
+            if i == 0:
+                pufD = copy.deepcopy(ufD)
+            parr = copy.deepcopy(arr)
+            arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
+                absolutePositions, relativePositions, arr, log, rmfile,
+                "remove_insertions", write=False)
+            for r in rm_relative:
+                abso.remove(r)
+            rm_rel = rm_rel | rm_relative
+            i += 1
+        else:
+            break
     outrm = open(rmfile, "a")
     if len(rm_rel) != 0:
         rmpos_str = [str(x) for x in sorted(rm_rel)]
