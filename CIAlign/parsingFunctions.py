@@ -229,44 +229,29 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     pufD = dict()
     abso = list(np.arange(np.shape(arr)[1]))
 
-    while not np.array_equal(arr, parr):
-        if i < 1:
-            # record which sites are not "-"
-            boolarr = arr != "-"
-            # array of the number of non-gap sites in each column
-            sums = sum(boolarr)
-            
-            height, width = np.shape(arr)
-        
-            low_coverage = insertions.findLowCoverage(boolarr,
-                                                      sums, height, width,
-                                                      min_size, max_size,
-                                                      min_flank)
-         
-            put_indels, ufD = insertions.getPutativeIndels(boolarr, sums, width,
-                                                      low_coverage, min_size,
-                                                      max_size, min_flank, pas=i, pufD=pufD, abso=abso)
+    # record which sites are not "-"
+    boolarr = arr != "-"
+    # array of the number of non-gap sites in each column
+    sums = sum(boolarr)
     
-            absolutePositions = insertions.finalCheck(put_indels, sums, min_size,
-                                                      max_size)
-            if i == 0:
-                pufD = copy.deepcopy(ufD)
-            parr = copy.deepcopy(arr)
-            arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
-                absolutePositions, relativePositions, arr, log, rmfile,
-                "remove_insertions", write=False)
-            for r in rm_relative:
-                abso.remove(r)
-            rm_rel = rm_rel | rm_relative
-            i += 1
-        else:
-            break
-    outrm = open(rmfile, "a")
-    if len(rm_rel) != 0:
-        rmpos_str = [str(x) for x in sorted(rm_rel)]
-        log.info("Removing sites %s" % (", ".join(rmpos_str)))
-        outrm.write("%s\t%s\n" % ("remove_insertions", ",".join(rmpos_str)))
-    outrm.close()
+    height, width = np.shape(arr)
+
+    low_coverage = insertions.findLowCoverage(boolarr,
+                                              sums, height, width,
+                                              min_size, max_size,
+                                              min_flank, min_perc)
+ 
+    put_indels = insertions.getPutativeIndels(boolarr, sums, width,
+                                              low_coverage, min_size,
+                                              max_size, min_flank, min_perc)
+
+    absolutePositions = insertions.finalCheck(put_indels, sums, min_size,
+                                              max_size)
+
+    arr, relativePositions, rm_relative = utilityFunctions.removeColumns(
+        absolutePositions, relativePositions, arr, log, rmfile,
+        "remove_insertions")
+
     return (arr, set(rm_relative), relativePositions)
 
 

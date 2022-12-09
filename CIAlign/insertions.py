@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import numpy as np
 import math
+import copy
 
 
-def findLowCoverage(boolarr, sums, height, width, min_size, max_size, min_flank):
+def findLowCoverage(boolarr, sums, height, width, min_size, max_size,
+                    min_flank, min_perc):
     '''
     Finds regions of the alignment with coverage <50%, as insertions gaps must
     be found in the majority of sequences to be removed -
@@ -28,7 +30,9 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size, min_flank)
         Minimum size insertions to remove
     max_size: int
         Maximum size insertions to remove
-    
+    min_perc: float
+        Remove insertions which are present in less than this
+        proportion of sequences. Default: 0.5    
     Returns
     -------
     puts: np.array
@@ -36,16 +40,14 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size, min_flank)
         a group of between min_size and max_size consecutive columns with
         gaps in >50% of sequences.
     '''
-    #max_cov = np.max(np.sum(boolarr, 0))
  
-    # Set the minimum threshold - the column shouldn't have coverage in >50%
-    # of rows
-    thresh = math.floor(height / 2)
-    leftsum = np.cumsum(boolarr, 1)
-    rightsum = (np.cumsum(boolarr[:, ::-1], 1)[:, ::-1])
-    # Create a boolean array with True if columns have >50% coverage
+    # Set the minimum threshold - the column shouldn't have coverage in
+    # >thresh of rows
+    thresh = math.floor(height) * min_perc
+
+    # Create a boolean array with True if columns have >thresh coverage
     # and False otherwise
-    low_cov = (sums <= thresh) #| (leftsum <= min_flank) | (rightsum <= min_flank)
+    low_cov = (sums <= thresh)
 
     # Calculate the cumulative sum of the number of columns with <50% coverage
     # - the numbers only increment for regions with coverage below the
@@ -57,15 +59,20 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size, min_flank)
     puts = np.where(np.diff(cumarr) == 1)[0] + 1
     diffs = np.where(np.diff(puts) != 1)[0] + 1
     splits = np.split(puts, diffs)
+    # Add a buffer few residues to low coverage regions - for some complex
+    # insertions the iterative process
+    # later somehow clips off the last residue or two
     splits2 = []
     for split in splits:
-        s = np.append(split, split[-1] + 1)
+        s = copy.deepcopy(split)
+        for i in np.arange(s[-1], s[-1]+6):
+            s = np.append(s, i)
         splits2.append(s)
     return (np.array(splits2, dtype='object'))
 
 
 def getPutativeIndels(boolarr, sums, width, puts,
-                      min_size, max_size, min_flank, pas, pufD, abso):
+                      min_size, max_size, min_flank, min_perc):
     '''
     Narrows down the low coverage regions to keep only low coverage regions
     flanked by higher coverage regions. Regions which don't meet these
@@ -88,7 +95,14 @@ def getPutativeIndels(boolarr, sums, width, puts,
         gaps in >50% of sequences.
     min_size: int
         Minimum size insertions to remove
-
+    max_size: int
+        Maximum size insertions to remove
+    min_flank: int
+        Minimum number of bases on either side of an insertion
+        to classify it as an insertion.
+    min_perc: float
+        Remove insertions which are present in less than this
+        proportion of sequences. Default: 0.5    
     Returns
     -------
     pp: list
@@ -130,6 +144,7 @@ def getPutativeIndels(boolarr, sums, width, puts,
                     # Take the indicies immediately on either side
                     left_pos = current_start - 1
                     right_pos = current_end
+
                     if right_pos < width:
                         # Get the number of gaps in the columns on either side
                         before_pos = np.sum(boolarr[:, left_pos])
@@ -140,7 +155,6 @@ def getPutativeIndels(boolarr, sums, width, puts,
                         if np.all(wi < before_pos) & np.all(wi < after_pos):
                             good = []
                             bad = []
-
                             # Iterate through the individual positions
                             for p in np.arange(current_start, current_end):
 
@@ -152,31 +166,27 @@ def getPutativeIndels(boolarr, sums, width, puts,
                                 # of the put deletion in each row
                                 ls = leftsum[:, p-1]
                                 rs = rightsum[:, p+1]
-                                
-                                # This takes into account columns removed in
-                                # previous iterations when checking
-                                # the min_flank parameter
-                                rel_pos = abso[p]
-                                if rel_pos in pufD:
-                                    ls = pufD[rel_pos][0]
-                                    rs = pufD[rel_pos][1]
+
                                     
-                                # Check that more columns have the insertion than
-                                # don't (from those with enough flanking residues)
+                                # Check that more columns have the insertion
+                                # than don't (from those with enough flanking
+                                # residues)
                                 covers_region = (sum((pcol_nongaps) & (
                                         ls >= min_flank) & (rs >= min_flank)))
                                 lacks_region = (sum((pcol_gaps) & (
                                         ls >= min_flank) & (rs >= min_flank)))
-                                
+
                                 # Check that the majority of rows lack
                                 # the insertion
                                 if lacks_region + covers_region > 0:
-                                    prop_with_insertion = covers_region / (lacks_region +
-                                                                           covers_region)
-                                    if prop_with_insertion <= 0.5:
+                                    prop_with_insertion = covers_region / (
+                                        lacks_region + covers_region)
+         
+                                    if prop_with_insertion <= min_perc:
                                         good.append(p)
                                     else:
                                         bad.append(p)
+
                                 else:
                                     bad.append(p)
                                 
@@ -188,7 +198,8 @@ def getPutativeIndels(boolarr, sums, width, puts,
                             # If all the positions are OK
                             if len(bad) == 0:
                                 # Save this deletion
-                                pp.append(np.arange(current_start, current_end+1))
+                                pp.append(np.arange(current_start,
+                                                    current_end+1))
                                 # move on to the next one
                                 current_start += current_size
                                 current_end = current_start + current_size
@@ -206,20 +217,18 @@ def getPutativeIndels(boolarr, sums, width, puts,
                         
                 else:
                     # try the next smaller size
-
-                    #current_size -= 1
                     current_start += 1
                     current_end = current_start + current_size
 
                 # Reduce the current size
                 current_size -= 1
-    return (pp, ufD)
+    return (pp)
 
 
 def finalCheck(pp, sums, min_size, max_size):
     '''
-    Check all the insertions are between min_size and max_size and remove
-    any which don't meet these criteria.
+    Check all the insertions are between min_size and max_size and flanked
+    by a higher coverage region and remove any which don't meet these criteria.
 
     Parameters
     ----------
@@ -250,6 +259,8 @@ def finalCheck(pp, sums, min_size, max_size):
     for split in keep:
         current_start = split[0]
         current_end = split[-1]+1
+        # Check that all positions within the insertion have higher coverage
+        # than all positions immediately on either side
         xx = np.arange(current_start-1, current_end+1)
         cent = sums[xx[1:-1]]
         bef = sums[xx[0]]
@@ -258,7 +269,8 @@ def finalCheck(pp, sums, min_size, max_size):
             
             absolutePositions_final = absolutePositions_final | set(split)
         else:
-
+            # If they don't meet the previous criteria, try subsections
+            # of the insertion
             for size in np.arange((np.shape(cent)[0]), min_size-1, -1):
                 for start in np.arange(current_start, (current_end + 1 - size)):
                     end = start + size + 1
@@ -266,8 +278,10 @@ def finalCheck(pp, sums, min_size, max_size):
                     new_pos = set(np.arange(start, start+size+1))
                     new_bef = sums[start-1]
                     new_aft = sums[start + size + 1]
-                    if (np.all(new_cent < new_bef)) & (np.all(new_cent < new_aft)):
-                        absolutePositions_final = absolutePositions_final | set(new_pos)
+                    if (np.all(new_cent < new_bef)) & (
+                            np.all(new_cent < new_aft)):
+                        absolutePositions_final = (absolutePositions_final |
+                                                   set(new_pos))
                     else:
                         pass
     return (absolutePositions_final)
