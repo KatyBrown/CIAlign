@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 
-def getCoreRes(typ):
+def getCoreRes(typ, RNA=False):
     '''
     Returns the "standard" (non-ambiguous, non-gap) set of residues for
     either nucleotides or amino acids.
@@ -14,7 +14,10 @@ def getCoreRes(typ):
         nt - nucleotide or aa - amino acid
     '''
     if typ == "nt":
-        core = ['A', 'C', 'T', 'G']
+        if RNA:
+            core = ['A', 'C', 'G', 'U']
+        else:
+            core = ['A', 'C', 'G', 'T']
     elif typ == "aa":
         core = ['D', 'E', 'C', 'M', 'K',
                 'R', 'S', 'T', 'F', 'Y',
@@ -23,7 +26,7 @@ def getCoreRes(typ):
     return (sorted(core))
 
 
-def getFreq(freqtype, log, typ, PFM, PFM2=None):
+def getFreq(freqtype, log, typ, RNA, PFM, PFM2=None):
     '''
     Calculates a frequency matrix to use to generate a position probability
     matrix, showing the background frequency of the base at each position -
@@ -66,7 +69,7 @@ def getFreq(freqtype, log, typ, PFM, PFM2=None):
         An array with the same dimensions as the PFM showing the residue
         frequency at each position.
     '''
-    core = getCoreRes(typ)
+    core = getCoreRes(typ, RNA)
     if freqtype == 'equal':
         # 1 / number of possible residues
         ff = np.repeat(1 / len(core), len(core))
@@ -91,7 +94,7 @@ PFM must be provided"
     
     # The calculations above are per nucleotide, repeat for each column
     ffmat = np.reshape(np.repeat(ff, np.shape(PFM)[1]), np.shape(PFM))
-    return (ffmat)
+    return (ffmat.round(3))
 
 
 def getAlpha(alphatype, log, PFM, freq, alphaval=1.0):
@@ -135,14 +138,15 @@ def getAlpha(alphatype, log, PFM, freq, alphaval=1.0):
         # Calculate as discussed in the blog post linked above
         alpha = np.array([f * np.sqrt(np.sum(PFM)) for f in freq])
         log.info("Calculating alpha value based on background frequencies")
-    elif isinstance(alphatype, int) or isinstance(alphatype, float):
+    elif alphatype == 'user':
         # If an integer is provided, use the integer
         # Reshape to match the PFM
+        alphaval = float(alphaval)
         alpha = np.full(np.shape(PFM), alphaval)
         log.info("Using user defined alpha value of %.4f" % alphaval)
     else:
-        raise RuntimeError ("Frequency type not recognised for PWM frequency")
-    return (alpha)
+        raise RuntimeError ("Alpha type not recognised for PWM")
+    return (alpha.round(3))
 
 
 def makePFM(arr, typ):
@@ -172,10 +176,16 @@ def makePFM(arr, typ):
         rows are residues - either A, C, G T or the 20 standard amino acids
         in alphabetical order.   
     '''
-    core = getCoreRes(typ)
+    # If there is a U in a nucleotide alignment, assume it is using U
+    # instead of T
+    if typ == "nt" and "U" in arr:
+        RNA = True
+    else:
+        RNA = False
+    core = getCoreRes(typ, RNA)
     sums = [np.sum(arr == res, 0) for res in core]
     sum_mat = pd.DataFrame(sums, index=core)
-    return (sum_mat.round(4))
+    return (sum_mat.round(3), RNA)
 
 def makePPM(PFM, alpha):
     '''
@@ -210,7 +220,7 @@ def makePPM(PFM, alpha):
         in alphabetical order.
     '''
     PPM = np.divide(PFM + alpha, np.sum(PFM + alpha))
-    return (PPM.round(4))
+    return (PPM.round(3))
 
 
 def makePWM(PPM, freq):
@@ -250,10 +260,10 @@ def makePWM(PPM, freq):
         in alphabetical order.     
     '''
     PWM = np.log2(np.divide(PPM, freq))
-    return (PWM.round(4))
+    return (PWM.round(3))
 
 
-def memeFormat(ppm, typ, freq, outfile, stem):
+def memeFormat(ppm, typ, RNA, freq, outfile, stem):
     '''
     Formats a PPM into MEME motif format (version 4+) as described
     here: https://meme-suite.org/meme/doc/meme-format.html
@@ -278,7 +288,7 @@ def memeFormat(ppm, typ, freq, outfile, stem):
     stem: str
         Prefix to use to name the motfif in the output file
     '''
-    core = getCoreRes(typ)
+    core = getCoreRes(typ, RNA)
     out = open(outfile, "w")
     out.write("MEME version 4\n\n")
     out.write("ALPHABET= %s\n\n" % ("".join(core)))
