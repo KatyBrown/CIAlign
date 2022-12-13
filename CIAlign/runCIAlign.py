@@ -536,7 +536,7 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         # Track what has been removed
         arr, r, relativePositions = A
 
-        if 'remove_gaponly' in markupdict:
+        if 'remove_gap_only' in markupdict:
             markupdict['remove_gaponly'].update(r)
         else:
             markupdict['remove_gaponly'] = r
@@ -603,10 +603,10 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
 
         # Track what has been removed
         arr, r, relativePositions = A
-        if 'remove_gaponly' in markupdict:
-            markupdict['remove_gaponly'].update(r)
+        if 'remove_gap_only' in markupdict:
+            markupdict['remove_gap_only'].update(r)
         else:
-            markupdict['remove_gaponly'] = r
+            markupdict['remove_gap_only'] = r
         removed_cols = removed_cols | r
         # Check there are still some columns left
         utilityFunctions.checkArrLength(arr, log)
@@ -1174,7 +1174,7 @@ than the end position for the position weight matrix")
         
         subarr = c_arr[:, pstart:pend]
         # Make the position frequency matrix
-        PFM = matrices.makePFM(subarr, typ)
+        PFM, RNA = matrices.makePFM(subarr, typ)
         # Make the second matrix where needed
         if args.pwm_freqtype == 'calc2':
             PFM2 = matrices.makePFM(c_arr, typ)
@@ -1182,7 +1182,7 @@ than the end position for the position weight matrix")
             PFM2 = None
     
         # Calculate the frequency and the alpha matrices
-        freq = matrices.getFreq(args.pwm_freqtype, log, typ, PFM, PFM2)
+        freq = matrices.getFreq(args.pwm_freqtype, log, typ, RNA, PFM, PFM2)
         alpha = matrices.getAlpha(args.pwm_alphatype, log, PFM, freq,
                                   args.pwm_alphaval)
     
@@ -1207,7 +1207,7 @@ than the end position for the position weight matrix")
         if args.pwm_output_meme:
             # Save the PPM matrix in the format required for MEME input
             # https://meme-suite.org/meme/doc/meme-format.html
-            matrices.memeFormat(PPM, typ, freq, "%s_ppm_meme_%s.txt" % (
+            matrices.memeFormat(PPM, typ, RNA, freq, "%s_ppm_meme_%s.txt" % (
                 args.outfile_stem, run), args.outfile_stem)
 
         if args.pwm_output_blamm:
