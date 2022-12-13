@@ -71,7 +71,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         self.legend = "./tests/test_files/test_mini_markup_legend.png"
         expected = image.imread('./tests/test_files/expected_mini_ali_markup.png')
         markup_dict = {'remove_divergent': {'Seq1'},
-                        'remove_gaponly': {89, 90, 91, 92, 93, 94, 95},
+                        'remove_gap_only': {89, 90, 91, 92, 93, 94, 95},
                         'remove_insertions': {22, 23, 24, 25, 26, 27},
                         'crop_ends': {'Seq5': ((np.array([]), np.array([92, 93, 94, 95])))},
                         'remove_short': {'Seq6'}}
@@ -126,7 +126,7 @@ class DrawMarkUpTest(unittest.TestCase):
         self.ali_width = len(self.alignment[0])
         self.ali_height = len(self.alignment)
         self.markup_dict = {'remove_divergent': {'Seq1'},
-                        'remove_gaponly': {89, 90, 91, 92, 93, 94, 95},
+                        'remove_gap_only': {89, 90, 91, 92, 93, 94, 95},
                         'remove_insertions': {22, 23, 24, 25, 26, 27},
                         'crop_ends': {'Seq5': ((np.array([]), np.array([92, 93, 94, 95])))},
                         'remove_short': {'Seq6'}}

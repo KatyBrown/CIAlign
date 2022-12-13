@@ -191,9 +191,9 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
             a.hlines(y+0.5, -0.5, ali_width-0.5, zorder=45, color='black',
                      lw=lineweight_h)
     # removes whole columns
-    if "remove_gaponly" in markupdict:
-        colour = colD['remove_gaponly']
-        for col in markupdict['remove_gaponly']:
+    if "remove_gap_only" in markupdict:
+        colour = colD['remove_gap_only']
+        for col in markupdict['remove_gap_only']:
             a.add_patch(matplotlib.patches.Rectangle((col-0.5, -0.5), 1,
                                                      ali_height,
                                                      color=colour,
@@ -229,7 +229,7 @@ def drawMarkUpLegend(outfile, palette="CBS"):
                  'remove_divergent': 'Too Divergent',
                  'remove_insertions': 'Insertions',
                  'remove_short': 'Too Short',
-                 'remove_gaponly': 'Gap Only',
+                 'remove_gap_only': 'Gap Only',
                  'crop_divergent': 'Crop Divergent',
                  'user': 'User'}
     L = len(functions)

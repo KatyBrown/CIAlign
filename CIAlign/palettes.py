@@ -56,7 +56,7 @@ def CBSafe():
               'remove_insertions': "#9db341",
               'remove_divergent': "#7066bc",
               'crop_ends': '#020545',
-              'remove_gaponly': '#f9c1d2',
+              'remove_gap_only': '#f9c1d2',
               'remove_short': "#c85133",
               'crop_divergent': '#ff00d1',
               'user': '#fff4a3'})
