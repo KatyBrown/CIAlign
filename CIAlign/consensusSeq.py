@@ -400,7 +400,6 @@ def sequence_logo(alignment,
 
                     height_sum_higher += height
         a.axis(limits)
-
         if rend - start < 25:
             a.set_xticks(np.arange(rstart-0.5, rend, 1))
             a.set_xticklabels([int(x) for x in np.arange(rstart, rend+0.5, 1)])
@@ -595,7 +594,8 @@ def calc_entropy(count, seq_count, typ):
         freq_per_base[element] = 0
         height_per_base[element] = 0
         entropy_per_base[element] = 0
-
+    if seq_count == 0:
+        return height_per_base, info_per_base, 0
     # correct for small sample sizes
 
     sample_size_correction = (s-1) / (2 * np.log(2) * seq_count)
@@ -603,12 +603,14 @@ def calc_entropy(count, seq_count, typ):
     gap_correction = seq_count
     if count.get("-"):
         seq_count -= count.get("-")
+
+
+    
     # correct for gaps, since they lower the information content
     gap_correction = seq_count/gap_correction
 
     entropy = 0
-    if seq_count == 0:
-        return height_per_base, info_per_base
+
     # calculate entropy, from that information, from that height
     freqs = []
     for base, quantity in count.items():
@@ -640,6 +642,16 @@ def calc_entropy(count, seq_count, typ):
 
 
 def calcConservationAli(alignment, typ):
+    '''
+    Calculate alignment conservation as the heights the letters would
+    be in a sequence logo.
+    
+    alignment: np.array
+        The alignment stored as a numpy array
+
+    typ: str
+        nt or aa
+    '''
     alignment_width = len(alignment[0, :])
     seq_count = len(alignment[:, 0])
     heights_per_col = []

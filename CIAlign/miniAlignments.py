@@ -336,7 +336,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     a.spines['left'].set_visible(False)
 
     if title:
-        f.suptitle(title)
+        f.suptitle(title, fontsize=fontsize*1.5, y=0.92)
     for t in a.get_xticklabels():
         t.set_fontsize(fontsize)
     a.set_yticks(np.arange(ali_height-1, -1, -tickint))
@@ -349,10 +349,10 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
                     labs.append(x)
                 x += 1
             a.set_yticklabels(labs,
-                              fontsize=fontsize)
+                              fontsize=fontsize*0.75)
         else:
             a.set_yticklabels(np.arange(1, ali_height+1, tickint),
-                              fontsize=fontsize)
+                              fontsize=fontsize*0.75)
     else:
         a.set_yticklabels(np.arange(0, ali_height, tickint), fontsize=fontsize)
 

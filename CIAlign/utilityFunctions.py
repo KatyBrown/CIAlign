@@ -83,7 +83,7 @@ def FastaToArray(infile, log=None, outfile_stem=None):
         for line in input:
             line = line.strip()
             if len(line) == 0:
-                continue  # todo: test!
+                continue
             if line[0] == ">":
                 seqs.append([s.upper() for s in seq])
                 nams.append(nam)
@@ -94,7 +94,7 @@ def FastaToArray(infile, log=None, outfile_stem=None):
                     if log:
                         log.error(formatErrorMessage)
                     print(formatErrorMessage)
-                    exit()
+                    exit(1)
                 seq += list(line)
     seqs.append(np.array([s.upper() for s in seq]))
     nams.append(nam)
@@ -271,7 +271,7 @@ def writeOutfile(outfile, arr, nams, removed, rmfile=None):
     out.close()
 
 
-def seqType(arr):
+def seqType(arr, log):
     '''
     Detects if an alignment is of nucleotides or amino acids using pre-built
     dictionarys of amino acid and nucleotide codes.
@@ -312,16 +312,15 @@ def seqType(arr):
             aa_count += 1
             ch += 1
         if ch == 0:
+            log.error("Unknown nucleotides or amino acids detected.\
+                       Please fix your MSA.")
             print("Unknown nucleotides or amino acids detected.\
                   Please fix your MSA.")
-            exit()
-
+            exit(1)
     if nt_count == len(arr):
         return "nt"
     if aa_count == len(arr):
         return "aa"
-    print("MSA type couldn't be established. Please fix your MSA.")
-    exit()
 
 
 def updateNams(nams, removed_seqs):
@@ -372,11 +371,11 @@ not all the same length."""
     if 0 in np.shape(arr):
         log.error(emptyAlignmentMessage)
         print(emptyAlignmentMessage)
-        exit()
+        exit(1)
     if len(np.shape(arr)) == 1:
         log.error(differentLengthsMessage)
         print(differentLengthsMessage)
-        exit()
+        exit(1)
 
 
 def listFonts(outfile):
@@ -508,9 +507,10 @@ def configRetainSeqs(retain, retainS, retainL, nams, fname, log, silent):
         if not os.path.exists(retainL):
             raise FileNotFoundError("""
 List of sequences to retain %s not found""" % retainL)
-        # Add the sequence names to the keeps set
-        keeps = keeps | set([line.strip()
-                             for line in open(retainL).readlines()])
+        
+        with open(retainL) as infile:
+            for line in infile:
+                keeps.add(line.strip())
 
     # If a string to match is specified
     if retainS is not None and len(retainS[0].strip()) != 0:
@@ -524,7 +524,8 @@ List of sequences to retain %s not found""" % retainL)
                     rr += 1
             if rr == 0:
                 # Warn if there are no matches
-                log.warn("""No sequence names matching "%s" were found""" % rs)
+                log.warning("""No sequence names matching "%s" were found"""
+                            % rs)
                 if not silent:
                     print("""Warning: No sequence names matching \
 "%s" were found""" % rs)
@@ -538,7 +539,7 @@ Some sequences listed to be retained were not found: %s""" % (" ".join(
                                                                   nams))))
 
     # Convert the result to an array
-    keeps_arr = np.array(list(keeps))
+    keeps_arr = np.array(sorted(list(keeps)))
 
     # Log the sequence names identified
     if len(keeps_arr) != 0:
@@ -549,6 +550,29 @@ Some sequences listed to be retained were not found: %s""" % (" ".join(
 
 
 def updateStartEnd(start, end, removed):
+    '''
+    Updates the start and end positions of a subsection of an array taking
+    into account positions that have been removed i.e. if the user
+    wants columns 10:20 of the input FASTA but 5 and 15 have been removed,
+    then in the updated alignment they would want 9:18.
+    
+    Parameters
+    ----------
+    start: int
+        The start position in the unedited alignment
+    end: int
+        The end position in the unedited alignment
+    removed: set
+        Set of integers representing positions which have been removed from
+        the alignment
+    
+    Returns
+    -------
+    newstart: int
+        The updated start position
+    newend: int
+        The updated end position
+    '''
     newstart = start
     newend = end
     if len(removed) != 0:
