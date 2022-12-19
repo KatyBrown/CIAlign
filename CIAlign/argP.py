@@ -362,11 +362,33 @@ def getParser():
                  metavar="(int, %s..%s)" % (
                      minis['remove_min_length'],
                      maxis['remove_min_length']))
+    optional.add("--remove_short_retain", dest="retain_seqs_rs",
+                 action="append", default=None, metavar="(string)",
+                 help="""Do not remove the sequence with this name when \
+                         running the remove_divergent function.
+                         Sequence names must exactly match the FASTA infile. \
+                         Can be specified multiple times. \
+                         Default: %(default)s""")
+
+    optional.add("--remove_short_retain_str", dest="retain_seqs_rsS",
+                 action="append", default=None, type=str, metavar="(string)",
+                 help="""Do not remove the sequences with names containing \
+                         this word (character string) when \
+                         running the remove_short function. \
+                         Case sensitive. \
+                         Default: %(default)s""")
+
+    optional.add("--remove_short_retain_list", dest="retain_seqs_rsL",
+                 type=str, default=None, metavar="(string)",
+                 help="""Do not remove the sequences listed in this file when \
+                         running the remove_short function. \
+                         Sequence names must exactly match the FASTA infile. \
+                         Default: %(default)s""")
 
     # Crop Divergent
     optional.add("--crop_divergent", dest="crop_divergent",
                  help="""Crop ends of sequences which are highly
-                         divergent. Default %(default)s""",
+                         divergent. Default: %(default)s""",
                  action="store_true")
 
     optional.add("--crop_divergent_min_prop_ident",
@@ -411,28 +433,11 @@ def getParser():
                      minis['divergent_buffer_size'],
                      maxis['divergent_buffer_size']))
 
-    optional.add("--remove_short_retain", dest="retain_seqs_rs",
-                 action="append", default=None, metavar="(string)",
-                 help="""Do not remove the sequence with this name when \
-                         running the remove_divergent function.
-                         Sequence names must exactly match the FASTA infile. \
-                         Can be specified multiple times. \
-                         Default: %(default)s""")
-
-    optional.add("--remove_short_retain_str", dest="retain_seqs_rsS",
-                 action="append", default=None, type=str, metavar="(string)",
-                 help="""Do not remove the sequences with names containing \
-                         this word (character string) when \
-                         running the remove_short function. \
-                         Case sensitive. \
-                         Default: %(default)s""")
-
-    optional.add("--remove_short_retain_list", dest="retain_seqs_rsL",
-                 type=str, default=None, metavar="(string)",
-                 help="""Do not remove the sequences listed in this file when \
-                         running the remove_short function. \
-                         Sequence names must exactly match the FASTA infile. \
-                         Default: %(default)s""")
+    # keep gap only
+    optional.add("--keep_gaponly", dest="remove_gaponly",
+                 action="store_false",
+                 help="Keep gap only columns in the alignment. Default: \
+                       %(default)s")
 
     optional.add("--retain", dest="retain_seqs",
                  action="append", default=None, type=str, metavar="(string)",
@@ -460,12 +465,6 @@ def getParser():
                           crop_ends). \
                          Sequence names must exactly match the FASTA infile. \
                          Default: %(default)s""")
-
-    # keep gap only
-    optional.add("--keep_gaponly", dest="remove_gaponly",
-                 action="store_false",
-                 help="Keep gap only columns in the alignment. Default: \
-                       %(default)s")
 
     # Consensus
     optional.add("--make_consensus", dest="make_consensus",
@@ -751,7 +750,8 @@ def getParser():
     optional.add("--palette", dest="palette", type=str,
                  default="CBS", metavar="(str",
                  help="Colour palette. Currently implemented \
-                       CBS (colour blind safe) or bright. Default %(default)s")
+                       CBS (colour blind safe) or bright. \
+                       Default: %(default)s")
 
     # Section
     optional.add("--get_section", dest="get_section",
