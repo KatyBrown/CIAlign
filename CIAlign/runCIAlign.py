@@ -265,7 +265,7 @@ def setupArrays(args, log):
         exit()
 
     # detect if the sequence is amino acids or nucleotides
-    typ = utilityFunctions.seqType(arr)
+    typ = utilityFunctions.seqType(arr, log)
 
     if typ == 'aa':
         log.info("Amino acid alignment detected")
