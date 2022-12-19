@@ -80,6 +80,10 @@ class ConsensusSeqTests(unittest.TestCase):
             ["./tests/test_files/consensus_example_aa.fasta", "majority_nongap",
             ['L', 'Q', 'N', 'P', 'R', 'V', 'T', 'Q', 'H', 'S', 'V', 'P', 'V', 'R', 'R', 'Y'],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.03, 0.03, 0.03, 0.03, 0.03],],
+            ["./tests/test_files/consensus_example_aa_gaps.fasta", "majority_nongap",
+            ['L', 'Q', 'N', 'P', 'R', 'V', 'T', 'Q', 'H', 'S', 'V', 'P', 'V', 'R', 'N', 'Y'],
+            [0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97,
+             0.03, 0.03, 0.03, 0, 0.03],],            
     ])
     def testFindConsensus(self, MSA, type, expected_consensus, expected_coverage):
         alignment, names = readMSA(MSA)
@@ -107,6 +111,15 @@ class ConsensusSeqTests(unittest.TestCase):
             {'D': 0, 'E': 0, 'C': 0, 'M': 0, 'K': 0, 'R': 0, 'S': 0, 'T': 0,
              'F': 0, 'Y': 0, 'N': 0, 'Q': 0, 'G': 0, 'L': 0, 'V': 4.32, 'I': 0,
               'A': 0, 'W': 0, 'H': 0, 'P': 0, 'X': 0, '-': 0, 'B': 0, 'Z': 0, 'J': 0, '*': 0, 'U': 0, 'O': 0}],
+            
+            [{}, 0, 'nt',
+             {'A': 0, 'G': 0, 'T': 0, 'C': 0, 'N': 0, '-': 0, 'U': 0,
+              'R': 0, 'Y': 0, 'S': 0, 'W': 0, 'K': 0, 'M': 0, 'B': 0,
+              'D': 0, 'H': 0, 'V': 0, 'X': 0},
+             {'A': 0, 'G': 0, 'T': 0, 'C': 0, 'N': 0, '-': 0, 'U': 0,
+              'R': 0, 'Y': 0, 'S': 0, 'W': 0, 'K': 0, 'M': 0, 'B': 0,
+              'D': 0, 'H': 0, 'V': 0, 'X': 0}]
+
     ])
     def test_calc_entropy(self, count, seq_count, type, expected_height, expected_info):
         height, info, freq = consensusSeq.calc_entropy(count, seq_count, type)
@@ -176,10 +189,17 @@ class ConsensusSeqSequenceLogoTest(unittest.TestCase):
                 os.remove("%s_temp.png" % b)
         os.remove(self.dest)
 
-    def testMakeCoveragePlot(self):
-        alignment, names = readMSA("./tests/test_files/consensus_example_nt.fasta")
-        consensusSeq.sequence_logo(alignment, self.dest)
+    @parameterized.expand([['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 0, 50],
+                           ['tests/test_files/consensus_example_nt.fasta', 'nt', 0, 0, 50],
+                           ['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 15, 10],
+                           ['tests/test_files/consensus_example_aa.fasta', 'aa', 0, 100, 50],
+                           ['tests/test_files/consensus_example_long.fasta', 'aa', 20, 200, 50]])
+    def testSequenceLogo(self, fasta, typ, start, end, figrowlength):
+        alignment, names = readMSA(fasta)
+        consensusSeq.sequence_logo(alignment, self.dest, typ=typ, start=start,
+                                   end=end, figrowlength=figrowlength)
         self.assertTrue(os.path.isfile(self.dest))
+
 
 class ConsensusSeqCoverageSequenceLogoBarTest(unittest.TestCase):
 
@@ -194,7 +214,15 @@ class ConsensusSeqCoverageSequenceLogoBarTest(unittest.TestCase):
                 os.remove("%s_temp.png" % b)
         os.remove(self.dest)
 
-    def testMakeCoveragePlot(self):
-        alignment, names = readMSA("./tests/test_files/consensus_example_aa.fasta")
-        consensusSeq.sequence_bar_logo(alignment, self.dest, 'aa')
+
+    @parameterized.expand([['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 0, 50],
+                           ['tests/test_files/consensus_example_nt.fasta', 'nt', 0, 0, 50],
+                           ['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 15, 10],
+                           ['tests/test_files/consensus_example_aa.fasta', 'aa', 0, 100, 50],
+                           ['tests/test_files/consensus_example_long.fasta', 'aa', 20, 200, 50]])
+    def testSequenceBarLogo(self, fasta, typ, start, end, figrowlength):
+        alignment, names = readMSA(fasta)
+        consensusSeq.sequence_bar_logo(alignment, self.dest, typ,
+                                       start=start, end=end,
+                                       figrowlength=figrowlength)
         self.assertTrue(os.path.isfile(self.dest))
