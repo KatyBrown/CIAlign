@@ -194,58 +194,6 @@ def getParser():
                        Default: %(default)s",
                  action='store_true')
 
-    # Crop Ends
-    optional.add("--crop_ends", dest="crop_ends",
-                 action="store_true",
-                 help="Crop the ends of sequences if they are poorly aligned. \
-                 Default: %(default)s")
-
-    optional.add("--crop_ends_mingap_perc", dest='crop_ends_mingap_perc',
-                 type=float_range(minis['crop_ends_mingap_perc'],
-                                  maxis['crop_ends_mingap_perc'],
-                                  defs['crop_ends_mingap_perc']),
-                 default=defs['crop_ends_mingap_perc'],
-                 help="Minimum proportion of the sequence length (excluding \
-                     gaps) that is the threshold for change in gap numbers. \
-                     Default: %(default)s",
-                 metavar="(float, %s..%s)" % (minis['crop_ends_mingap_perc'],
-                                              maxis['crop_ends_mingap_perc']))
-
-    optional.add("--crop_ends_redefine_perc", dest='crop_ends_redefine_perc',
-                 type=float_range(minis['crop_ends_redefine_perc'],
-                                  maxis['crop_ends_redefine_perc'],
-                                  defs['crop_ends_redefine_perc']),
-                 default=defs['crop_ends_redefine_perc'],
-                 help="Proportion of the sequence length (excluding gaps) \
-                       that is being checked for change in gap numbers to \
-                       redefine start/end. Default: %(default)s",
-                 metavar="(float, %s..%s)" % (
-                     minis['crop_ends_redefine_perc'],
-                     maxis['crop_ends_redefine_perc']))
-
-    optional.add("--crop_ends_retain", dest="retain_seqs_ce",
-                 action="append", default=None, metavar="(string)",
-                 help="""Do not crop the sequence with this name when \
-                         running the crop_ends function. Can be specified \
-                         multiple times. Default: %(default)s""")
-
-    optional.add("--crop_ends_retain_str", dest="retain_seqs_ceS",
-                 action="append", default=None, type=str,
-                 metavar="(string)",
-                 help="""Do not crop sequences with names containing \
-                         this word (character string) when \
-                         running the crop_ends function. \
-                         Case sensitive. \
-                         Default: %(default)s""")
-
-    optional.add("--crop_ends_retain_list", dest="retain_seqs_ceL",
-                 type=str, default=None,
-                 metavar="(string)",
-                 help="""Do not crop the sequences listed in this file when \
-                         running the crop_ends function. \
-                         Sequence names must exactly match the FASTA infile. \
-                         Default: %(default)s""")
-
     # Remove divergent sequences
     optional.add("--remove_divergent", dest="remove_divergent",
                  action="store_true",
@@ -347,6 +295,58 @@ def getParser():
                      minis['insertion_min_perc'],
                      maxis['insertion_min_perc']))
 
+    # Crop Ends
+    optional.add("--crop_ends", dest="crop_ends",
+                 action="store_true",
+                 help="Crop the ends of sequences if they are poorly aligned. \
+                 Default: %(default)s")
+
+    optional.add("--crop_ends_mingap_perc", dest='crop_ends_mingap_perc',
+                 type=float_range(minis['crop_ends_mingap_perc'],
+                                  maxis['crop_ends_mingap_perc'],
+                                  defs['crop_ends_mingap_perc']),
+                 default=defs['crop_ends_mingap_perc'],
+                 help="Minimum proportion of the sequence length (excluding \
+                     gaps) that is the threshold for change in gap numbers. \
+                     Default: %(default)s",
+                 metavar="(float, %s..%s)" % (minis['crop_ends_mingap_perc'],
+                                              maxis['crop_ends_mingap_perc']))
+
+    optional.add("--crop_ends_redefine_perc", dest='crop_ends_redefine_perc',
+                 type=float_range(minis['crop_ends_redefine_perc'],
+                                  maxis['crop_ends_redefine_perc'],
+                                  defs['crop_ends_redefine_perc']),
+                 default=defs['crop_ends_redefine_perc'],
+                 help="Proportion of the sequence length (excluding gaps) \
+                       that is being checked for change in gap numbers to \
+                       redefine start/end. Default: %(default)s",
+                 metavar="(float, %s..%s)" % (
+                     minis['crop_ends_redefine_perc'],
+                     maxis['crop_ends_redefine_perc']))
+
+    optional.add("--crop_ends_retain", dest="retain_seqs_ce",
+                 action="append", default=None, metavar="(string)",
+                 help="""Do not crop the sequence with this name when \
+                         running the crop_ends function. Can be specified \
+                         multiple times. Default: %(default)s""")
+
+    optional.add("--crop_ends_retain_str", dest="retain_seqs_ceS",
+                 action="append", default=None, type=str,
+                 metavar="(string)",
+                 help="""Do not crop sequences with names containing \
+                         this word (character string) when \
+                         running the crop_ends function. \
+                         Case sensitive. \
+                         Default: %(default)s""")
+
+    optional.add("--crop_ends_retain_list", dest="retain_seqs_ceL",
+                 type=str, default=None,
+                 metavar="(string)",
+                 help="""Do not crop the sequences listed in this file when \
+                         running the crop_ends function. \
+                         Sequence names must exactly match the FASTA infile. \
+                         Default: %(default)s""")
+
     # Remove Short
     optional.add("--remove_short", dest="remove_short",
                  help="Remove sequences <= N bases / amino acids from the \
@@ -386,6 +386,12 @@ def getParser():
                          running the remove_short function. \
                          Sequence names must exactly match the FASTA infile. \
                          Default: %(default)s""")
+
+    # keep gap only
+    optional.add("--keep_gaponly", dest="remove_gaponly",
+                 action="store_false",
+                 help="Keep gap only columns in the alignment. Default: \
+                       %(default)s")
 
     # Crop Divergent
     optional.add("--crop_divergent", dest="crop_divergent",
@@ -435,12 +441,7 @@ def getParser():
                      minis['divergent_buffer_size'],
                      maxis['divergent_buffer_size']))
 
-    # keep gap only
-    optional.add("--keep_gaponly", dest="remove_gaponly",
-                 action="store_false",
-                 help="Keep gap only columns in the alignment. Default: \
-                       %(default)s")
-
+    # Retain
     optional.add("--retain", dest="retain_seqs",
                  action="append", default=None, type=str, metavar="(string)",
                  help="""Do not remove the sequence with this name when \
