@@ -64,10 +64,11 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size,
     # later somehow clips off the last residue or two
     splits2 = []
     for split in splits:
-        s = copy.deepcopy(split)
-        for i in np.arange(s[-1], s[-1]+6):
-            s = np.append(s, i)
-        splits2.append(s)
+        if len(split) != 0:
+            s = copy.deepcopy(split)
+            for i in np.arange(s[-1], s[-1]+6):
+                s = np.append(s, i)
+            splits2.append(s)
     return (np.array(splits2, dtype='object'))
 
 
@@ -266,24 +267,7 @@ def finalCheck(pp, sums, min_size, max_size):
         bef = sums[xx[0]]
         aft = sums[xx[-1]]
         if (np.all(cent < bef)) & (np.all(cent < aft)):
-            
             absolutePositions_final = absolutePositions_final | set(split)
-        else:
-            # If they don't meet the previous criteria, try subsections
-            # of the insertion
-            for size in np.arange((np.shape(cent)[0]), min_size-1, -1):
-                for start in np.arange(current_start, (current_end + 1 - size)):
-                    end = start + size + 1
-                    new_cent = sums[start:end]
-                    new_pos = set(np.arange(start, start+size+1))
-                    new_bef = sums[start-1]
-                    new_aft = sums[start + size + 1]
-                    if (np.all(new_cent < new_bef)) & (
-                            np.all(new_cent < new_aft)):
-                        absolutePositions_final = (absolutePositions_final |
-                                                   set(new_pos))
-                    else:
-                        pass
     return (absolutePositions_final)
 
     
