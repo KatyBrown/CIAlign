@@ -14,8 +14,9 @@ try:
 except ImportError:
     import utilityFunctions
 import os
-matplotlib.use('Agg')
 import scipy.stats
+matplotlib.use('Agg')
+
 
 def getAxisUnits(subplot):
     '''
@@ -262,7 +263,7 @@ def makeLinePlot(stat, dest, ylab, dpi=300, height=3, width=5,
 
     xmax = x.max()
     ymax = max(y)
-    
+
     x_div = 10**(math.floor(np.log10(xmax))) / 5
     y_div = 10**(math.floor(np.log10(ymax))) / 2
 
@@ -297,11 +298,12 @@ def makeLinePlot(stat, dest, ylab, dpi=300, height=3, width=5,
         sp.set_xticks(np.arange(0, xmax*1.1, x_div))
         sp.set_xticklabels(np.arange(0, xmax*1.1, x_div), fontsize=fontsize)
         sp.set_yticks(np.arange(0, ymax*1.1, y_div))
-        sp.set_yticklabels(["%.1f" % y for y in np.arange(0, ymax*1.1, y_div)], fontsize=fontsize)
+        sp.set_yticklabels([
+            "%.1f" % y for y in np.arange(0, ymax*1.1, y_div)],
+            fontsize=fontsize)
         sp.set_xlim(0, xmax)
     f.tight_layout()
     f.savefig(dest, dpi=dpi, bbox_inches='tight')
-
 
 
 def sequence_logo(alignment,
@@ -403,7 +405,7 @@ def sequence_logo(alignment,
         if rend - start < 25:
             a.set_xticks(np.arange(rstart-0.5, rend, 1))
             a.set_xticklabels([int(x) for x in np.arange(rstart, rend+0.5, 1)])
-        else:        
+        else:
             a.set_xticks([rstart, rend])
             a.set_xticklabels([rstart, rend])
         a.set_xlim(rstart, rstart+figrowlength)
@@ -599,13 +601,10 @@ def calc_entropy(count, seq_count, typ):
     # correct for small sample sizes
 
     sample_size_correction = (s-1) / (2 * np.log(2) * seq_count)
-    #print (sample_size_correction)
     gap_correction = seq_count
     if count.get("-"):
         seq_count -= count.get("-")
 
-
-    
     # correct for gaps, since they lower the information content
     gap_correction = seq_count/gap_correction
 
@@ -645,7 +644,7 @@ def calcConservationAli(alignment, typ):
     '''
     Calculate alignment conservation as the heights the letters would
     be in a sequence logo.
-    
+
     alignment: np.array
         The alignment stored as a numpy array
 
@@ -666,4 +665,3 @@ def calcConservationAli(alignment, typ):
         ents.append(ent)
     heights = [sum(x.values()) for x in heights_per_col]
     return (heights, ents)
-        

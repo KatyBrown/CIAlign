@@ -35,6 +35,7 @@ def float_range(mini, maxi, default):
     mini = float(mini)
     maxi = float(maxi)
     default = float(default)
+
     def float_range_checker(arg):
         try:
             f = float(arg)
@@ -80,6 +81,7 @@ def int_range(mini, maxi, n_col, default):
         default_val = eval(default)
     except TypeError:
         default_val = int(default)
+
     def int_range_checker(arg):
         try:
             f = int(arg)
@@ -657,12 +659,12 @@ def getParser():
                  help="Generate a position frequency matrix, position \
                        probability matrix and position weight matrix based \
                        on the input alignment. Default: %(default)s")
-    
+
     optional.add("--pwm_output", dest="pwm_output",
                  action="store_true", default=False,
                  help="Generate a position frequency matrix, position \
                        probability matrix and position weight matrix based \
-                       on the output alignment. Default: %(default)s")    
+                       on the output alignment. Default: %(default)s")
 
     optional.add("--pwm_start", dest="pwm_start",
                  type=int, default=None, metavar="(int)",
@@ -689,7 +691,8 @@ def getParser():
                        If alphatype is 'calc', alpha is calculated as \
                        frequency(base) * (square root(n rows in alignment)), \
                        as described in Dave Tang's blog here: \
-                       https://davetang.org/muse/2013/10/01/position-weight-matrix/, \
+                       https://davetang.org/muse/2013/10/01/\
+                       position-weight-matrix/, \
                        which recreates the method used in \
                        doi.org/10.1038/nrg1315. If alpha type is 'user' \
                        the user provides the value of alpha as pwm_alphatype. \
@@ -767,8 +770,7 @@ def getParser():
                  help="Start position (column) for a section of the alignment \
                  to be isolated. 0-based - the first column is column 0. \
                  Default: %(default)s")
-                 
-                 
+
     optional.add("--section_end", dest="section_end",
                  type=int, default=None, metavar="(int",
                  help="End position (column) for a section of the alignment \

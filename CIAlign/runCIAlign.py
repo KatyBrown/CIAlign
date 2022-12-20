@@ -30,7 +30,6 @@ def run(args, log):
     orig_arr = copy.copy(arr)
     orig_nams = copy.copy(nams)
     functions = whichFunctions(args)
-    
 
     if "section" in functions:
         arr, removed_c = setupSection(args, log, arr)
@@ -81,7 +80,6 @@ def run(args, log):
         runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r, rev=True)
 
     if "utot" in functions:
-        print ("hi")
         # Convert U to T in the input or output
         runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r)
 
@@ -124,7 +122,7 @@ def prelimChecks(args, log):
         exit()
     if args.get_section:
         if args.section_start is None or args.section_end is None:
-            print ("Error! Start (--section_start) and end \
+            print("Error! Start (--section_start) and end \
 (--section_end) positions must be provided with --get_section")
             exit()
 
@@ -207,7 +205,7 @@ def whichFunctions(args):
     if any([args.pwm_input,
             args.pwm_output]):
         which_functions.append("pwm")
-    
+
     if args.get_section:
         which_functions.append("section")
 
@@ -439,7 +437,7 @@ def setupSection(args, log, arr):
     '''
     Extracts a subset of columns from the alignment for processing, as
     specified by the user.
-    
+
     Parameters
     ----------
     args: configargparse.ArgumentParser
@@ -448,7 +446,7 @@ def setupSection(args, log, arr):
         Open log file
     arr: np.array
         Array containing the original alignment
-    
+
     Returns
     -------
     arr: np.array
@@ -460,7 +458,7 @@ def setupSection(args, log, arr):
     log.info("Cropping alignment to keep columns %i to %i" % (
         args.section_start, args.section_end))
     if not args.silent:
-        print ("Cropping alignment to keep columns %i to %i" % (
+        print("Cropping alignment to keep columns %i to %i" % (
             args.section_start, args.section_end))
 
     arr = copy.copy(arr[:, args.section_start:args.section_end+1])
@@ -468,8 +466,8 @@ def setupSection(args, log, arr):
     removed_c += list(np.arange(args.section_end+1, orig_width))
     removed_c = set(removed_c)
     return (arr, removed_c)
-    
-    
+
+
 def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
     '''
     Run the cleaning functions
@@ -544,7 +542,6 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         # Check there are some columns left
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
-
 
     # Crop divergent
     if args.crop_divergent:
@@ -649,7 +646,6 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         # Check there are still some positions left
         utilityFunctions.checkArrLength(arr, log)
 
-
     # Remove short
     if args.remove_short or args.all_options or args.clean:
         log.info("Removing short sequences")
@@ -684,7 +680,6 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
-
     if args.remove_gaponly and not (args.all_options or
                                     args.remove_divergent or
                                     args.remove_insertions or
@@ -709,7 +704,7 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         removed_cols = removed_cols | r
         # Check there are some columns left
         utilityFunctions.checkArrLength(arr, log)
-    
+
     # Write the output file
     utilityFunctions.writeOutfile(outfile, arr, orig_nams,
                                   removed_seqs, rmfile)
@@ -922,8 +917,7 @@ def runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ):
         to_plot.append("input")
     if args.plot_stats_output or args.all_options or args.interpret:
         to_plot.append("output")
-    
-    
+
     for inout in to_plot:
         if inout == 'input':
             c_arr = copy.deepcopy(orig_arr)
@@ -936,18 +930,18 @@ def runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ):
         bit_scores, ents = consensusSeq.calcConservationAli(c_arr, typ)
         rowD['information_content'] = bit_scores
         rowD['shannon_entropy'] = ents
-        
+
         log.info("Plotting coverage for %s" % inout)
         if not args.silent:
             print("Plotting coverage for %s" % inout)
         for stat in rowD:
             outfile = "%s_%s_%s.%s" % (args.outfile_stem, inout,
                                        stat, args.plot_stats_filetype)
-    
+
             consensusSeq.makeLinePlot(rowD[stat],
                                       outfile,
                                       stat.replace("_", " ").title(),
-                                      dpi=args.plot_stats_dpi, 
+                                      dpi=args.plot_stats_dpi,
                                       height=args.plot_stats_height,
                                       width=args.plot_stats_width,
                                       colour=args.plot_stats_colour)
@@ -990,7 +984,7 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
             exit()
         # Sequence logo bar chart
         if (args.sequence_logo_type == 'bar' or
-            args.sequence_logo_type == 'both'):
+                args.sequence_logo_type == 'both'):
             log.info("Generating sequence logo bar chart")
             if not args.silent:
                 print("Generating sequence logo bar chart")
@@ -1002,7 +996,7 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
                                            start=logo_start, end=logo_end,
                                            palette=args.palette)
         if (args.sequence_logo_type == 'text' or
-            args.sequence_logo_type == 'both'):
+                args.sequence_logo_type == 'both'):
             # Text sequence logo
             log.info("Generating text sequence logo")
             if not args.silent:
@@ -1062,7 +1056,8 @@ def runUnalign(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
                                       removed_seqs)
 
 
-def runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_seqs, rev=False):
+def runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_seqs,
+            rev=False):
     '''
     Make a copy of the alignment with T replaced by U
 
@@ -1122,7 +1117,7 @@ def runPWM(args, log, orig_arr, arr, typ, removed):
     PWM - position weight matrix - a matrix which shows the log-likelihood
     ratio of observing character i at position j in a site
     compared with a random sequence (from 10.1186/s12859-020-3348-6)
-    
+
     Parameters
     ----------
     args: configargparse.ArgumentParser
@@ -1146,7 +1141,7 @@ def runPWM(args, log, orig_arr, arr, typ, removed):
             c_arr = copy.deepcopy(arr)
         if args.pwm_start is not None and args.pwm_end is not None:
             start = args.pwm_start
-            end = args.pwm_end        
+            end = args.pwm_end
 
             if run == 'input':
                 pstart, pend = start, end
@@ -1158,20 +1153,19 @@ def runPWM(args, log, orig_arr, arr, typ, removed):
                 pend = len(arr[0, :])
 
             if end < start:
-                    print("Error! The start position should be less \
+                print("Error! The start position should be less \
 than the end position for the position weight matrix")
-                    exit()
+                exit()
             log.info("Position matrices will show between positions \
 %i and %i" % (start, end))
         else:
             pstart = 0
             pend = len(c_arr[0, :])
-            
 
         log.info("Generating position frequency matrix")
         if not args.silent:
-            print ("Generating position frequency matrix")
-        
+            print("Generating position frequency matrix")
+
         subarr = c_arr[:, pstart:pend]
         # Make the position frequency matrix
         PFM, RNA = matrices.makePFM(subarr, typ)
@@ -1180,30 +1174,30 @@ than the end position for the position weight matrix")
             PFM2 = matrices.makePFM(c_arr, typ)
         else:
             PFM2 = None
-    
+
         # Calculate the frequency and the alpha matrices
         freq = matrices.getFreq(args.pwm_freqtype, log, typ, RNA, PFM, PFM2)
         alpha = matrices.getAlpha(args.pwm_alphatype, log, PFM, freq,
                                   args.pwm_alphaval)
-    
+
         log.info("Generating position probability matrix")
         if not args.silent:
-            print ("Generating position probability matrix")
+            print("Generating position probability matrix")
         # Calculate the PPM from the PFM
         PPM = matrices.makePPM(PFM, alpha=alpha)
-    
+
         log.info("Generating position weight matrix")
         if not args.silent:
-            print ("Generating position weight matrix")
-    
+            print("Generating position weight matrix")
+
         # Calculate the PWM from the PPM
         PWM = matrices.makePWM(PPM, freq)
-    
+
         # Save all the matrices
         PFM.to_csv("%s_pfm_%s.txt" % (args.outfile_stem, run),  sep="\t")
         PPM.to_csv("%s_ppm_%s.txt" % (args.outfile_stem, run),   sep="\t")
         PWM.to_csv("%s_pwm_%s.txt" % (args.outfile_stem, run),   sep="\t")
-        
+
         if args.pwm_output_meme:
             # Save the PPM matrix in the format required for MEME input
             # https://meme-suite.org/meme/doc/meme-format.html
@@ -1217,5 +1211,6 @@ than the end position for the position weight matrix")
             out.write(">alignment_motif\n")
             for ind, row in zip(PFM.index.values, PFM.values):
                 out.write("%s\t[\t%s\t]\n" % (ind,
-                                              "\t".join([str(x) for x in row])))
+                                              "\t".join(
+                                                  [str(x) for x in row])))
             out.close()

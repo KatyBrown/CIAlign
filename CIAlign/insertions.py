@@ -13,7 +13,7 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size,
     Generates a list of arrays, each of which is the indices of a group of
     consecutive positions with coverage in <50% of columns. The groups
     must have length >= min_size and < max_size.
-    
+
     Parameters
     ----------
     boolarr: np.array
@@ -32,7 +32,7 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size,
         Maximum size insertions to remove
     min_perc: float
         Remove insertions which are present in less than this
-        proportion of sequences. Default: 0.5    
+        proportion of sequences. Default: 0.5
     Returns
     -------
     puts: np.array
@@ -40,7 +40,7 @@ def findLowCoverage(boolarr, sums, height, width, min_size, max_size,
         a group of between min_size and max_size consecutive columns with
         gaps in >50% of sequences.
     '''
- 
+
     # Set the minimum threshold - the column shouldn't have coverage in
     # >thresh of rows
     thresh = math.floor(height) * min_perc
@@ -79,7 +79,7 @@ def getPutativeIndels(boolarr, sums, width, puts,
     flanked by higher coverage regions. Regions which don't meet these
     criteria are split into smaller regions if this then allows them
     to meet the criteria.
-    
+
     Parameters
     ----------
     boolarr: np.array
@@ -103,7 +103,7 @@ def getPutativeIndels(boolarr, sums, width, puts,
         to classify it as an insertion.
     min_perc: float
         Remove insertions which are present in less than this
-        proportion of sequences. Default: 0.5    
+        proportion of sequences. Default: 0.5
     Returns
     -------
     pp: list
@@ -162,13 +162,12 @@ def getPutativeIndels(boolarr, sums, width, puts,
                                 # Take the current pos
                                 pcol_nongaps = boolarr[:, p]
                                 pcol_gaps = np.invert(pcol_nongaps)
-                                
+
                                 # Count the non-gap positions on either side
                                 # of the put deletion in each row
                                 ls = leftsum[:, p-1]
                                 rs = rightsum[:, p+1]
 
-                                    
                                 # Check that more columns have the insertion
                                 # than don't (from those with enough flanking
                                 # residues)
@@ -182,15 +181,14 @@ def getPutativeIndels(boolarr, sums, width, puts,
                                 if lacks_region + covers_region > 0:
                                     prop_with_insertion = covers_region / (
                                         lacks_region + covers_region)
-         
+
                                     if prop_with_insertion <= min_perc:
                                         good.append(p)
                                     else:
                                         bad.append(p)
-
                                 else:
                                     bad.append(p)
-                                
+
                                 # Save the flank info for the next iteration
                                 fl = leftsum[:, p-1]
                                 fr = rightsum[:, p+1]
@@ -215,7 +213,6 @@ def getPutativeIndels(boolarr, sums, width, puts,
                     else:
                         current_start += 1
                         current_end = current_start + current_size
-                        
                 else:
                     # try the next smaller size
                     current_start += 1
@@ -269,5 +266,3 @@ def finalCheck(pp, sums, min_size, max_size):
         if (np.all(cent < bef)) & (np.all(cent < aft)):
             absolutePositions_final = absolutePositions_final | set(split)
     return (absolutePositions_final)
-
-    

@@ -507,7 +507,7 @@ def configRetainSeqs(retain, retainS, retainL, nams, fname, log, silent):
         if not os.path.exists(retainL):
             raise FileNotFoundError("""
 List of sequences to retain %s not found""" % retainL)
-        
+
         with open(retainL) as infile:
             for line in infile:
                 keeps.add(line.strip())
@@ -555,7 +555,7 @@ def updateStartEnd(start, end, removed):
     into account positions that have been removed i.e. if the user
     wants columns 10:20 of the input FASTA but 5 and 15 have been removed,
     then in the updated alignment they would want 9:18.
-    
+
     Parameters
     ----------
     start: int
@@ -565,7 +565,7 @@ def updateStartEnd(start, end, removed):
     removed: set
         Set of integers representing positions which have been removed from
         the alignment
-    
+
     Returns
     -------
     newstart: int
@@ -592,7 +592,7 @@ def removeColumns(rmAbsolute, relativePositions,
     removeGapOnly. Removes the columns, calculates the
     positions of these columns in the input alignment, writes positions
     removed to the log file and the removed file.
-    
+
     Parameters
     ----------
     rmAbsolute: list

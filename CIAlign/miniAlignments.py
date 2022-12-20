@@ -106,7 +106,7 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
     '''
     colD = utilityFunctions.getMarkupColours(palette)
     lineweight_h = 5 / ali_height
-    
+
     # removes columns
     if "user" in markupdict:
         colour = colD['user']
@@ -164,7 +164,8 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
             a.add_patch(matplotlib.patches.Rectangle(
                     (col-0.5, -0.5), 1, ali_height, color=colour, zorder=46,
                     lw=0))
-            a.hlines(np.arange(ali_height), col-0.5, col+0.5, zorder=47, color='black',
+            a.hlines(np.arange(ali_height), col-0.5, col+0.5, zorder=47,
+                     color='black',
                      lw=lineweight_h)
 
     # removes whole columns

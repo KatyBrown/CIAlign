@@ -232,14 +232,14 @@ def removeInsertions(arr, relativePositions, rmfile, log,
     boolarr = arr != "-"
     # array of the number of non-gap sites in each column
     sums = sum(boolarr)
-    
+
     height, width = np.shape(arr)
 
     low_coverage = insertions.findLowCoverage(boolarr,
                                               sums, height, width,
                                               min_size, max_size,
                                               min_flank, min_perc)
- 
+
     put_indels = insertions.getPutativeIndels(boolarr, sums, width,
                                               low_coverage, min_size,
                                               max_size, min_flank, min_perc)
@@ -342,7 +342,7 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
     if len(arr) != 0:
         sums = sum(arr == "-")
         absolutePositions = set(np.where(sums == len(arr[:, 0]))[0])
-        
+
         arr, relativePositions, rmpos = utilityFunctions.removeColumns(
             absolutePositions, relativePositions, arr, log, rmfile,
             "remove_gap_only")
