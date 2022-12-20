@@ -35,4 +35,4 @@ jobs:
 
       - name: Test with PyTest
         run: |
-          pytest tests/consensusSeqTest.py tests/cropSeqTest.py tests/miniAlignmentsTest.py tests/parsingFunctionsTest.py tests/utilityFunctionsTest.py  tests/similarityMatrixTest.py
+          python -m unittest tests/*py
