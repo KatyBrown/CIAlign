@@ -13,6 +13,7 @@ import os
 import filecmp
 import CIAlign.matrices as matrices
 import CIAlign.utilityFunctions as utilityFunctions
+import pandas.testing
 
 class PWMTests(unittest.TestCase):
 
@@ -73,7 +74,8 @@ class PWMTests(unittest.TestCase):
     def testmakePFM(self, typ, subtyp):
         arr = self.arrs[subtyp]
         PFM, RNA = matrices.makePFM(arr, typ)
-        self.assertTrue(PFM.equals(self.matrices['pfm'][subtyp]))
+        pandas.testing.assert_frame_equal(PFM, self.matrices['pfm'][subtyp],
+                                          check_names=False)
 
 
     @parameterized.expand([['nt', 'dna', False],
@@ -83,7 +85,7 @@ class PWMTests(unittest.TestCase):
         PFM = self.matrices['pfm'][subtyp]
         alpha = self.matrices['alpha'][subtyp]
         PPM = matrices.makePPM(PFM, alpha).round(3)
-        self.assertTrue(PPM.equals(self.matrices['ppm'][subtyp]))
+        pandas.testing.assert_frame_equal(PPM, self.matrices['ppm'][subtyp])
 
 
     @parameterized.expand([['nt', 'dna', False],
@@ -93,9 +95,7 @@ class PWMTests(unittest.TestCase):
         PPM = self.matrices['ppm'][subtyp]
         freq = self.matrices['freq'][subtyp]
         PWM = matrices.makePWM(PPM, freq)
-        print ("pwm", PWM.head())
-        print ("exp", self.matrices['pwm'][subtyp].head())
-        self.assertTrue(PWM.equals(self.matrices['pwm'][subtyp]))
+        pandas.testing.assert_frame_equal(PWM, self.matrices['pwm'][subtyp])
 
 
     @parameterized.expand([['equal', 'nt', 'dna', False,
