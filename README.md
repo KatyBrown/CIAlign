@@ -23,14 +23,16 @@ This allows the user to:
 * Visualise alignments
   * Generate image files showing the alignment before and after using CIAlign cleaning functions and showing which columns and rows have been removed
   * Draw sequence logos
-  * Visualise coverage at each position in the alignment
+  * Visualise coverage and conservation at each position in the alignment
+  * Generate position frequency, position probability and position weight matrices based on the alignment and produce output formated to be used as input for the [BLAMM](https://github.com/biointec/blamm) and [MEME](https://meme-suite.org/meme/) motif analysis tools.
 
 * Analyse alignment statistics
   * Generate a similarity matrix showing the percentage identity between each sequence pair
 
-* Unalign the alignment
-
-* Replace U's by T's
+* Make changes to the alignment
+	* Extract a section of the alignment
+	* Unalign the alignment
+	* Replace U with T, or T with U in a nucleotide alignment
 
 ## Citation
 
@@ -69,7 +71,7 @@ If you download the package directly, you will also need to add the CIAlign dire
 #### Parameters
 Parameters can be specified in the command line or in a config file using the naming system below.
 
-A template config file is provided in CIAlign/templates/ini_template.txt - edit this file and provide the path to the --inifile argument.  If this argument is not provided command line arguments and defaults will be used.
+A template config file is provided in `CIAlign/templates/ini_template.ini` - edit this file and provide the path to the --inifile argument.  If this argument is not provided command line arguments and defaults will be used.
 
 Parameters passed in the command line will take precedence over config file parameters, which take precedence over defaults.
 
@@ -80,11 +82,11 @@ Command help can be accessed by typing `CIAlign --help`
 | `--infile` | Path to input alignment file in FASTA format | None |
 | `--inifile` | Path to config file | None |
 | `--outfile_stem` | Prefix for output files, including the path to the output directory | CIAlign |
-| `--silent` | Do not print progress to the screen | False |
 | `--all` | Use all available functions with default parameters. Does not currently include crop_divergent | False |
 | `--clean` | Use all available cleaning functions (except crop_divergent) with default parameters | False |
 | `--visualise` | Use all available mini alignment visualisation functions with default parameters | False |
 | `--interpret` | Use all available interpretation functions (except sequence logos) with default parameters | False |
+| `--silent` | Do not print progress to the screen | False |
 | `--help` | Show all available parameters with an explanation | None |
 | `--version` | Show the version | None |
 
@@ -104,40 +106,98 @@ The "cleaned" alignment after all steps have been performed will be saved as **`
 
 remove_divergent, remove_insertions, crop_ends and crop divergent require three or more sequences in the alignment, remove_short and remove_gap_only require two or more sequences.
 
+The **retain** functions allow the user to specify sequences to keep regardless of the CIAlign results.
+
+**Remove Divergent**
+
+Removes divergent sequences from the alignment -  sequences with <= `remove_divergent_minperc` positions at which the most common residue in the alignment is present
+
+
+![Remove Divergent](remove_divergent.png)
+
+
 | Parameter | Description | Default Value | Min | Max |
 | ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--remove_divergent`** |  Remove sequences with <= `remove_divergent_minperc` positions at which the most common base / amino acid in the alignment is present | False | NA | NA |
 | *`--remove_divergent_minperc`* | Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved | 0.65 | 0 | 1 |
-| **`--remove_insertions`** |  Remove insertions found in <= `insertion_min_perc` of sequences from the alignment | False | NA | NA |
 | *`--remove_divergent_retain`* | Do not remove sequences with this name when running the remove divergent function | None | NA | NA |
 | *`--remove_divergent_retain_str`* | Do not remove sequences with names containing this character string when running the remove divergent function | None | NA | NA |
 | *`--remove_divergent_retain_list`* | Do not remove sequences with names listed in this file when running the remove divergent function | None | NA | NA |
-| **`--remove_insertions`** |  Remove insertions found in <= insertion_min_perc of sequences from the alignment | False | NA | NA |
+
+**Remove Insertions**
+
+Removes insertions from the alignment which are found in <= `insertion_min_perc` of the sequences.
+
+![Remove Insertions](remove_insertions.png)
+
+| Parameter | Description | Default Value | Min | Max |
+| ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
+| **`--remove_insertions`** |  Remove insertions found in <= `insertion_min_perc` of sequences from the alignment | False | NA | NA |
 | *`--insertion_min_size`* | Only remove insertions >= this number of residues | 3 | 1 | n_col |
-| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 200 | 1 | 1000 |
+| *`--insertion_max_size`* |  Only remove insertions <= this number of residues | 200 | 1 | 10000 |
 | *`--insertion_min_flank`* | Minimum number of bases on either side of an insertion to classify it as an insertion | 5 | 0 | n_col/2 |
 | *`--insertion_min_perc`* | Remove insertions which are present in less than this proportion of sequences | 0.5 | 0 | 1 |
+
+
+**Crop Ends**
+
+Crops the ends of individual sequences if they contain a high proportion of gaps relative to the rest of the alignment.
+
+![Crop Ends](crop_ends.png)
+
+| Parameter | Description | Default Value | Min | Max |
+| ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--crop_ends`** | Crop the ends of sequences if they are poorly aligned | False | NA | NA |
 | *`--crop_ends_mingap_perc`* |  Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers. | 0.05 | 0 | 0.6 |
 | *`--crop_ends_redefine_perc`* |  Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end. |  0.1 | 0 | 0.5 |
 | *`--crop_ends_retain`* | Do not crop sequences with this name when running the crop ends function | None | NA | NA |
 | *`--crop_ends_retain_str`* | Do not crop sequences with names containing this character string when running the crop ends function | None | NA | NA |
 | *`--crop_ends_retain_list`* | Do not crop sequences with names listed in this file when running the crop ends function | None | NA | NA |
-| *`--crop_divergent`* |  Crop either end of the alignment until > `crop_divergent_min_prop_ident` residues in a column are identical and > `crop_divergent_min_prop_nongap` residues are not gaps, over `buffer_size` consecutive columns |  False | NA | NA |
-| *`--crop_divergent_min_prop_ident`* |  Minumum proportion of identical residues in a column to be retained by crop_divergent |  0.5 | 0.01 | 1 |
-| *`--crop_divergent_min_prop_nongap`* |  Minumum proportion of non gap residues in a column to be retained by crop_divergent |  0.5 | 0.01 | 1 |
-| *`--crop_divergent_buffer_size`* |  Minumum number of consecutive columns which must meet the criteria for crop_divergent to be retained |  5 | 1 | n_col |
+
+Note: if the sequences are short (e.g. < 100), a low crop_ends_mingap_perc (e.g. 0.01) will result in a change of gap numbers that is too low (e.g. 0). If this happens, the change in gap numbers will be set to 2 and a warning will be printed.
+
+**Remove Short**
+
+Removes sequences blow a threshold length.
+
+| Parameter | Description | Default Value | Min | Max |
+| ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--remove_short`** | Remove sequences <= `remove_min_length`  amino acids from the alignment | False | NA | NA |
 | *`--remove_min_length`* | Sequences are removed if they are shorter than this minimum length, excluding gaps. | 50 | 0 | n_col |
 | *`--remove_short_retain`* | Do not remove sequences with this name when running the remove short function | None | NA | NA |
 | *`--remove_short_retain_str`* | Do not remove sequences with names containing this character string when running the remove short function | None | NA | NA |
 | *`--remove_short_retain_list`* | Do not remove sequences with names listed in this file when running the remove short function | None | NA | NA |
+
+**Keep Gap Only**
+
+Removes columns containing only gaps.
+
+| Parameter | Description | Default Value | Min | Max |
+| ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--keep_gaponly`** | Keep gap only columns in the alignment | False | NA | NA |
+
+
+**Crop Divergent**
+
+Crops columns from the sides of alignment to leave only a single conserved section, based on a threshold percentage of identical residues and percentage of gaps in each column.
+
+
+| Parameter | Description | Default Value | Min | Max |
+| ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
+| **`--crop_divergent`** |  Crop either end of the alignment until > `crop_divergent_min_prop_ident` residues in a column are identical and > `crop_divergent_min_prop_nongap` residues are not gaps, over `buffer_size` consecutive columns |  False | NA | NA |
+| *`--crop_divergent_min_prop_ident`* |  Minumum proportion of identical residues in a column to be retained by crop_divergent |  0.5 | 0.01 | 1 |
+| *`--crop_divergent_min_prop_nongap`* |  Minumum proportion of non gap residues in a column to be retained by crop_divergent |  0.5 | 0.01 | 1 |
+| *`--crop_divergent_buffer_size`* |  Minumum number of consecutive columns which must meet the criteria for crop_divergent to be retained |  5 | 1 | n_col |
+
+**Retain**
+These parameters allow the user to specify sequences to not edit with any of the rowwise functions, regardless of the CIAlign results. The rowwise functions are currently remove_divergent, crop_ends and remove_short.
+
+| Parameter | Description | Default Value | Min | Max |
+| ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
 | **`--retain`** | Do not edit or remove sequences with this name when running any rowwise function (currently remove divergent, crop ends and remove short) | None | NA | NA |
 | **`--retain_str`** | Do not edit or remove sequences with names containing this character string when running any rowwise function | None | NA | NA |
 | **`--retain_list`** | Do not edit or remove sequences with names listed in this file when running any rowwise function | None | NA | NA |
 
-Note: if the sequences are short (e.g. < 100), a low crop_ends_mingap_perc (e.g. 0.01) will result in a change of gap numbers that is too low (e.g. 0). If this happens, the change in gap numbers will be set to 2 and a warning will be printed.
 
 ## Generating a Consensus Sequence
 This step generates a consensus sequence based on the cleaned alignment.  If no cleaning functions are performed, the consensus will be based on the input alignment.
@@ -168,18 +228,25 @@ Output files:
 | `--unalign_input` | Generates a copy of the input alignment with no gaps | False |
 | `--unalign_output` | Generates a copy of the output alignment with no gaps | False |
 
-## Replacing U's by T's
-This function replaces the U nucleotides by T nucleotides without disturbing the sequence names.
+## Replacing U or T
+This function replaces the U nucleotides with T nucleotides or vice versa without otherwise changing the alignment.
 
 Output files:
 
 * **`OUTFILE_STEM_T_input.fasta`** - input alignment with T's instead of U's
 * **`OUTFILE_STEM_T_output.fasta`** - output alignment with T's instead of U's
 
+or
+
+* **`OUTFILE_STEM_U_input.fasta`** - input alignment with U's instead of T's
+* **`OUTFILE_STEM_U_output.fasta`** - output alignment with U's instead of T's
+
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| `--replace_input` | Generates a copy of the input alignment with T's instead of U's | False |
-| `--replace_output` | Generates a copy of the output alignment with T's instead of U's | False |
+| `--replace_input_tu` | Generates a copy of the input alignment with T's instead of U's | False |
+| `--replace_output_tu` | Generates a copy of the output alignment with T's instead of U's | False |
+| `--replace_input_ut` | Generates a copy of the input alignment with U's instead of T's | False |
+| `--replace_output_ut` | Generates a copy of the output alignment with U's instead of T's | False |
 
 ## Visualising Alignments
 Each of these functions produces some kind of visualisation of your alignment.
@@ -226,27 +293,43 @@ Output_files:
 
 NB: to see available fonts on your system, run CIAlign --list_fonts_only and view CIAlign_fonts.png
 
-### Coverage Plots
-This function plots the number of non-gap residues at each position in the alignment.
+### Position Frequency, Probability and Weight Matrices
+These functions are used to create a position weight matrix, position frequency matrix or position probability matrix for your (cleaned) alignment. If no cleaning functions are specified, the output will be based on your input alignment.
 
-Output file:
 
-* **`OUTFILE_STEM_input_coverage.png (or svg, tiff, jpg) `** - image showing the input alignment coverage
-* **`OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) `** - image showing the output alignment coverage
 
-| Parameter | Description | Default |
-| ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--plot_coverage_input`** | Plot the coverage of the input MSA | False |
-| **`--plot_coverage_output`** | Plot the coverage of the output MSA | False |
-| *`--plot_coverage_dpi`* | DPI for coverage plot | 300 |
-| *`--plot_coverage_height`* | Height for coverage plot (inches) | 3 |
-| *`--plot_coverage_width`* | Width for coverage plot (inches) | 5 |
-| *`--plot_coverage_colour`* | Colour for coverage plot (hex code or name) | #007bf5 |
-| *`--plot_coverage_filetype`* | File type for coverage plot (png, svg, tiff, jpg) | png |
+
 
 
 ## Analysing Alignment Statistics
 These functions provide additional analyses you may wish to perform on your alignment.
+
+
+### Statistics Plots
+For each position in the alignment, these functions plot:
+* Coverage (the number of non-gap residues)
+* Information content
+* Shannon entropy
+
+Output files:
+
+* **`OUTFILE_STEM_input_coverage.png (or svg, tiff, jpg) `** - image showing the input alignment coverage
+* **`OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) `** - image showing the output alignment coverage
+* **`OUTFILE_STEM_input_information_content.png (or svg, tiff, jpg) `** - image showing the input alignment information content
+* **`OUTFILE_STEM_output_information_content.png (or svg, tiff, jpg) `** - image showing the output alignment information content
+* **`OUTFILE_STEM_input_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the input alignment Shannon entropy
+* **`OUTFILE_STEM_output_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the output alignment Shannon entropy
+
+| Parameter | Description | Default |
+| ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |
+| **`--plot_stats_input`** | Plot the statistics for the input MSA | False |
+| **`--plot_stats_output`** | Plot the statistics for the output MSA | False |
+| *`--plot_stats_dpi`* | DPI for coverage plot | 300 |
+| *`--plot_stats_height`* | Height for coverage plot (inches) | 3 |
+| *`--plot_stats_width`* | Width for coverage plot (inches) | 5 |
+| *`--plot_stats_colour`* | Colour for coverage plot (hex code or name) | #007bf5 |
+| *`--plot_stats_filetype`* | File type for coverage plot (png, svg, tiff, jpg) | png |
+
 
 ### Similarity Matrices
 Generates a matrix showing the proportion of identical bases / amino acids between each pair of sequences in the MSA.
