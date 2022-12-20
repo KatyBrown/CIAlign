@@ -43,7 +43,7 @@ class UtilityFunctionsMSAInputTests(unittest.TestCase):
             os.remove(self.rmfile)
 
     def testReplaceUbyT(self):
-        result_ali = utilityFunctions.replaceUbyT(self.in_array, rev=False)
+        result_ali = utilityFunctions.replaceUbyT(self.in_array, rev=True)
         findU = np.where(result_ali == "U")
         findu = np.where(result_ali == "u")
 
@@ -53,7 +53,7 @@ class UtilityFunctionsMSAInputTests(unittest.TestCase):
         self.assertFalse(len(findu[1]) > 0)
 
     def testReplaceTbyU(self):
-        result_ali = utilityFunctions.replaceUbyT(self.in_array, rev=True)
+        result_ali = utilityFunctions.replaceUbyT(self.in_array, rev=False)
         findT = np.where(result_ali == "T")
         findt = np.where(result_ali == "t")
 
