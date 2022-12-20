@@ -166,4 +166,4 @@ class PWMTests(unittest.TestCase):
         ppm = self.matrices['ppm'][subtyp]
         outfile = "./tests/test_files/test_meme.out"
         matrices.memeFormat(ppm, typ, RNA, freq, outfile, "")
-        self.assertTrue(filecmp.cmp(outfile, expected, shallow=True))
+        self.assertTrue(filecmp.cmp(outfile, expected, shallow=False))
