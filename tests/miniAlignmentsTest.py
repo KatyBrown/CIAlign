@@ -63,7 +63,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile(self.legend):
             os.remove(self.legend)
-        # os.remove(self.dest)
+        os.remove(self.dest)
 
     def testDrawMiniAlignmentMarkUp(self):
         self.alignment, self.names = readMSA("./tests/test_files/example1.fasta")

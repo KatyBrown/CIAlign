@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 
 import CIAlign
 import CIAlign.consensusSeq as consensusSeq
+import CIAlign.utilityFunctions as utilityFunctions
 from tests.helperFunctions import readMSA
 
 class ConsensusSeqTests(unittest.TestCase):
@@ -226,3 +227,26 @@ class ConsensusSeqCoverageSequenceLogoBarTest(unittest.TestCase):
                                        start=start, end=end,
                                        figrowlength=figrowlength)
         self.assertTrue(os.path.isfile(self.dest))
+
+class ConsensusSeqConservation(unittest.TestCase):
+    def setUp(self):
+        self.arr, nams = utilityFunctions.FastaToArray(
+            "tests/test_files/consensus_example_nt.fasta")
+
+    def tearDown(self):
+        pass
+
+    @parameterized.expand([[np.array([0.388, 0.224, 0.764, 0.273, 0.273,
+                                      0.273, 0.273, 0.273, 0.273, 1.639,
+                                      0.989, 0.989, 0.388, 0.388, 0.388,
+                                      0.764]),
+                            np.array([0.868, 0.95, 0.5, 0.0, 0.0,
+                                      0.0, 0.0, 0.0, 0.0, 0.0,
+                                      0.451, 0.451, 0.868, 0.868, 0.868,
+                                      0.5])]])
+    def testCalcConservationAli(self, expected_heights, expected_ents):
+        heights, ents = consensusSeq.calcConservationAli(self.arr, 'nt')
+        heights = np.array(heights).round(3)
+        ents = np.array(ents).round(3)
+        self.assertTrue(np.array_equal(heights, expected_heights))
+        self.assertTrue(np.array_equal(ents, expected_ents))
