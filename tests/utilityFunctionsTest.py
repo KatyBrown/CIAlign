@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import logging
 import unittest
+import pytest
 from unittest import mock
 from mock import patch
 from parameterized import parameterized, parameterized_class
@@ -106,7 +107,10 @@ class UtilityFunctionsMSAInputTests(unittest.TestCase):
 
 
 class UtilityFunctionsMSAEmpty(unittest.TestCase):
-
+    @pytest.fixture(autouse=True)
+    def _pass_fixtures(self, capsys):
+        self.capsys = capsys
+        
     def setUp(self):
         self.input = "./tests/test_files/empty.fasta"
 
@@ -118,23 +122,12 @@ class UtilityFunctionsMSAEmpty(unittest.TestCase):
     def testFastaToArrayCorrupt(self, ali_path):
         logger = logging.getLogger('path.to.module.under.test')
 
-        # capture output code from @paxdiablo on
-        # https://stackoverflow.com/questions/33767627/python-write-unittest-for-console-print
-        capturedOutput = io.StringIO()
-        capturedError = io.StringIO()
-        sys.stdout = capturedOutput
-        sys.stderr = capturedError
         with self.assertRaises(SystemExit) as cm:
             ali, nams = utilityFunctions.FastaToArray(ali_path, logger)
-        self.assertEqual(cm.exception.code, 1)
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
+        captured = self.capsys.readouterr()
 
-        printed_stdout = capturedOutput.getvalue()
-        printed_stderr = capturedError.getvalue()
-        
-        self.assertTrue('needs to be in FASTA format' in printed_stdout)
-        self.assertTrue('needs to be in FASTA format' in printed_stderr)
+        self.assertEqual(cm.exception.code, 1)
+        self.assertTrue('needs to be in FASTA format' in captured.out)
 
 
 class UltilityFunctionsWriteOutfileTest(unittest.TestCase):
@@ -151,11 +144,13 @@ class UltilityFunctionsWriteOutfileTest(unittest.TestCase):
 
     def testWriteOutfile(self):
         utilityFunctions.writeOutfile(self.outfile, self.in_array, self.nams, self.removed)
-
         self.assertTrue(os.path.isfile(self.outfile))
 
 
 class UtilityFunctionsCheckSeqTest(unittest.TestCase):
+    @pytest.fixture(autouse=True)
+    def _pass_fixtures(self, capsys):
+        self.capsys = capsys
 
     @parameterized.expand([
             ['./tests/test_files/example1.fasta', "nt"],
@@ -175,24 +170,13 @@ class UtilityFunctionsCheckSeqTest(unittest.TestCase):
     def testSeqTypeNonIUPAC(self, input):
         arr, nams = utilityFunctions.FastaToArray(input)
         logger = logging.getLogger('path.to.module.under.test')
-
-        capturedOutput = io.StringIO()
-        capturedError = io.StringIO()
-        sys.stdout = capturedOutput
-        sys.stderr = capturedError
         with self.assertRaises(SystemExit) as cm:
             ali, nams = utilityFunctions.seqType(arr, logger)
+        captured = self.capsys.readouterr()
         self.assertEqual(cm.exception.code, 1)
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
+        self.assertTrue('Unknown nucleotides or amino acids detected'
+                        in captured.out)
 
-        printed_stdout = capturedOutput.getvalue()
-        printed_stderr = capturedError.getvalue()
-        
-        self.assertTrue('Unknown nucleotides or amino acids detected'
-                        in printed_stdout)
-        self.assertTrue('Unknown nucleotides or amino acids detected'
-                        in printed_stderr)
 
 
 class UtilityFunctionsListFontsTest(unittest.TestCase):
@@ -236,6 +220,9 @@ class UtilityFunctionsUpdateNamsTest(unittest.TestCase):
 
 
 class UtilityFunctionscheckArrLengthTest(unittest.TestCase):
+    @pytest.fixture(autouse=True)
+    def _pass_fixtures(self, capsys):
+        self.capsys = capsys
 
     def setUp(self):
         pass
@@ -248,46 +235,27 @@ class UtilityFunctionscheckArrLengthTest(unittest.TestCase):
                            [np.zeros([3]), "not all the same length"]])
     def testCheckArrLength0(self, arr, expected):
         logger = logging.getLogger('path.to.module.under.test')
-        # capture output code from @paxdiablo on
-        # https://stackoverflow.com/questions/33767627/python-write-unittest-for-console-print
-        capturedOutput = io.StringIO()
-        capturedError = io.StringIO()
-        sys.stdout = capturedOutput
-        sys.stderr = capturedError
+
         with self.assertRaises(SystemExit) as cm:
             utilityFunctions.checkArrLength(arr, logger)
+        captured = self.capsys.readouterr()
         self.assertEqual(cm.exception.code, 1)
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-
-        printed_stdout = capturedOutput.getvalue()
-        printed_stderr = capturedError.getvalue()
-        
-        self.assertTrue(expected in printed_stdout)
-        self.assertTrue(expected in printed_stderr)
+        self.assertTrue(expected in captured.out)
 
     @parameterized.expand([[np.zeros([10, 4])]])
     def testCheckArrLengthNot0(self, arr):
         logger = logging.getLogger('path.to.module.under.test')
-        # capture output code from @paxdiablo on
-        # https://stackoverflow.com/questions/33767627/python-write-unittest-for-console-print
-        capturedOutput = io.StringIO()
-        capturedError = io.StringIO()
-        sys.stdout = capturedOutput
-        sys.stderr = capturedError
 
         utilityFunctions.checkArrLength(arr, logger)
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
+        captured = self.capsys.readouterr()
 
-        printed_stdout = capturedOutput.getvalue()
-        printed_stderr = capturedError.getvalue()
-        
-        self.assertTrue(len(printed_stdout) == 0)
-        self.assertTrue(len(printed_stderr) == 0)
+        self.assertTrue(len(captured.out) == 0)
 
 
 class UtilityFunctionsRetainTest(unittest.TestCase):
+    @pytest.fixture(autouse=True)
+    def _pass_fixtures(self, capsys):
+        self.capsys = capsys
 
     def setUp(self):
         self.arr, self.nams = utilityFunctions.FastaToArray(
@@ -327,23 +295,12 @@ class UtilityFunctionsRetainTest(unittest.TestCase):
 
     def testConfigRetainSeqsNoMatch(self):
         logger = logging.getLogger('path.to.module.under.test')
-    
-        capturedOutput = io.StringIO()
-        capturedError = io.StringIO()
-        sys.stdout = capturedOutput
-        sys.stderr = capturedError
 
         utilityFunctions.configRetainSeqs(None, ["hello"], "",
                                           self.nams, "func", logger,
                                           False)
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-
-        printed_stdout = capturedOutput.getvalue()
-        printed_stderr = capturedError.getvalue()
-        
-        self.assertTrue("No sequence names matching" in printed_stdout)
-        self.assertTrue("No sequence names matching" in printed_stderr)
+        captured = self.capsys.readouterr()
+        self.assertTrue("No sequence names matching" in captured.out)
 
     @parameterized.expand([[['S1'], [""], ""],
                            [None, ["S"], "tests/test_files/keep_m.txt"]])
