@@ -2,17 +2,9 @@
 
 import unittest
 from unittest import mock
-from mock import patch
-from parameterized import parameterized, parameterized_class
-
-import sys
+from parameterized import parameterized
 import logging
 import numpy as np
-from Bio import AlignIO
-import os
-from os import path
-
-import CIAlign
 
 import CIAlign.cropSeq as cropSeq
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
 import matplotlib
-import copy
 try:
     import CIAlign.cropSeq as cropSeq
     import CIAlign.cropDiv as cropDiv

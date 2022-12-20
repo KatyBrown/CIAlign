@@ -3,21 +3,11 @@ import logging
 import unittest
 import pytest
 from unittest import mock
-from mock import patch
-from parameterized import parameterized, parameterized_class
-import matplotlib.font_manager
+from parameterized import parameterized
 import sys
-import logging
 import numpy as np
-from Bio import AlignIO
 import os
-from os import path
-import sys
-import io
 import warnings
-
-import CIAlign
-
 import CIAlign.utilityFunctions as utilityFunctions
 from tests.helperFunctions import readMSA
 

@@ -1,21 +1,10 @@
 #! /usr/bin/env python
 
 import unittest
-from unittest import mock
-from mock import patch
-from parameterized import parameterized, parameterized_class
-
-import sys
-import logging
+from parameterized import parameterized
 import numpy as np
-from Bio import AlignIO
 import os
-from os import path
-
 import pandas as pd
-
-import CIAlign
-
 from CIAlign.similarityMatrix import calculateSimilarityMatrix
 from tests.helperFunctions import readMSA
 

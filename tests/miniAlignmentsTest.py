@@ -4,24 +4,13 @@
 python3 -m unittest tests.miniAlignmentsTest
 in CIAlign folder
 '''
-
+from parameterized import parameterized
 import unittest
 from unittest import mock
-from mock import patch
-from parameterized import parameterized, parameterized_class
-
-import sys
 import logging
 import numpy as np
-from Bio import AlignIO
 import os
-from os import path
-import pandas as pd
-import matplotlib.pyplot as plt
-
 from matplotlib import image
-
-import CIAlign
 import CIAlign.miniAlignments as miniAlignments
 from tests.helperFunctions import readMSA
 import skimage.metrics
@@ -131,6 +120,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
                                                      channel_axis=-1)
         self.assertTrue(simi > 0.95)
 
+
 class DrawMarkUpTest(unittest.TestCase):
 
     def setUp(self):
@@ -157,6 +147,7 @@ class DrawMarkUpTest(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("./tests/test_files/test_mini_legend.png"):
             os.remove("./tests/test_files/test_mini_legend.png")
+        os.remove(self.dest)
 
     def testDrawMarkUp(self):
         # add markup to mini plot
