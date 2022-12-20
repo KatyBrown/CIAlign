@@ -33,7 +33,7 @@ def main():
     pandoc -o user_guide.pdf user_guide.md
     echo '![CI](https://github.com/KatyBrown/CIAlign/actions/workflows/main.yml/badge.svg)' > ../README.md
     echo '# CIAlign' >> ../README.md
-    awk 'NR > 7' user_guide.md >> ../README.md"""
+    awk 'NR > 7' user_guide.md | sed 's/images/man\/images/g' >> ../README.md"""
     os.system(statement)
 
 

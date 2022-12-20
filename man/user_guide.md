@@ -118,7 +118,7 @@ The **retain** functions allow the user to specify sequences to keep regardless 
 Removes divergent sequences from the alignment -  sequences with <= `remove_divergent_minperc` positions at which the most common residue in the alignment is present
 
 
-![Remove Divergent](remove_divergent.png)
+![Remove Divergent](images/remove_divergent.png)
 
 
 | Parameter | Description | Default Value | Min | Max |
@@ -133,7 +133,7 @@ Removes divergent sequences from the alignment -  sequences with <= `remove_dive
 
 Removes insertions from the alignment which are found in <= `insertion_min_perc` of the sequences.
 
-![Remove Insertions](remove_insertions.png)
+![Remove Insertions](images/remove_insertions.png)
 
 | Parameter | Description | Default Value | Min | Max |
 | ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
@@ -148,7 +148,7 @@ Removes insertions from the alignment which are found in <= `insertion_min_perc`
 
 Crops the ends of individual sequences if they contain a high proportion of gaps relative to the rest of the alignment.
 
-![Crop Ends](crop_ends.png)
+![Crop Ends](images/crop_ends.png)
 
 | Parameter | Description | Default Value | Min | Max |
 | ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
@@ -195,6 +195,7 @@ Crops columns from the sides of alignment to leave only a single conserved secti
 | *`--crop_divergent_buffer_size`* |  Minumum number of consecutive columns which must meet the criteria for crop_divergent to be retained |  5 | 1 | n_col |
 
 **Retain**
+
 These parameters allow the user to specify sequences to not edit with any of the rowwise functions, regardless of the CIAlign results. The rowwise functions are currently remove_divergent, crop_ends and remove_short.
 
 | Parameter | Description | Default Value | Min | Max |

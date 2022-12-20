@@ -118,7 +118,7 @@ The **retain** functions allow the user to specify sequences to keep regardless 
 Removes divergent sequences from the alignment -  sequences with <= `remove_divergent_minperc` positions at which the most common residue in the alignment is present
 
 
-![Remove Divergent](remove_divergent.png)
+![Remove Divergent](images/remove_divergent.png)
 
 
 | Parameter | Description | Default Value | Min | Max |
@@ -133,7 +133,7 @@ Removes divergent sequences from the alignment -  sequences with <= `remove_dive
 
 Removes insertions from the alignment which are found in <= `insertion_min_perc` of the sequences.
 
-![Remove Insertions](remove_insertions.png)
+![Remove Insertions](images/remove_insertions.png)
 
 | Parameter | Description | Default Value | Min | Max |
 | ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
@@ -148,7 +148,7 @@ Removes insertions from the alignment which are found in <= `insertion_min_perc`
 
 Crops the ends of individual sequences if they contain a high proportion of gaps relative to the rest of the alignment.
 
-![Crop Ends](crop_ends.png)
+![Crop Ends](images/crop_ends.png)
 
 | Parameter | Description | Default Value | Min | Max |
 | ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
