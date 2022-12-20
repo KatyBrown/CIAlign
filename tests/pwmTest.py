@@ -10,7 +10,6 @@ from parameterized import parameterized
 import pandas as pd
 import numpy as np
 import os
-import filecmp
 import CIAlign.matrices as matrices
 import CIAlign.utilityFunctions as utilityFunctions
 import pandas.testing
@@ -166,4 +165,8 @@ class PWMTests(unittest.TestCase):
         ppm = self.matrices['ppm'][subtyp]
         outfile = "./tests/test_files/test_meme.out"
         matrices.memeFormat(ppm, typ, RNA, freq, outfile, "")
-        self.assertTrue(filecmp.cmp(outfile, expected, shallow=False))
+        lines = np.array(
+            [line.strip() for line in open(outfile).readlines()])
+        expected_lines = np.array([
+            line.strip() for line in open(expected).readlines()])
+        self.assertTrue(np.array_equal(lines, expected_lines))
