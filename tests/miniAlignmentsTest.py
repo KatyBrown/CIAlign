@@ -86,15 +86,15 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
                                              True, markup_dict, False)
 
         mini_alignment = image.imread(self.dest).round(3)
-        '''
+
         # added a bit of leeway to allow for images created on different
         # machines - they are visually identical but have minor differences
         # in rendering - look for 95% structural similarity
         simi = skimage.metrics.structural_similarity(expected,
                                                      mini_alignment,
                                                      channel_axis=-1)
-        '''
-        self.assertTrue(np.array_equal(mini_alignment, expected))
+
+        self.assertTrue(simi > 0.95)
 
     @parameterized.expand([
             ['./tests/test_files/example1.fasta', './tests/test_files/expected_mini_ali.png', 'nt', True],
@@ -129,7 +129,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         simi = skimage.metrics.structural_similarity(expected,
                                                      mini_alignment,
                                                      channel_axis=-1)
-        self.assertTrue(simi > 0.9)
+        self.assertTrue(simi > 0.95)
 
 class DrawMarkUpTest(unittest.TestCase):
 
