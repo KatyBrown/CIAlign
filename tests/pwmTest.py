@@ -93,6 +93,8 @@ class PWMTests(unittest.TestCase):
         PPM = self.matrices['ppm'][subtyp]
         freq = self.matrices['freq'][subtyp]
         PWM = matrices.makePWM(PPM, freq)
+        print ("pwm", PWM.head())
+        print ("exp", self.matrices['pwm'][subtyp].head())
         self.assertTrue(PWM.equals(self.matrices['pwm'][subtyp]))
 
 
