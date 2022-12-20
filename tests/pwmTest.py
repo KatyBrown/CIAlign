@@ -165,8 +165,6 @@ class PWMTests(unittest.TestCase):
         ppm = self.matrices['ppm'][subtyp]
         outfile = "./tests/test_files/test_meme.out"
         matrices.memeFormat(ppm, typ, RNA, freq, outfile, "")
-        lines = np.array(
-            [line.strip() for line in open(outfile).readlines()])
-        expected_lines = np.array([
-            line.strip() for line in open(expected).readlines()])
-        self.assertTrue(np.array_equal(lines, expected_lines))
+        out = pd.read_csv(outfile, skiprows=8, sep=" ", header=None)
+        exp = pd.read_csv(expected, skiprows=8, sep=" ", header=None)
+        pandas.testing.assert_frame_equal(out, exp)
