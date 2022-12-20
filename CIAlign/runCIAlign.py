@@ -77,11 +77,13 @@ def run(args, log):
 
     if "ttou" in functions:
         # Convert T to U in the input or output
-        runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r, rev=True)
+        runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r,
+                rev=False)
 
     if "utot" in functions:
         # Convert U to T in the input or output
-        runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r)
+        runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_r,
+                rev=True)
 
     if "pwm" in functions:
         # Generate position matrices
@@ -199,8 +201,8 @@ def whichFunctions(args):
 
     # Replace T with U in input or output
     if any([args.replace_input_ut,
-            args.replace_output_ut]):
-        which_functions.append("utou")
+            args.replace_output_ut,]):
+        which_functions.append("utot")
 
     if any([args.pwm_input,
             args.pwm_output]):
@@ -208,7 +210,6 @@ def whichFunctions(args):
 
     if args.get_section:
         which_functions.append("section")
-
     return (which_functions)
 
 
@@ -1078,27 +1079,36 @@ def runTtoU(args, log, orig_arr, orig_nams, arr, nams, removed_seqs,
     removed_seqs: set
         Set of sequence names which have been removed
     rev: bool
-        If True, do the opposite, change T to U
+        If True, do the opposite, change U to T
     '''
+    if not rev:
+        one = "T"
+        two = "U"
+    else:
+        one = "U"
+        two = "T"
+
     # Replace T with U in the input
     if args.replace_input_tu or args.replace_input_ut:
-        log.info("Generating a T instead of U version of the input alignment")
+        log.info("Generating a %s instead of %s version of the input \
+alignment" % (two, one))
         if not args.silent:
-            print("Generating a T instead of U version of the input alignment")
-        outf = "%s_T_input.fasta" % (args.outfile_stem)
+            print("Generating a %s instead of %s version of the input \
+alignment" % (two, one))
+        outf = "%s_%s_input.fasta" % (args.outfile_stem, two)
         T_arr = utilityFunctions.replaceUbyT(orig_arr, rev=rev)
         # Write to file
         utilityFunctions.writeOutfile(outf, T_arr,
                                       orig_nams,
                                       removed_seqs)
-    # Rpleace T with U in the output
+    # Replace T with U in the output
     if args.replace_output_tu or args.replace_output_ut:
-        log.info("Generating a T instead of U version of\
-                 the output alignment")
+        log.info("Generating a %s instead of %s version of the output \
+alignment" % (two, one))
         if not args.silent:
-            print("Generating a T instead of U version of\
-                  the output alignment")
-        outf = "%s_T_output.fasta" % (args.outfile_stem)
+            print("Generating a %s instead of %s version of the output \
+alignment" % (two, one))
+        outf = "%s_%s_output.fasta" % (args.outfile_stem, two)
         T_arr = utilityFunctions.replaceUbyT(arr, rev=rev)
         # Write to file
         utilityFunctions.writeOutfile(outf, T_arr,

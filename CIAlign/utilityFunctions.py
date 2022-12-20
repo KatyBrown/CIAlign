@@ -27,7 +27,7 @@ def replaceUbyT(arr, rev):
     arr: np.array
         2D numpy array of sequences with Ts instead of Us.
     '''
-    if rev:
+    if not rev:
         arr = np.where(arr == "T", "U", arr)
     else:
         arr = np.where(arr == "U", "T", arr)
