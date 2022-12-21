@@ -1,0 +1,576 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; ERVsearch 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parameters" href="parameters.html" />
+    <link rel="prev" title="ERVsearch Documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ERVsearch
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#pipeline-description">Pipeline Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#screen">Screen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#classify">Classify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ervregions">ERVRegions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#input-files">Input Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#required-input-files">Required Input Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-input-files">Optional Input Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#custom-databases">Custom Databases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-list">Sequence List</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#databases">Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-pipeline">Running the Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parallelisation">Parallelisation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#verbosity">Verbosity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#main-output-files">Main Output Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Screen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Classify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">ERVRegions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs.html">Minor Output Files</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ERVsearch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/pages/introduction.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>ERVsearch is a pipeline for identification of endogenous retrovirus like regions in a host genome, based on sequence similarity to known retroviruses.</p>
+<p>ERVsearch screens for endogenous retrovirus (ERV) like regions in any FASTA file using the Exonerate algorithm (Slater and Birney, 2005, doi:<a class="reference external" href="https://doi.org/10.1186/1471-2105-6-31">10.1186/1471-2105-6-31</a>).</p>
+<ul class="simple">
+<li><p>In the <strong>Screen</strong> section, open reading frames (ORFs) resembling retroviral <em>gag</em>, <em>pol</em> and <em>env</em> genes are identified based on their level of similarity to a database of known complete or partial retroviral ORFs.</p></li>
+<li><p>In the <strong>Classify</strong> section, these ORFs are classified into groups based on a database of currently classified retroviruses and phylogenetic trees are built.</p></li>
+<li><p>In the <strong>ERVRegions</strong> section, regions with ORFs resembling more than one retroviral gene are identified.</p></li>
+</ul>
+<p>This is a updated and expanded version of the pipeline used to identify ERVs in Brown and Tarlinton 2017 (doi: <a class="reference external" href="https://doi.org/10.1111/mam.12079">10.1111/mam.12079</a>), Brown et al. 2014 (doi: <a class="reference external" href="https://doi.org/10.1128/JVI.00966-14">10.1128/JVI.00966-14</a>), Brown et al. 2012 (doi: <a class="reference external" href="https://doi.org/10.1016/j.virol.2012.07.010">j.virol.2012.07.010</a>) and Tarlinton et al. 2012 (doi: <a class="reference external" href="https://doi.org/10.1016/j.tvjl.2012.08.011">10.1016/j.tvjl.2012.08.011</a>). The original version is available <a class="reference external" href="https://github.com/ADAC-UoN/predict.genes.by.exonerate.pipeline">here</a> as a Perl pipeline and was written by Dr Richard Emes.</p>
+<ol class="simple">
+<li><p><a class="reference external" href="#prerequisites">Prerequisites</a><br></p></li>
+<li><p><a class="reference external" href="#installation">Installation</a><br></p></li>
+<li><p><a class="reference external" href="#quick-start">Quick Start</a><br></p></li>
+<li><p><a class="reference external" href="#pipeline-description">Pipeline Description</a></p></li>
+<li><p><a class="reference external" href="#input-files">Input Files</a></p></li>
+<li><p><a class="reference external" href="#usage">Usage</a></p></li>
+<li><p><a class="reference external" href="parameters.html">Parameters</a></p></li>
+<li><p><a class="reference external" href="functions.html">Functions</a></p></li>
+<li><p><a class="reference external" href="#main-output-files">Main Output Files</a></p></li>
+<li><p><a class="reference external" href="outputs.html">Minor Output Files</a></p></li>
+</ol>
+</div>
+<div class="section" id="prerequisites">
+<h1>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h1>
+<p>The pipeline is currently available for Unix-based systems only.</p>
+<p>The ERVsearch pipeline requires the following freely available software. All packages are available via pip and easy_install</p>
+<p>Python 3.5+ with the following packages:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pypi.python.org/pypi/ruffus">ruffus</a></p></li>
+<li><p><a class="reference external" href="https://pypi.python.org/pypi/numpy">numpy</a></p></li>
+<li><p><a class="reference external" href="https://pypi.python.org/pypi/pandas">pandas</a></p></li>
+<li><p><a class="reference external" href="https://pypi.python.org/pypi/ete3">ete3</a></p></li>
+<li><p><a class="reference external" href="https://pypi.python.org/pypi/matplotlib">matplotlib</a></p></li>
+</ul>
+<p>The following commonly used software needs to be installed and in your $PATH</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://sourceforge.net/projects/samtools">Samtools</a></p></li>
+<li><p><a class="reference external" href="https://github.com/arq5x/bedtools2">Bedtools</a></p></li>
+<li><p><a class="reference external" href="http://emboss.sourceforge.net">Emboss</a></p></li>
+<li><p><a class="reference external" href="http://mafft.cbrc.jp/alignment/software">Mafft</a></p></li>
+<li><p><a class="reference external" href="http://meta.microbesonline.org/fasttree">FastTree</a></p></li>
+</ul>
+<p>The following software also needs to be installed</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate">Exonerate</a></p></li>
+<li><p><a class="reference external" href="http://www.drive5.com/usearch">Usearch</a></p></li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>The latest release of ERVsearch is available via pip3.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">ERVsearch</span>
+</pre></div>
+</div>
+<p>Alternatively, if you prefer to install directly,  the latest release can be downloaded from <a class="reference external" href="https://github.com/KatyBrown/ERVsearch/releases/latest">Github</a>.</p>
+<p>The latest (beta) version can also be cloned from github</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">KatyBrown</span><span class="o">/</span><span class="n">ERVsearch</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>No compliation is required, just add the ERVsearch directory to your path or use the full path to <code class="docutils literal notranslate"><span class="pre">ERVsearch/ERVsearch</span></code>. If installed using pip you should be able to call <code class="docutils literal notranslate"><span class="pre">ERVsearch</span></code> directly.</p>
+</div>
+<div class="section" id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p>After cloning the repository, the program can be used as is (with the above prerequisites installed).</p>
+<ol class="simple">
+<li><p>Make a copy of the pipeline.ini file (ERVsearch/templates/pipeline.ini or <a class="reference external" href="https://raw.githubusercontent.com/KatyBrown/ERVsearch/master/ERVsearch/templates/pipeline.ini">here</a>) in your working directory (the directory in which you would like to store the output).</p></li>
+<li><p>Download a local copy of your genome (or other sequence) of interest as a single FASTA file.</p></li>
+<li><p>Edit your copy of pipeline.ini to configure the pipeline for your computer:</p></li>
+</ol>
+<ul class="simple">
+<li><p>Add the path to the genome you want to screen (the fasta file in step 2) to the genome section
+e.g. hg38.fa saved in /home/myname/genome/hg38.fa would require the following options:<br></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">genome</span><span class="p">]</span>
+<span class="n">file_</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">myname</span><span class="o">/</span><span class="n">genome</span><span class="o">/</span><span class="n">hg38</span><span class="o">.</span><span class="n">fa</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Add the paths to usearch and exonerate to the paths section
+e.g.<br></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">paths</span><span class="p">]</span>
+<span class="n">path_to_usearch</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">myname</span><span class="o">/</span><span class="n">usearch</span><span class="o">/</span><span class="n">usearch11</span><span class="o">.</span><span class="mf">0.667</span><span class="n">_i86linux32</span>
+<span class="n">path_to_exonerate</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">myname</span><span class="o">/</span><span class="n">exonerate</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">exonerate</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Run the pipeline in your working directory as:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">full</span> <span class="o">-</span><span class="n">v5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pipeline-description">
+<h1>Pipeline Description<a class="headerlink" href="#pipeline-description" title="Permalink to this headline">¶</a></h1>
+<p>The pipeline is designed to identify regions resembling retroviral <em>gag</em>, <em>pol</em> and <em>env</em> genes in a genome (or other set of sequences) and to perform various analyses on these regions.</p>
+<p>It is divided into three sections:</p>
+<div class="section" id="screen">
+<h2>Screen<a class="headerlink" href="#screen" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="functions.html#screen">function documentation</a><br></p>
+<ul class="simple">
+<li><p>Screens the genome for ERV like regions by comparing the genome to a set of known retroviral ORFs using Exonerate.</p></li>
+<li><p>Confirms the Exonerate regions using UBLAST</p></li>
+<li><p>Finds and confirms ORFs within these regions</p></li>
+<li><p>Finds the most similar known retroviral ORF in the database to each of the newly identified ORFs<br></p></li>
+</ul>
+</div>
+<div class="section" id="classify">
+<h2>Classify<a class="headerlink" href="#classify" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="functions.html#classify">function documentation</a><br></p>
+<ul class="simple">
+<li><p>Classifies the newly identified ORFs into groups based on the most similar known ORF</p></li>
+<li><p>Aligns the newly identified ORFs with reference sequences within these groups and builds a phylogenetic tree for each group.</p></li>
+<li><p>Finds clusters of newly identified ORFs within these trees</p></li>
+<li><p>Incorporates representative sequences from these clusters into a summary tree for each retroviral gene and genus  (based on classification into <em>gamma</em>, <em>beta</em>, <em>spuma</em>, <em>alpha</em>, <em>lenti</em>, <em>epsilon</em> and <em>delta</em> retroviruses as definied by the ICTV (https://talk.ictvonline.org/taxonomy).<br></p></li>
+</ul>
+</div>
+<div class="section" id="ervregions">
+<h2>ERVRegions<a class="headerlink" href="#ervregions" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="functions.html#ervregions">function documentation</a></p>
+<ul class="simple">
+<li><p>Identifies regions of the genome containing ORFs resembling more than one different retroviral gene within a certain distance<br></p></li>
+</ul>
+<p>All functions in all sections are described in detail in the <a class="reference external" href="functions.html">functions</a> section.</p>
+</div>
+</div>
+<div class="section" id="input-files">
+<h1>Input Files<a class="headerlink" href="#input-files" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="required-input-files">
+<h2>Required Input Files<a class="headerlink" href="#required-input-files" title="Permalink to this headline">¶</a></h2>
+<p>1: <em>FASTA file to screen for ERVs</em></p>
+<p>The main input file is sequence file in <a class="reference external" href="https://en.wikipedia.org/wiki/FASTA_format">FASTA format</a> containing DNA sequences from the genome which you wish to screen for ERV-like regions. This would usually be a reference or de novo assembled genome but can be any set of DNA sequences.</p>
+<p>Reference genome sequences are available from <a class="reference external" href="http://www.ensembl.org/info/about/species.html">Ensembl</a> and <a class="reference external" href="https://genome-euro.ucsc.edu/index.html">UCSC</a> (amongst others).</p>
+<p>To be used as an input file, the reference genome needs to be contained in a single FASTA file.</p>
+<p>For Ensembl genomes, this would usually be the <code class="docutils literal notranslate"><span class="pre">GENOMEID.dna.toplevel.fa.gz</span> </code>file from the “download DNA sequence” page for the appropriate organism, substituting <code class="docutils literal notranslate"><span class="pre">GENOMEID</span></code> for the genome ID (e.g. GRCh38)</p>
+<p>For UCSC genomes this would be <code class="docutils literal notranslate"><span class="pre">GENOMEID.fa.gz</span></code> from the bigZips directory for this organism on the FTP server, substituting <code class="docutils literal notranslate"><span class="pre">GENOMEID</span></code> for the genome ID (e.g. hg38)</p>
+<p>It is possible to use a gzipped or zipped file, in which case the filename needs to end with .gz or .zip respectively.</p>
+<p>2: <code class="docutils literal notranslate"><span class="pre">pipeline.ini</span></code> file</p>
+<p>This file is a configuration file in <a class="reference external" href="https://en.wikipedia.org/wiki/INI_file">ini format</a> containing the parmeters you wish to use.
+This file needs to be in your working directory - the folder in which you wish to run ERVsearch.</p>
+<p>A template <code class="docutils literal notranslate"><span class="pre">pipeline.ini</span></code> file should be used and edited - this file is available as <code class="docutils literal notranslate"><span class="pre">ERVsearch/templates/pipeline.ini</span></code> or <a class="reference external" href="https://raw.githubusercontent.com/KatyBrown/ERVsearch/master/ERVsearch/templates/pipeline.ini">here</a></p>
+<p>Options specified as <code class="docutils literal notranslate"><span class="pre">!?</span></code> are required, all others have a default value.</p>
+<p><a class="reference external" href="parameters.html#required-parameters">Required parameters</a></p>
+<p><a class="reference external" href="parameters.html#optional-parameters">Optional parameters</a></p>
+</div>
+<div class="section" id="optional-input-files">
+<h2>Optional Input Files<a class="headerlink" href="#optional-input-files" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="custom-databases">
+<h3>Custom Databases<a class="headerlink" href="#custom-databases" title="Permalink to this headline">¶</a></h3>
+<p>By default, ERVsearch will use the provided database of 774 ERV nucleotide sequences and corresponding amino acid sequences as a query against the provided genome. This database is designed to be representative of known retroviruses and to identify the majority of ERVs. However, a more specific custom database can also be provided and used for the initial screen.</p>
+<p>To do this, the <a class="reference external" href="parameters.html#use-custom-db">database_use_custom_db</a> parameter in the pipeline.ini can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. The query sequences should be stored as FASTA files of amino acid sequences, with one file per retroviral gene. Only gag, pol and env genes are currently supported. Very short sequences (less than ~100 amino acids) should be avoided where possible.
+The paths to these files are then specified in the database section of the pipeline.ini</p>
+<p>e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">database</span><span class="p">]</span>
+<span class="n">use_custom_db</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">gag</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">katy</span><span class="o">/</span><span class="n">my_databases</span><span class="o">/</span><span class="n">gag_ervs</span><span class="o">.</span><span class="n">fasta</span>
+<span class="n">pol</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">katy</span><span class="o">/</span><span class="n">my_databases</span><span class="o">/</span><span class="n">pol_ervs</span><span class="o">.</span><span class="n">fasta</span>
+<span class="n">env</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">katy</span><span class="o">/</span><span class="n">my_databases</span><span class="o">/</span><span class="n">env_ervs</span><span class="o">.</span><span class="n">fasta</span>
+</pre></div>
+</div>
+<p>Currently, custom databases are only used for the initial Exonerate screen and UBLAST check, after this all classification based steps will use the default databases, as these sequences have been classified into subgroups for phylogenetic analysis.</p>
+</div>
+<div class="section" id="sequence-list">
+<h3>Sequence List<a class="headerlink" href="#sequence-list" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">keep_chroms.txt</span></code></p>
+<p>A list of chromosome names to include. The names should the names in the fasta file cropped at the first space,  e.g. “NW_006711271.1 Panthera tigris altaica isolate TaeGuk unplaced genomic scaffold” should just be listed as NW_006711271.1. The names should be listed with one name per line, are case sensitive and need to be identical to those in the fasta file. This file needs to be named keep_chroms.txt and in the working directory.</p>
+</div>
+</div>
+</div>
+<div class="section" id="databases">
+<h1>Databases<a class="headerlink" href="#databases" title="Permalink to this headline">¶</a></h1>
+<p>Several sets of reference sequences are provided as part of this package.</p>
+<p>For each retroviral gene (gag, pol and env), a representative set of retroviral open reading frames has been selected from NCBI Genbank and various publications.</p>
+<p>These files are provided as:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db/gag.fasta</span></code> - <em>gag</em> gene amino acid sequences<br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db/pol.fasta</span></code> - <em>pol</em> gene amino acid sequences<br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db/env.fasta</span></code> - <em>env</em> gene amino acid sequences<br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db/all_ERVs_nt.fasta</span></code> - all ORFs as nucleotide sequences
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db/all_ERVs_aa.fasta</span></code> - all ORFs as amino acid sequences</p>
+<p>A number of subsets of sequences are also provided to use in phylogenetic analysis.</p>
+<p>These are:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/group_phylogenies/*fasta</span></code></p>
+<p>Small groups of nucleotide sequences from the ORF database which are closely related, selected manually as representatives of these groups based on prior knowledge, sequence similarity and phylogenetic analysis. Newly identified sequences are assigned to these groups where possible.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/summary_phylogenies/*fasta</span></code></p>
+<p>Broader groups of nucleotide sequences from the ORF database for each gene (gag, pol and env) and each genus (gamma, beta, delta, alpha, epsilon, lenti and spuma). Newly identified sequences are incorporated into phylogenetic trees based on these sequences, plus more closely related sequences from the <code class="docutils literal notranslate"><span class="pre">group_phylogenies</span></code> fasta files.</p>
+<p>Two addtional files are also provided:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db/convert.tsv</span></code></p>
+<p>Table showing the group each reference sequence belongs to.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/outgroups.tsv</span></code></p>
+<p>Table providing the name of an appropriate outgroup for each phylogeny.</p>
+<p>If you want to see these files (ERVsearch will locate them automatically for internal use), then if you are using a clone of the git repository, database files can be found in <code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db</span></code> and <code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies</span></code>. If you installed using pip, they will be in the same location in the ERVsearch directory in your python site-packages directory.</p>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="running-the-pipeline">
+<h2>Running the Pipeline<a class="headerlink" href="#running-the-pipeline" title="Permalink to this headline">¶</a></h2>
+<p>The pipeline is implemented using the pipeline development package <a class="reference external" href="http://www.ruffus.org.uk/">ruffus</a>, (Goodstadt 2010, doi:<a class="reference external" href="https://doi.org/10.1093/bioinformatics/btq524">10.1093/bioinformatics/btq524</a>).</p>
+<p>To run the full pipeline, the following command is used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">full</span>
+</pre></div>
+</div>
+<p>If the pipeline stops or fails at any point, it will restart from after the previous fully completed step (based on the presence of the output files from this step). If the output of an earlier step in the pipeline has a more recent timestamp than the output of a later step, the later step will be rerun.</p>
+<p>Sections of the pipeline can be run as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">Screen</span>
+</pre></div>
+</div>
+<p>Screen with Exonerate and check the results with UBLAST, find ORFs and find the most similar known retroviral ORF.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">Classify</span>
+</pre></div>
+</div>
+<p>Run the <em>Screen</em> steps and then sort the sequences into subgroups, build phylogenetic trees for these groups and a summary tree for each gene and genus.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">ERVRegions</span>
+</pre></div>
+</div>
+<p>Run the <em>Screen</em> steps and then find regions with ORFs resembling more than one retroviral gene in close proximity.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">full</span>
+</pre></div>
+</div>
+<p>Run all the above sections.</p>
+<p>You can also run the pipeline up until any specific <a class="reference external" href="functions.html">function</a> - any function name can be provided for the <code class="docutils literal notranslate"><span class="pre">target_tasks</span></code> parameter.</p>
+<p>For example to run up until the end of the function <code class="docutils literal notranslate"><span class="pre">classifyWithExonerate</span></code>, use the following command.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">classifyWithExonerate</span>
+</pre></div>
+</div>
+<p>All functions prior to this function will run if needed.</p>
+</div>
+<div class="section" id="parallelisation">
+<h2>Parallelisation<a class="headerlink" href="#parallelisation" title="Permalink to this headline">¶</a></h2>
+<p>The pipeline is paralellised to run jobs simultaneously where possible. To do this, set the parameter<code class="docutils literal notranslate"><span class="pre">--jobs</span> <span class="pre">N</span></code> in the command line, where N is the number of CPUs available on your machine.
+e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">full</span> <span class="o">--</span><span class="n">jobs</span> <span class="mi">8</span>
+</pre></div>
+</div>
+<p>This would run on 8 CPUs</p>
+<p>If running on a high performance cluster, it is recommended to use a single node and set <code class="docutils literal notranslate"><span class="pre">--jobs</span></code> to the number of cores available on that node.</p>
+</div>
+<div class="section" id="verbosity">
+<h2>Verbosity<a class="headerlink" href="#verbosity" title="Permalink to this headline">¶</a></h2>
+<p>Ruffus verbosity is set using the <code class="docutils literal notranslate"><span class="pre">-v</span></code> parameter from 1 to 10. The recommended setting for ERvsearch is -v 5, however this needs to be specified to override the ruffus default of 1.</p>
+<p>e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERVsearch</span> <span class="o">--</span><span class="n">target_tasks</span> <span class="n">full</span> <span class="o">-</span><span class="n">v</span> <span class="mi">5</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="main-output-files">
+<h1>Main Output Files<a class="headerlink" href="#main-output-files" title="Permalink to this headline">¶</a></h1>
+<p>The main output files produced are as follows. Many additional output files are generated, these are described <a class="reference external" href="outputs.html">here</a>.</p>
+<div class="section" id="id1">
+<h2>Screen<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">screen_results.dir/results.tsv</span></code><br>
+Table showing the ORFs identified with Exonerate and verified with UBLAST which meet the requirements specified in the <code class="docutils literal notranslate"><span class="pre">pipeline.ini</span></code> file.
+Columns are as follows:</p>
+<ul class="simple">
+<li><p><strong>name</strong><br>
+Name assigned to the region consisting of the ID, chromosome, start and end positions</p></li>
+<li><p><strong>match</strong><br>
+The most similar reference ORF to this ORF identified in the <code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db</span></code> database using the ungapped Exonerate algorithm.</p></li>
+<li><p><strong>perc_identity</strong><br>
+The percentage identity between this sequence and the most similar reference ORF, based on the UBLAST output.</p></li>
+<li><p>*<em>alignment_length</em><br>
+The length of the alignment of this sequence and the most similar reference ORF, based on the UBLAST output.</p></li>
+<li><p><strong>evalue</strong><br>
+The UBLAST e-value of the alignment of this sequence and the most similar reference ORF.</p></li>
+<li><p><strong>bit_score</strong><br>
+The UBLAST bit score of the alignment of this sequence and the most similar reference ORF.</p></li>
+<li><p><strong>ID</strong><br>
+ID assigned to this ORF</p></li>
+<li><p><strong>chrom</strong><br>
+Chromosome (or scaffold, contig or sequence) on which this ORF was identified.</p></li>
+<li><p><strong>start</strong><br>
+Start position of this ORF on the chromosome.</p></li>
+<li><p><strong>end</strong><br>
+End position of this ORF on the chromosome.</p></li>
+<li><p><strong>strand</strong><br>
+Positive sense (+) or negative sense (+)</p></li>
+<li><p><strong>group</strong><br>
+Local group to which the most similar reference ORF belongs. If the reference ORF is not in a group, this is genus_gene.</p></li>
+<li><p><strong>genus</strong><br>
+Genus to which the most similar reference ORF belongs.</p></li>
+<li><p><strong>length</strong> <br>
+ORF length in nucleotides.</p></li>
+<li><p><strong>gene</strong><br>
+Retroviral gene - gag, pol or env.
+<br><br></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">screen_results.dir/by_length.FMT</span></code><br>
+Histograms of ORF lengths (in nucleotides) based on the results.tsv table, for the gag, pol and env genes.<br></p>
+<p><code class="docutils literal notranslate"><span class="pre">screen_results.dir/by_genus.FMT</span></code><br>
+Bar charts showing the number of ORFs identified for each genus and gene based on the results.tsv table.</p>
+<p><code class="docutils literal notranslate"><span class="pre">screen_results.dir/by_group.FMT</span></code><br>
+Bar charts showing the number of ORFs identified in each small subgroup of reference sequences for each retroviral gene. ORFs assigned as genus_gene were related to a reference sequence which is not in a smaller subgroup, based on the results.tsv table.<br></p>
+<p><code class="docutils literal notranslate"><span class="pre">screen_results.dir/by_gene.FMT</span></code><br>
+Bar chart showing the number of ORFs identified for each gene, based on the results.tsv table.<br></p>
+</div>
+<div class="section" id="id2">
+<h2>Classify<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">summary_trees.dir/*FMT</span></code> (can be png, jpg, svg or pdf depending on the <a class="reference external" href="parameters.html#format">plots_format</a> parameter).<br>
+Image files of the phylogenetic trees for each retroviral gene and genus. Different sized circles are used to show the relative size of collapsed monophyletic groups. Newly identified ERVs are highlighted.<br></p>
+<p><code class="docutils literal notranslate"><span class="pre">summary_trees.dir/*tre</span></code><br>
+Tree files in Newick format for each retroviral gene and genus combining reference and newly identified sequences. Monophyletic groups of newly identified ORF sequences are represented by a single sequence.<br></p>
+</div>
+<div class="section" id="id3">
+<h2>ERVRegions<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">erv_regions_results.dir/results.tsv</span></code><br>
+Table summarising regions identified containing retrovirus-like ORFs from more than one gene.
+Columns:</p>
+<ul class="simple">
+<li><p><strong>name</strong> - the final ID of the ERV region - the genes found plus an integer  e.g. gag_pol_12<br></p></li>
+<li><p><strong>chrom</strong> - chromosome<br></p></li>
+<li><p><strong>start</strong> - start position of the ERV region<br></p></li>
+<li><p><strong>end</strong> - end position of the ERV region<br></p></li>
+<li><p><strong>strand</strong> - strand of the ERv region<br></p></li>
+<li><p><strong>genus</strong> - genus of the ERV region, can be multiple genera delimted by “|” if different genes had different genera<br></p></li>
+<li><p>for each gene screened for (usually gag, pol and env)<br></p>
+<ul>
+<li><p><strong>GENE_name</strong> - the names of the ORFs for this gene in this region<br></p></li>
+<li><p><strong>GENE_ID</strong> - the original IDs of the ORFs for this gene in this region<br></p></li>
+<li><p><strong>GENE_start</strong> - the start position of this gene in this region (genome co-ordinates)<br></p></li>
+<li><p><strong>GENE_relative_start</strong> - the start position of this gene in this region (relative to the start of the region)<br></p></li>
+<li><p><strong>GENE_end</strong> - the end position of this gene in this region (genome co-ordinates)<br></p></li>
+<li><p><strong>GENE_relative_end</strong> - the end position of this gene in this region (relative to the start of the region)<br></p></li>
+<li><p><strong>GENE_strand</strong> - the strand for this gene in this region<br></p></li>
+<li><p><strong>GENE_match</strong> - the closest reference retrovirus to this gene in this region<br></p></li>
+<li><p><strong>GENE_group</strong> - the group of the closest reference retrovirus to this gene in this region<br></p></li>
+<li><p><strong>GENE_genus</strong> - the genus of the closest reference retrovirus to this gene in this region<br></p></li>
+</ul>
+</li>
+<li><p><strong>orig_name</strong> - the name of the region in the input table<br></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="parameters.html" class="btn btn-neutral float-right" title="Parameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="ERVsearch Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Katy Brown
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

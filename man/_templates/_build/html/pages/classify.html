@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Classify &mdash; ERVsearch 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ERVsearch
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#quick-start">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#pipeline-description">Pipeline Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#input-files">Input Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ERVsearch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Classify</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/pages/classify.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="classify">
+<h1>Classify<a class="headerlink" href="#classify" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Classifies the newly identified ORFs into groups based on the most similar known ORF</p></li>
+<li><p>Aligns the newly identified ORFs with reference sequences within these groups and builds a phylogenetic tree for each group.</p></li>
+<li><p>Finds clusters of newly identified ORFs within these trees</p></li>
+<li><p>Incorporates representative sequences from these clusters into a summary tree for each retroviral gene and genus  (based on classification into <em>gamma</em>, <em>beta</em>, <em>spuma</em>, <em>alpha</em>, <em>lenti</em>, <em>epsilon</em> and <em>delta</em> retroviruses as defined by the ICTV (https://talk.ictvonline.org/taxonomy).</p></li>
+</ul>
+<ol class="simple">
+<li><p><a class="reference external" href="#makeGroupFastas">makeGroupFastas</a><br></p></li>
+<li><p><a class="reference external" href="#makeGroupTrees">makeGroupTrees</a><br></p></li>
+<li><p><a class="reference external" href="#drawGroupTrees">drawGroupTrees</a><br></p></li>
+<li><p><a class="reference external" href="#makeSummaryFastas">makeSummaryFastas</a><br></p></li>
+<li><p><a class="reference external" href="#makeSummaryTrees">makeSummaryTrees</a><br></p></li>
+<li><p><a class="reference external" href="#drawSummaryTrees">drawSummaryTrees</a><br></p></li>
+<li><p><a class="reference external" href="#summariseClassify">summariseClassify</a><br></p></li>
+<li><p><a class="reference external" href="#Classify">Classify</a></p></li>
+</ol>
+<div class="section" id="makegroupfastas-a-name-makegroupfastas-a">
+<h2>makeGroupFastas<a name="makeGroupFastas"></a><a class="headerlink" href="#makegroupfastas-a-name-makegroupfastas-a" title="Permalink to this headline">¶</a></h2>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">grouped.dir/GENE_groups.tsv</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/group_phylogenies/*fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/summary_phylogenies/*fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/outgroups.tsv</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">group_fastas.dir/GENE_(.*)_GENUS.fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">group_fastas.dir/GENE_(.*)_GENUS_A.fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_ERVsearch</span></code><br></p>
+<p>Two sets of reference fasta files are available (files are stored in <code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/group_phylogenies</span></code> and <code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/summary_phylogenies</span></code>)</p>
+<ul class="simple">
+<li><p>group_phylogenies - groups of closely related ERVs for fine classification of sequences</p></li>
+<li><p>summary_phylogenies - groups of most distant ERVs for broad classification of sequences</p></li>
+</ul>
+<p>Sequences have been assigned to groups based on the most similar sequence in the provided ERV database, based on the score using the Exonerate ungapped algorithm.
+Where the most similar sequence is not part of a a well defined group, it has been assigned to a genus.</p>
+<p>Fasta files are generated containing all members of the group from the group_phylogenies file (plus an outgroup) where possible and using representative sequences from the same genus, using the summary_phylogenies file, where only a genus has been assigned, plus all the newly identified ERVs in the group. These files are saved as GENE_(group_name_)GENUS.fasta.</p>
+<p>A “~” is added to all new sequence names so they can be searched for easily.</p>
+<p>The files are aligned using the MAFFT fftns algorithm https://mafft.cbrc.jp/alignment/software/manual/manual.html to generate the GENE_(group_name_)GENUS_A.fasta aligned output files.</p>
+<div class="section" id="makegrouptrees-a-name-makegrouptrees-a">
+<h3>makeGroupTrees<a name="makeGroupTrees"></a><a class="headerlink" href="#makegrouptrees-a-name-makegrouptrees-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">group_fastas.dir/GENE_(.*_)GENUS_A.fasta</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">group_trees.dir/GENE_(.*_)GENUS.tre</span></code><br></p>
+<p><strong>Parameters</strong><br>
+None<br></p>
+<p>Builds a phylogenetic tree, using the FastTree2 algorithm (http://www.microbesonline.org/fasttree) with the default settings plus the GTR model, for the aligned group FASTA files generated by the makeGroupFastas function.</p>
+</div>
+<div class="section" id="drawgrouptrees-a-name-drawgrouptrees-a">
+<h3>drawGroupTrees<a name="drawGroupTrees"></a><a class="headerlink" href="#drawgrouptrees-a-name-drawgrouptrees-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">group_trees.dir/GENE_(.*_)GENUS.tre</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">group_trees.dir/GENE_(.*_)GENUS.FMT</span></code> (png, svg, pdf or jpg)<br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[plots]</span> <span class="pre">gag_colour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[plots]</span> <span class="pre">pol_colour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[plots]</span> <span class="pre">env_colour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">use_gene_colour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">maincolour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">highlightcolour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">outgroupcolour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">dpi</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">format</span></code><br></p>
+<p>Generates an image file for each file generated in the makeGroupTrees step, using ete3 (http://etetoolkit.org). Newly identified sequences are labelled as “~” and shown in a different colour.</p>
+<p>By default, newly identified sequences are shown in the colours specified in <code class="docutils literal notranslate"><span class="pre">plots_gag_colour</span></code>, <code class="docutils literal notranslate"><span class="pre">plots_pol_colour</span></code> and <code class="docutils literal notranslate"><span class="pre">plots_env_colour</span></code> - to do this then <code class="docutils literal notranslate"><span class="pre">trees_use_gene_colour</span></code> should be set to True in the <code class="docutils literal notranslate"><span class="pre">pipeline.ini</span></code>. Alternatively, a fixed colour can be used by setting <code class="docutils literal notranslate"><span class="pre">trees_use_gene_colour</span></code> to False and settings <code class="docutils literal notranslate"><span class="pre">trees_highlightcolour</span></code>. The text colour of the reference sequences (default black) can be set using <code class="docutils literal notranslate"><span class="pre">trees_maincolour</span></code> and the outgroup using <code class="docutils literal notranslate"><span class="pre">trees_outgroupcolour</span></code>.</p>
+<p>The output file DPI can be specified using <code class="docutils literal notranslate"><span class="pre">trees_dpi</span></code> and the format (which can be png, svg, pdf or jpg) using <code class="docutils literal notranslate"><span class="pre">trees_format</span></code>.</p>
+</div>
+<div class="section" id="makesummaryfastas-a-name-makesummaryfastas-a">
+<h3>makeSummaryFastas<a name="makeSummaryFastas"></a><a class="headerlink" href="#makesummaryfastas-a-name-makesummaryfastas-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">group_fastas.dir/GENE_(.*_)GENUS.fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">group_trees.dir/GENE_(*_)GENUS.tre</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/summary_phylogenies/GENE_GENUS.fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/group_phylogenies/(.*)_GENUS_GENE.fasta</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">summary_fastas.dir/GENE_GENUS.fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">summary_fastas.dir/GENE_GENUS.tre</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_ERVsearch</span></code><br></p>
+<p>Based on the group phylogenetic trees generated in makeGroupTrees, monophyletic groups of newly idenified ERVs are identified. For each of these groups, a single sequence (the longest) is selected as representative. The representative sequences are combined with the FASTA files in <code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/summary_phylogenies</span></code>, which contain representative sequences for each retroviral gene and genus. These are extended to include further reference sequences from the same small group as the newly identified sequences.</p>
+<p>For example, if one MLV-like pol and one HERVF-like pol was identified in the gamma genus, the gamma_pol.fasta summary fasta would contain:
+* The new MLV-like pol sequence
+* The new HERVF-like pol sequence
+* The reference sequences from <code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/group_phylogenies/MLV-like_gamma_pol.fasta</span></code> - highly related sequences from the MLV-like group
+* The reference sequences from <code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/group_phylogenies/HERVF-like_gamma_pol.fasta</span></code> - highly related sequences from the HERVF-like group.
+* The reference sequences from <code class="docutils literal notranslate"><span class="pre">ERVsearch/phylogenies/summary_phylogenies/gamma_pol.fasta</span></code> - a less detailed but more diverse set of gammaretroviral pol ORFs.
+* A epsilonretrovirus outgroup</p>
+<p>This ensures sufficient detail in the groups of interest while avoiding excessive detail in groups where nothing new has been identified.</p>
+<p>These FASTA files are saved as GENE_GENUS.fasta</p>
+<p>The files are aligned using the MAFFT fftns algorithm https://mafft.cbrc.jp/alignment/software/manual/manual.html to generate the GENE_GENUS_A.fasta aligned output files.</p>
+</div>
+<div class="section" id="makesummarytrees-a-name-makesummarytrees-a">
+<h3>makeSummaryTrees<a name="makeSummaryTrees"></a><a class="headerlink" href="#makesummarytrees-a-name-makesummarytrees-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">summary_fastas.dir/GENE_GENUS_A.fasta</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">summary_trees.dir/GENE_GENUS.tre</span></code><br></p>
+<p><strong>Parameters</strong><br>
+None<br></p>
+<p>Builds a phylogenetic tree, using the FastTree2 algorithm (http://www.microbesonline.org/fasttree) with the default settings plus the GTR model, for the aligned group FASTA files generated by the makeSummaryFastas function.</p>
+</div>
+<div class="section" id="drawsummarytrees-a-name-drawsummarytrees-a">
+<h3>drawSummaryTrees<a name="drawSummaryTrees"></a><a class="headerlink" href="#drawsummarytrees-a-name-drawsummarytrees-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">summary_trees.dir/GENE_GENUS.tre</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">summary_trees.dir/GENE_GENUS.FMT</span></code> (FMT = png, svg, pdf or jpg)<br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[plots]</span> <span class="pre">gag_colour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[plots]</span> <span class="pre">pol_colour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[plots]</span> <span class="pre">env_colour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">use_gene_colour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">maincolour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">highlightcolour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">outgroupcolour</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">dpi</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[trees]</span> <span class="pre">format</span></code><br></p>
+<p>Generates an image file for each file generated in the makeSummaryTrees step, using ete3 (http://etetoolkit.org). Newly identified sequences are labelled as “~” and shown in a different colour. Monophyletic groups of newly identified ERVs have been collapsed (by choosing a single representative sequence) and the number of sequences in the group is added to the label and represented by the size of the node tip.</p>
+<p>By default, newly identified sequences are shown in the colours specified in <code class="docutils literal notranslate"><span class="pre">plots_gag_colour</span></code>, <code class="docutils literal notranslate"><span class="pre">plots_pol_colour</span></code> and <code class="docutils literal notranslate"><span class="pre">plots_env_colour</span></code> - to do this then <code class="docutils literal notranslate"><span class="pre">trees_use_gene_colour</span></code> should be set to True in the <code class="docutils literal notranslate"><span class="pre">pipeline.ini</span></code>. Alternatively, a fixed colour can be used by setting <code class="docutils literal notranslate"><span class="pre">trees_use_gene_colour</span></code> to False and settings <code class="docutils literal notranslate"><span class="pre">trees_highlightcolour</span></code>. The text colour of the reference sequences (default black) can be set using <code class="docutils literal notranslate"><span class="pre">trees_maincolour</span></code> and the outgroup using <code class="docutils literal notranslate"><span class="pre">trees_outgroupcolour</span></code>.</p>
+<p>The output file DPI can be specified using <code class="docutils literal notranslate"><span class="pre">trees_dpi</span></code> and the format (which can be png, svg, pdf or jpg) using <code class="docutils literal notranslate"><span class="pre">trees_format</span></code>.</p>
+</div>
+<div class="section" id="summariseclassify-a-name-summariseclassify-a">
+<h3>summariseClassify<a name="summariseClassify"></a><a class="headerlink" href="#summariseclassify-a-name-summariseclassify-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br></p>
+<p><strong>Output Files</strong><br></p>
+<p><strong>Parameters</strong><br></p>
+</div>
+<div class="section" id="classify-a-name-classify-a">
+<h3>Classify<a name="Classify"></a><a class="headerlink" href="#classify-a-name-classify-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong> None<br></p>
+<p><strong>Output Files</strong> None<br></p>
+<p><strong>Parameters</strong> None<br></p>
+<p>Helper function to run all screening functions and classification functions (all functions prior to this point).</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Katy Brown
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

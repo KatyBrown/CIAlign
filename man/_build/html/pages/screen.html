@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Screen &mdash; ERVsearch 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ERVsearch
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#quick-start">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#pipeline-description">Pipeline Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#input-files">Input Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ERVsearch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Screen</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/pages/screen.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="screen">
+<h1>Screen<a class="headerlink" href="#screen" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Screens the genome for ERV like regions by comparing the genome to a set of known retroviral ORFs using Exonerate.</p></li>
+<li><p>Confirms the Exonerate regions using UBLAST</p></li>
+<li><p>Finds and confirms ORFs within these regions</p></li>
+<li><p>Finds the most similar known retroviral ORF in the database to each of the newly identified ORFs</p></li>
+</ul>
+</div>
+<div class="section" id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
+<ol class="simple">
+<li><p><a class="reference external" href="#initiate">initiate</a><br></p></li>
+<li><p><a class="reference external" href="#genomeToChroms">genomeToChroms</a><br></p></li>
+<li><p><a class="reference external" href="#prepDBs">prepDBs</a><br></p></li>
+<li><p><a class="reference external" href="#runExonerate">runExonerate</a><br></p></li>
+<li><p><a class="reference external" href="#cleanExonerate">cleanExonerate</a><br></p></li>
+<li><p><a class="reference external" href="#mergeOverlaps">mergeOverlaps</a><br></p></li>
+<li><p><a class="reference external" href="#makeFastas">makeFastas</a><br></p></li>
+<li><p><a class="reference external" href="#renameFastas">renameFastas</a><br></p></li>
+<li><p><a class="reference external" href="#makeUBLASTDb">makeUBLASTDb</a><br></p></li>
+<li><p><a class="reference external" href="#runUBLASTCheck">runUBLASTCheck</a><br></p></li>
+<li><p><a class="reference external" href="#classifyWithExonerate">classifyWithExonerate</a><br></p></li>
+<li><p><a class="reference external" href="#getORFs">getORFs</a><br></p></li>
+<li><p><a class="reference external" href="#checkORFsUBLAST">checkORFsUBLAST</a><br></p></li>
+<li><p><a class="reference external" href="#assignGroups">assignGroups</a><br></p></li>
+<li><p><a class="reference external" href="#summariseScreen">summariseScreen</a><br></p></li>
+<li><p><a class="reference external" href="#Screen">Screen</a><br></p></li>
+</ol>
+<div class="section" id="initiate-a-name-initiate-a">
+<h2>initiate<a name="initiate"></a><a class="headerlink" href="#initiate-a-name-initiate-a" title="Permalink to this headline">¶</a></h2>
+<p><strong>Input Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">pipeline.ini</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">init.txt</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[genome]</span> <span class="pre">file</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_ERVsearch</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_usearch</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_exonerate</span></code><br></p>
+<p>Initialises the pipeline and checks that the required parameters in the pipeline.ini are set and valid and that the required software is in your $PATH.</p>
+<p>Checks that:</p>
+<ul class="simple">
+<li><p>The input genome file exists.</p></li>
+<li><p>The correct path to ERVsearch is provided.</p></li>
+<li><p>samtools, bedtools, FastTree and mafft are in the $PATH</p></li>
+<li><p>The correct paths to usearch and exonerate are provided.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">init.txt</span></code> is a placeholder to show that this step has been completed.</p>
+<div class="section" id="genometochroms-a-name-genometochroms-a">
+<h3>genomeToChroms<a name="genomeToChroms"></a><a class="headerlink" href="#genometochroms-a-name-genometochroms-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong>
+<code class="docutils literal notranslate"><span class="pre">[genome]</span> <span class="pre">file</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">keep_chroms.txt</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">host_chromosomes.dir/*fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[genome]</span> <span class="pre">file</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[genomesplits]</span> <span class="pre">split</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[genomesplits]</span> <span class="pre">split_n</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[genomesplits]</span> <span class="pre">force</span></code><br></p>
+<p>Splits the host genome provided by the user into FASTA files of a suitable size to run Exonerate efficiently.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">genomesplits_split</span></code> in the pipeline.ini is False, the genome is split into one fasta file for each sequence - each chromosome, scaffold or contig.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">genomesplits_split</span></code> in the pipeline.ini is True, the genome is split into the number of batches specified by the <code class="docutils literal notranslate"><span class="pre">genomesplits_splitn</span></code> parameter, unless the total number of sequences in the input file is less than this number.</p>
+<p>The pipeline will fail if the number of sequences which would result from the genomesplits settings would result in &gt;500 Exonerate runs, however it is possible to force the pipeline to run despite this by setting <code class="docutils literal notranslate"><span class="pre">genomesplits_force</span></code> to True.</p>
+<p>If the file keep_chroms.txt exists in the working directory only chromosomes listed in this file will be kept.</p>
+<p>An unzipped copy of zipped and gzipped fasta files will be created or a link to the file if it is already unzipped. this will be named <code class="docutils literal notranslate"><span class="pre">genome.fa</span></code> and be in the working directory.</p>
+<p>This function generates a series of fasta files which are stored in the host_chromosomes.dir directory.</p>
+</div>
+<div class="section" id="prepdbs-a-name-prepdbs-a">
+<h3>prepDBs<a name="prepDBs"></a><a class="headerlink" href="#prepdbs-a-name-prepdbs-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+None<br></p>
+<p><strong>Output Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">gene_databases.dir/GENE.fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[database]</span> <span class="pre">use_custom_db</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[database]</span> <span class="pre">gag</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[database]</span> <span class="pre">pol</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[database]</span> <span class="pre">env</span></code><br></p>
+<p>Retrieves the gag, pol and env amino acid sequence database fasta files and puts a copy of each gene_databases.dir directory.</p>
+<p>If custom databases are used they are retrieved and named as gag.fasta  pol.fasta, env.fasta so the path doesn’t need to be changed every time.</p>
+</div>
+<div class="section" id="runexonerate-a-name-runexonerate-a">
+<h3>runExonerate<a name="runExonerate"></a><a class="headerlink" href="#runexonerate-a-name-runexonerate-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">gene_databases.dir/GENE.fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">host_chromosomes.dir/*fasta</span></code><br></p>
+<p><strong>Output Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">raw_exonerate_output.dir/GENE_*.tsv</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_exonerate</span></code><br></p>
+<p>Runs the <code class="docutils literal notranslate"><span class="pre">protein2dna</span></code> algorithm in the <a class="reference external" href="https://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate-manual">Exonerate software package</a> with the host chromosomes (or other regions) in <code class="docutils literal notranslate"><span class="pre">host_chromosomes.dir</span></code> as target sequences and the FASTA files from prepDBs as the query sequences.</p>
+<p>The raw output of Exonerate is stored in the raw_exonerate_output directory, one file is created for each combination of query and target sequences.</p>
+<p>This step is carried out with low stringency as results are later filtered using UBLAST and Exonerate.</p>
+</div>
+<div class="section" id="cleanexonerate-a-name-cleanexonerate-a">
+<h3>cleanExonerate<a name="cleanExonerate"></a><a class="headerlink" href="#cleanexonerate-a-name-cleanexonerate-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">raw_exonerate_output.dir/GENE_*.tsv</span></code><br></p>
+<p><strong>Output_Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">clean_exonerate_output.dir/GENE_*_unfiltered.tsv</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">clean_exonerate_output.dir/GENE_*_filtered.tsv</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">clean_exonerate_output.dir/GENE_*.bed</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[exonerate]</span> <span class="pre">min_hit_length</span></code><br></p>
+<p>Filters and cleans up the Exonerate output.</p>
+<ul class="simple">
+<li><p>Converts the raw Exonerate output files into dataframes - GENE_unfiltered.tsv</p></li>
+<li><p>Filters out any regions containing introns (as defined by Exonerate)</p></li>
+<li><p>Filters out regions less than <code class="docutils literal notranslate"><span class="pre">exonerate_min_hit_length</span></code> on the host sequence (in nucleotides).</p></li>
+<li><p>Outputs the filtered regions to GENE_filtered.tsv</p></li>
+<li><p>Converts this to bed format and outputs this to GENE.bed</p></li>
+</ul>
+</div>
+<div class="section" id="mergeoverlaps-a-name-mergeoverlaps-a">
+<h3>mergeOverlaps<a name="mergeOverlaps"></a><a class="headerlink" href="#mergeoverlaps-a-name-mergeoverlaps-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">clean_exonerate_output.dir/GENE_*.bed</span></code><br></p>
+<p><strong>Output_Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">gene_bed_files.dir/GENE_all.bed</span></code>,<br>
+<code class="docutils literal notranslate"><span class="pre">gene_bed_files.dir/GENE_merged.bed</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[exonerate]</span> <span class="pre">overlap</span></code><br></p>
+<p>Merges the output bed files for individual sections of the input genome into a single bed file.</p>
+<p>Overlapping regions or very close together regions of the genome detected by Exonerate with similarity to the same retroviral gene are then merged into single regions.  This is performed using <a class="reference external" href="https://bedtools.readthedocs.io/en/latest/content/tools/merge.html">bedtools merge</a> on the bed files output by cleanExonerate.</p>
+<p>If there is a gap of less than <code class="docutils literal notranslate"><span class="pre">exonerate_overlap</span></code> between the regions they will be merged.</p>
+</div>
+<div class="section" id="makefastas-a-name-makefastas-a">
+<h3>makeFastas<a name="makeFastas"></a><a class="headerlink" href="#makefastas-a-name-makefastas-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">gene_bed_files.dir/GENE_merged.bed</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">genome.fa</span></code><br></p>
+<p><strong>Output Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">gene_fasta_files.dir/GENE_merged.fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+None<br></p>
+<p>Fasta files are generated containing the sequences of the merged regions of the genome identified using mergeOverlaps.
+These are extracted from the host chromosomes using <a class="reference external" href="https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html">bedtools getfasta</a>.</p>
+</div>
+<div class="section" id="renamefastas-a-name-renamefastas-a">
+<h3>renameFastas<a name="renameFastas"></a><a class="headerlink" href="#renamefastas-a-name-renamefastas-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">gene_fasta_files.dir/GENE_merged.fasta</span></code><br></p>
+<p><strong>Output Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">gene_fasta_files.dir/GENE_merged_renamed.fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+None<br></p>
+<p>Renames the sequences in the fasta files of ERV-like regions identified with Exonerate so each record has a numbered unique ID (gag1, gag2 etc). Also removes “:” from sequence names as this causes problems later.</p>
+</div>
+<div class="section" id="makeublastdb-a-name-makeublastdb-a">
+<h3>makeUBLASTDb<a name="makeUBLASTDb"></a><a class="headerlink" href="#makeublastdb-a-name-makeublastdb-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">gene_databases.dir/GENE.fasta</span></code><br></p>
+<p><strong>Output Files</strong> <br>
+<code class="docutils literal notranslate"><span class="pre">UBLAST_db.dir/GENE_db.udb</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_ublast</span></code><br></p>
+<p><a class="reference external" href="https://www.drive5.com/usearch/">USEARCH</a> requires an indexed database of query sequences to run. This function generates this database for the three gene amino acid fasta files used to screen the genome.</p>
+</div>
+<div class="section" id="runublastcheck-a-name-runublastcheck-a">
+<h3>runUBLASTCheck<a name="runUBLASTCheck"></a><a class="headerlink" href="#runublastcheck-a-name-runublastcheck-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">UBLAST_db.dir/GENE_db.udb</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">gene_fasta_files.dir/GENE_merged.fasta</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">ublast.dir/GENE_UBLAST_alignments.txt</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ublast.dir/GENE_UBLAST.tsv</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ublast.dir/GENE_filtered_UBLAST.fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_usearch</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[usearch]</span> <span class="pre">min_id</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[usearch]</span> <span class="pre">min_hit_length</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[usearch]</span> <span class="pre">min_coverage</span></code><br></p>
+<p>ERV regions in the fasta files generated by makeFasta are compared to the ERV amino acid database files for a second time, this time using USEARCH (https://www.drive5.com/usearch/). Using both of these tools reduces the number of false positives.</p>
+<p>This allows sequences with low similarity to known ERVs to be filtered out.  Similarity thresholds can be set in the pipeline.ini file (<code class="docutils literal notranslate"><span class="pre">usearch_min_id,</span></code> - minimum identity between query and target -  <code class="docutils literal notranslate"><span class="pre">usearch_min_hit_length</span></code> - minimum length of hit on target sequence -  and <code class="docutils literal notranslate"><span class="pre">usearch_min_coverage</span></code> - minimum proportion of the query sequence the hit should cover).</p>
+<p>The raw output of running UBLAST against the target sequences is saved in GENE_UBLAST_alignments.txt (equivalent to the BLAST default output) and GENE_UBLAST.tsv (equivalent to the BLAST -outfmt 6 tabular output) this is already filtered by passing the appropriate parameters to UBLAST. The regions which passed the filtering and are therefore in these output files are then output to a FASTA file GENE_filtered_UBLAST.fasta.</p>
+</div>
+<div class="section" id="classifywithexonerate-a-name-classifywithexonerate-a">
+<h3>classifyWithExonerate<a name="classifyWithExonerate"></a><a class="headerlink" href="#classifywithexonerate-a-name-classifywithexonerate-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">ublast.dir/GENE_filtered_UBLAST.fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db/all_ERVs_nt.fasta</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">exonerate_classification.dir/GENE_all_matches_exonerate.tsv</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">exonerate_classification.dir/GENE_best_matches_exonerate.tsv</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">exonerate_classification.dir/GENE_refiltered_matches_exonerate.fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_exonerate</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[exonerate]</span> <span class="pre">min_score</span></code><br></p>
+<p>Runs the Exonerate ungapped algorithm with each ERV region in the fasta files generated by makeFasta as queries and the all_ERVs_nt.fasta fasta file as a target, to detect which known retrovirus is most similar to each newly identified ERV region. Regions which don’t meet a minimum score threshold (<code class="docutils literal notranslate"><span class="pre">exonerate_min_score</span></code>) are filtered out.</p>
+<p>all_ERVs_nt.fasta contains nucleic acid sequences for many known endogenous and exogenous retroviruses with known classifications.</p>
+<p>First all seqeunces are compared to the database and the raw output is saved as exonerate_classification.dirGENE_all_matches_exonerate.tsv. Results need a score greater than <code class="docutils literal notranslate"><span class="pre">exonerate_min_score</span></code>
+against one of the genes of the same type (<em>gag</em>, <em>pol</em> or <em>env</em>) in the database. The highest scoring result which meets these critera for each sequence is then identified and output to exonerate_classification.dir/GENE_best_matches_exonerate.tsv. The sequences which meet these critera are also output to a FASTA file exonerate_classification.dir/GENE_refiltered_exonerate.fasta.</p>
+</div>
+<div class="section" id="getorfs-a-name-getorfs-a">
+<h3>getORFs<a name="getORFs"></a><a class="headerlink" href="#getorfs-a-name-getorfs-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">exonerate_classification.dir/GENE_refiltered_matches_exonerate.fasta</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">ORFs.dir/GENE_orfs_raw.fasta</span></code><br>
+xs<code class="docutils literal notranslate"><span class="pre">ORFs.dir/GENE_orfs_nt.fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ORFs.dir/GENE_orfs_aa.fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[orfs]</span> <span class="pre">translation_table</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[orfs]</span> <span class="pre">min_orf_len</span></code><br></p>
+<p>Finds the longest open reading frame in each of the ERV regions in the filtered output table.</p>
+<p>This analysis is performed using <a class="reference external" href="http://emboss.open-bio.org/rel/dev/apps/revseq.html">EMBOSS revseq</a> and <a class="reference external" href="http://emboss.open-bio.org/rel/dev/apps/transeq.html">EMBOSS transeq</a>.</p>
+<p>The sequence is translated in all six frames using the user specified translation table. The longest ORF is then identified. ORFs shorter than orfs_min_orf_length are filtered out.</p>
+<p>The positions of the ORFs are also convered so that they can be extracted directly from the input sequence file, rather than using the co-ordinates relative to the original Exonerate regions.</p>
+<p>The raw transeq output, the nucleotide sequences of the ORFs and the amino acid sequences of the ORFs are written to the output FASTA files.</p>
+</div>
+<div class="section" id="checkorfsublast-a-name-checkorfsublast-a">
+<h3>checkORFsUBLAST<a name="checkORFsUBLAST"></a><a class="headerlink" href="#checkorfsublast-a-name-checkorfsublast-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">ORFs.dir/GENE_orfs_nt.fasta</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">UBLAST_dbs.dir/GENE_db.udb</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">ublast_orfs.dir/GENE_UBLAST_alignments.txt</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ublast_orfs.dir/GENE_UBLAST.tsv</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ublast_orfs.dir/GENE_filtered_UBLAST.fasta</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_usearch</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[usearch]</span> <span class="pre">min_id</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[usearch]</span> <span class="pre">min_hit_length</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">[usearch]</span> <span class="pre">min_coverage</span></code><br></p>
+<p>ERV ORFs in the fasta files generated by the ORFs function are compared to the original ERV amino acid files using UBLAST. This allows any remaining sequences with poor similarity to known ERVs to be filtered out.</p>
+<p>This allows ORFs with low similarity to known ERVs to be filtered out.   Similarity thresholds can be set in the pipeline.ini file (<code class="docutils literal notranslate"><span class="pre">usearch_min_id,</span></code> - minimum identity between query and target -  <code class="docutils literal notranslate"><span class="pre">usearch_min_hit_length</span></code> - minimum length of hit on target sequence -  and <code class="docutils literal notranslate"><span class="pre">usearch_min_coverage</span></code> - minimum proportion of the query sequence the hit should cover).</p>
+<p>The raw output of running UBLAST against the target sequences is saved in GENE_UBLAST_alignments.txt (equivalent to the BLAST default output) and GENE_UBLAST.tsv (equivalent to the BLAST -outfmt 6 tabular output) this is already filtered by passing the appropriate parameters to UBLAST. The regions which passed the filtering and are therefore in these output files are then output to a FASTA file GENE_filtered_UBLAST.fasta.</p>
+</div>
+<div class="section" id="assigngroups-a-name-assigngroups-a">
+<h3>assignGroups<a name="assignGroups"></a><a class="headerlink" href="#assigngroups-a-name-assigngroups-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">ublast_orfs.dir/GENE_UBLAST.tsv</span></code><br>
+<code class="docutils literal notranslate"><span class="pre">ERVsearch/ERV_db/convert.tsv</span></code><br></p>
+<p><strong>Output Files</strong><br>
+<code class="docutils literal notranslate"><span class="pre">grouped.dir/GENE_groups.tsv</span></code><br></p>
+<p><strong>Parameters</strong><br>
+<code class="docutils literal notranslate"><span class="pre">[paths]</span> <span class="pre">path_to_ERVsearch</span></code><br></p>
+<p>Many of the retroviruses in the input database all_ERVs_nt.fasta have been classified into groups based on sequence similarity, prior knowledge and phylogenetic clustering.  Some sequences don’t fall into any well defined group, in these cases they are just assigned to a genus, usually based on prior knowledge. The information about these groups is stored in the provided file ERVsearch/ERV_db/convert.tsv.</p>
+<p>Each sequence in the filtered fasta file of newly identified ORFs is assigned to one of these groups based on the sequence identified as the most similar in the classifyWithExonerate step.</p>
+<p>The output table is also  tidied up to include the UBLAST output, chromosome, ORF start and end positions, genus and group.</p>
+</div>
+<div class="section" id="summarisescreen-a-name-summarisescreen-a">
+<h3>summariseScreen<a name="summariseScreen"></a><a class="headerlink" href="#summarisescreen-a-name-summarisescreen-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong><br></p>
+<p><strong>Output Files</strong><br></p>
+<p><strong>Parameters</strong><br></p>
+</div>
+<div class="section" id="screen-a-name-screen-a">
+<h3>Screen<a name="Screen"></a><a class="headerlink" href="#screen-a-name-screen-a" title="Permalink to this headline">¶</a></h3>
+<p><strong>Input Files</strong> <br>
+None<br></p>
+<p><strong>Output Files</strong><br>
+None<br></p>
+<p><strong>Parameters</strong> <br>
+None<br></p>
+<p>Helper function to run all screening functions (all functions prior to this point).</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Katy Brown
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
