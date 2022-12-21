@@ -544,6 +544,13 @@ def getParser():
                  Will cause labels to overlap on large plots. \
                  Default: %(default)s")
 
+    # Colours
+    optional.add("--palette", dest="palette", type=str,
+                 default="CBS", metavar="(str",
+                 help="Colour palette. Currently implemented \
+                       CBS (colour blind safe) or bright. \
+                       Default: %(default)s")
+
     # Sequence logos
     optional.add("--make_sequence_logo", dest="make_sequence_logo",
                  action="store_true",
@@ -584,6 +591,69 @@ def getParser():
     optional.add("--list_fonts_only", dest='list_fonts_only',
                  action="store_true",
                  help="Make a swatch showing available fonts. \
+                       Default: %(default)s")
+
+    # PWM function
+    optional.add("--pwm_input", dest="pwm_input",
+                 action="store_true", default=False,
+                 help="Generate a position frequency matrix, position \
+                       probability matrix and position weight matrix based \
+                       on the input alignment. Default: %(default)s")
+
+    optional.add("--pwm_output", dest="pwm_output",
+                 action="store_true", default=False,
+                 help="Generate a position frequency matrix, position \
+                       probability matrix and position weight matrix based \
+                       on the output alignment. Default: %(default)s")
+
+    optional.add("--pwm_start", dest="pwm_start",
+                 type=int, default=None, metavar="(int)",
+                 help="Start column of the PWM. Default: %(default)s")
+
+    optional.add("--pwm_end", dest="pwm_end",
+                 type=int, default=None, metavar="(int",
+                 help="End column of the PWM. Default: %(default)s")
+
+    optional.add("--pwm_freqtype", dest="pwm_freqtype",
+                 type=str, default="equal", metavar="(str",
+                 help="Type of background frequency matrix to use when \
+                       generating the PWM. Should be 'equal', 'calc', 'calc2' \
+                       or user. 'equal', assume all residues are equally \
+                       common, 'calc', frequency is calculated using the PFM, \
+                       'calc2', frequency is calculated using the full \
+                       alignment (same as calc if pwm_start and pwm_end are \
+                       not specified). Default: %(default)s")
+
+    optional.add("--pwm_alphatype", dest="pwm_alphatype",
+                 type=str, default="calc", metavar="(str",
+                 help="Alpha value to use as a pseudocount to avoid zero \
+                       values in the PPM. Should be 'calc' or 'user'. \
+                       If alphatype is 'calc', alpha is calculated as \
+                       frequency(base) * (square root(n rows in alignment)), \
+                       as described in Dave Tang's blog here: \
+                       https://davetang.org/muse/2013/10/01/\
+                       position-weight-matrix/, \
+                       which recreates the method used in \
+                       doi.org/10.1038/nrg1315. If alpha type is 'user' \
+                       the user provides the value of alpha as pwm_alphatype. \
+                       To run without pseudocounts set pwm_alphatype as user \
+                       and pwm_alphaval as 0. Default: %(default)s")
+
+    optional.add("--pwm_alphaval", dest="pwm_alphaval",
+                 type=float, default=1.0, metavar="(int",
+                 help="User defined value of the alpha parameter to use as a \
+                       pseudocount in the PPM. Default: %(default)s")
+
+    optional.add("--pwm_output_blamm", dest="pwm_output_blamm",
+                 action="store_true", default=False,
+                 help="Output PPM formatted for BLAMM software \
+                       https://github.com/biointec/blamm. \
+                       Default: %(default)s")
+
+    optional.add("--pwm_output_meme", dest="pwm_output_meme",
+                 action="store_true", default=False,
+                 help="Output PPM formatted for MEME software \
+                       https://meme-suite.org/meme \
                        Default: %(default)s")
 
     # Plots
@@ -654,68 +724,6 @@ def getParser():
                        gaps in both sequences, 2 - consider all positions \
                        regardless of gaps. Default: %(default)s")
 
-    # PWM function
-    optional.add("--pwm_input", dest="pwm_input",
-                 action="store_true", default=False,
-                 help="Generate a position frequency matrix, position \
-                       probability matrix and position weight matrix based \
-                       on the input alignment. Default: %(default)s")
-
-    optional.add("--pwm_output", dest="pwm_output",
-                 action="store_true", default=False,
-                 help="Generate a position frequency matrix, position \
-                       probability matrix and position weight matrix based \
-                       on the output alignment. Default: %(default)s")
-
-    optional.add("--pwm_start", dest="pwm_start",
-                 type=int, default=None, metavar="(int)",
-                 help="Start column of the PWM. Default: %(default)s")
-
-    optional.add("--pwm_end", dest="pwm_end",
-                 type=int, default=None, metavar="(int",
-                 help="End column of the PWM. Default: %(default)s")
-
-    optional.add("--pwm_freqtype", dest="pwm_freqtype",
-                 type=str, default="equal", metavar="(str",
-                 help="Type of background frequency matrix to use when \
-                       generating the PWM. Should be 'equal', 'calc', 'calc2' \
-                       or user. 'equal', assume all residues are equally \
-                       common, 'calc', frequency is calculated using the PFM, \
-                       'calc2', frequency is calculated using the full \
-                       alignment (same as calc if pwm_start and pwm_end are \
-                       not specified). Default: %(default)s")
-
-    optional.add("--pwm_alphatype", dest="pwm_alphatype",
-                 type=str, default="calc", metavar="(str",
-                 help="Alpha value to use as a pseudocount to avoid zero \
-                       values in the PPM. Should be 'calc' or 'user'. \
-                       If alphatype is 'calc', alpha is calculated as \
-                       frequency(base) * (square root(n rows in alignment)), \
-                       as described in Dave Tang's blog here: \
-                       https://davetang.org/muse/2013/10/01/\
-                       position-weight-matrix/, \
-                       which recreates the method used in \
-                       doi.org/10.1038/nrg1315. If alpha type is 'user' \
-                       the user provides the value of alpha as pwm_alphatype. \
-                       To run without pseudocounts set pwm_alphatype as user \
-                       and pwm_alphaval as 0. Default: %(default)s")
-
-    optional.add("--pwm_alphaval", dest="pwm_alphaval",
-                 type=float, default=1.0, metavar="(int",
-                 help="User defined value of the alpha parameter to use as a \
-                       pseudocount in the PPM. Default: %(default)s")
-
-    optional.add("--pwm_output_blamm", dest="pwm_output_blamm",
-                 action="store_true", default=False,
-                 help="Output PPM formatted for BLAMM software \
-                       https://github.com/biointec/blamm. \
-                       Default: %(default)s")
-
-    optional.add("--pwm_output_meme", dest="pwm_output_meme",
-                 action="store_true", default=False,
-                 help="Output PPM formatted for MEME software \
-                       https://meme-suite.org/meme \
-                       Default: %(default)s")
 
     # Unalign function
     optional.add("--unalign_input", dest="unalign_input",
@@ -750,12 +758,6 @@ def getParser():
                  action="store_true", default=False,
                  help="Replaces all Ts by Us in output alignment. \
                      Default: %(default)s")
-    # Colours
-    optional.add("--palette", dest="palette", type=str,
-                 default="CBS", metavar="(str",
-                 help="Colour palette. Currently implemented \
-                       CBS (colour blind safe) or bright. \
-                       Default: %(default)s")
 
     # Section
     optional.add("--get_section", dest="get_section",

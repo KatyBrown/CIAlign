@@ -118,7 +118,7 @@ The **retain** functions allow the user to specify sequences to keep regardless 
 Removes divergent sequences from the alignment -  sequences with <= `remove_divergent_minperc` positions at which the most common residue in the alignment is present
 
 
-![Remove Divergent](images/remove_divergent.png)
+![Remove Divergent](images/remove_divergent.png?raw=true)
 
 
 | Parameter | Description | Default Value | Min | Max |
@@ -133,7 +133,7 @@ Removes divergent sequences from the alignment -  sequences with <= `remove_dive
 
 Removes insertions from the alignment which are found in <= `insertion_min_perc` of the sequences.
 
-![Remove Insertions](images/remove_insertions.png)
+![Remove Insertions](images/remove_insertions.png?raw=true)
 
 | Parameter | Description | Default Value | Min | Max |
 | ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
@@ -148,7 +148,7 @@ Removes insertions from the alignment which are found in <= `insertion_min_perc`
 
 Crops the ends of individual sequences if they contain a high proportion of gaps relative to the rest of the alignment.
 
-![Crop Ends](images/crop_ends.png)
+![Crop Ends](images/crop_ends.png?raw=true)
 
 | Parameter | Description | Default Value | Min | Max |
 | ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |-----|------|
@@ -221,38 +221,7 @@ Output files:
 | *`--consensus_keep_gaps`* | If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False) | False |
 | *`--consensus_name`* | Name to use for the consensus sequence in the output fasta file | consensus |
 
-## Unaligning the Alignment
-This function simply removes the gaps from the input or output alignment and creates and unaligned file of the sequences.
 
-Output files:
-
-* **`OUTFILE_STEM_unaligned_input.fasta`** - unaligned sequences of input alignment
-* **`OUTFILE_STEM_unaligned_output.fasta`** - unaligned sequences of output alignment
-
-| Parameter | Description | Default |
-| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| `--unalign_input` | Generates a copy of the input alignment with no gaps | False |
-| `--unalign_output` | Generates a copy of the output alignment with no gaps | False |
-
-## Replacing U or T
-This function replaces the U nucleotides with T nucleotides or vice versa without otherwise changing the alignment.
-
-Output files:
-
-* **`OUTFILE_STEM_T_input.fasta`** - input alignment with T's instead of U's
-* **`OUTFILE_STEM_T_output.fasta`** - output alignment with T's instead of U's
-
-or
-
-* **`OUTFILE_STEM_U_input.fasta`** - input alignment with U's instead of T's
-* **`OUTFILE_STEM_U_output.fasta`** - output alignment with U's instead of T's
-
-| Parameter | Description | Default |
-| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
-| `--replace_input_tu` | Generates a copy of the input alignment with T's instead of U's | False |
-| `--replace_output_tu` | Generates a copy of the output alignment with T's instead of U's | False |
-| `--replace_input_ut` | Generates a copy of the input alignment with U's instead of T's | False |
-| `--replace_output_ut` | Generates a copy of the output alignment with U's instead of T's | False |
 
 ## Visualising Alignments
 Each of these functions produces some kind of visualisation of your alignment.
@@ -278,33 +247,61 @@ Output files:
 | *`--plot_keep_numbers`* | Label rows in mini alignments based on input alignment, rather than renumbering | False |
 | *`--plot_force_numbers`* | Force all rows in mini alignments to be numbered rather than labelling e.g. every 10th row for larger plots Will cause labels to overlap in larger plots | False |
 
+### Palettes
+
+This function sets the colour palette for the mini alignments. Currently available palettes are colour blind safe (CBS) and bright.
+
+![CBS palette](images/palettes_CBS.png?raw=true)
+![Bright palette](images/palettes_bright.png?raw=true)
+
+
+| Parameter | Description | Default Value |
+| ---------------------------------------------------------------- |--------------------------------------------------------------------------------------------------- | ------------ |
+| **`--palette`** | Colour palette. Currently implemented CBS (colourblind safe) and bright| CBS |
+
+
 ### Sequence logos
-These functions draw sequence logos representing your output (cleaned) alignment.  If no cleaning functions are specified, the logo will be based on your input alignment.
+These functions draw sequence logos representing output (cleaned) alignment.  You can also specify a subsection of the alignment using the `logo_start` and `logo_end` arguments, positions should be relative to the input alignment. If no cleaning functions are specified, the logo will be based on your input alignment.
 
 Output_files:
 
 * **`OUTFILE_STEM_logo_bar.png (or svg, tiff, jpg)`** - the alignment represented as a bar chart
 * **`OUTFILE_STEM_logo_text.png (or svg, tiff, jpg)`** - the alignment represented as a standard sequence logo using text
 
+![Sequence logo text](images/sequence_logo.png?raw=true)
+![Sequence logo bar](images/sequence_logo_bar.png?raw=true)
+
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--make_sequence_logo`** | Draw a sequence logo | False |
-| *`--logo_start`* | Start of sequence logo | 0 |
-| *`--logo_end`* | End of sequence logo | MSA length |
 | *`--sequence_logo_type`* | Type of sequence logo - bar/text/both | bar |
 | *`--sequence_logo_dpi`* | DPI for sequence logo | 300 |
 | *`--sequence_logo_font`* | Font (see NB below) for bases / amino acids in a text based sequence logo | monospace |
 | *`--sequence_logo_nt_per_row`* | Number of bases / amino acids to show per row in the sequence logo, where the logo is too large to show on a single line | 50 |
 | *`--sequence_logo_filetype`* | Image file type to use for the sequence logo - can be png, svg, tiff or jpg | png |
+| *`--logo_start`* | Start sequence logo | 0 |
+| *`--logo_end`* | End of sequence logo | MSA length |
 
 NB: to see available fonts on your system, run CIAlign --list_fonts_only and view CIAlign_fonts.png
 
+
 ### Position Frequency, Probability and Weight Matrices
-These functions are used to create a position weight matrix, position frequency matrix or position probability matrix for your (cleaned) alignment. If no cleaning functions are specified, the output will be based on your input alignment.
+These functions are used to create a position weight matrix, position frequency matrix or position probability matrix for your input or output (cleaned) alignment. These are numerical representations of the alignment which can be used as input for various other software, for example to find regions of another sequence resembling part of your alignment. PFMs, PPMs and PWMs are described well in the Wikipedia article [here](https://en.wikipedia.org/wiki/Position_weight_matrix). 
+
+You can also specify a subsection of the alignment using the `pwm_start` and `pwm_end` arguments, positions should be relative to the input alignment.
 
 
-
-
+| Parameter | Description | Default |
+| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
+| **`--pwm_input`** | Generate a position frequency matrix, position probability matrix and position weight matrix based on the input alignment | False |
+| **`--pwm_output`** | Generate a position frequency matrix, position probability matrix and position weight matrix based on the cleaned output alignment | False |
+| *`--pwm_start`* | Start the PWM and other matrices from this column of the input alignment | None |
+| *`--pwm_end`* | Start the PWM and other matrices from this column of the input alignment | None |
+| *`--pwm_freqtype`* | Type of background frequency matrix to use when generating the PWM. Should be 'equal', 'calc', 'calc2' or 'user'. 'equal', assume all residues are equally common, 'calc', frequency is calculated using the PFM,  'calc2', frequency is calculated using the full alignment (same as calc if pwm_start and pwm_end are not specified). | equal |
+| *`--pwm_alphatype`* | Alpha value to use as a pseudocount to avoid zero values in the PPM. Should be 'calc' or 'user'. If alphatype is 'calc', alpha is calculated as frequency(base) * (square root(n rows in alignment)), as described in Dave Tang's blog [here](https://davetang.org/muse/2013/10/01/position-weight-matrix/), which recreates the method used in [Wasserman & Sandelin 2004](doi.org/10.1038/nrg1315). If alpha type is 'user' the user provides the value of alpha as `pwm_alphatype`. To run without pseudocounts set `pwm_alphatype` as user and `pwm_alphaval` as 0 | calc |
+| *`--pwm_alphaval`* | User defined value of the alpha parameter to use as a pseudocount in the PPM. | 1 |
+| *`--pwm_output_blamm`* | Output PPM formatted for [BLAMM](https://github.com/biointec/blamm) software | False 
+| *`--pwm_output_meme`* | Output PPM formatted for [MEME](https://meme-suite.org/meme) software | False |
 
 
 ## Analysing Alignment Statistics
@@ -352,3 +349,36 @@ Output file:
 | *`--make_simmatrix_keepgaps`* | 0 - exclude positions which are gaps in either or both sequences from similarity calculations, 1 - exclude positions which are gaps in both sequences, 2 - include all positions  | 0 |
 | *`--make_simmatrix_dp`* | Number of decimal places to display in the similarity matrix output file | 4 |
 | *`--make_simmatrix_minoverlap`* | Minimum overlap between two sequences to have non-zero similarity in the similarity matrix | 1 |
+
+## Replacing U or T
+This function replaces the U nucleotides with T nucleotides or vice versa without otherwise changing the alignment.
+
+Output files:
+
+* **`OUTFILE_STEM_T_input.fasta`** - input alignment with T's instead of U's
+* **`OUTFILE_STEM_T_output.fasta`** - output alignment with T's instead of U's
+
+or
+
+* **`OUTFILE_STEM_U_input.fasta`** - input alignment with U's instead of T's
+* **`OUTFILE_STEM_U_output.fasta`** - output alignment with U's instead of T's
+
+| Parameter | Description | Default |
+| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
+| `--replace_input_tu` | Generates a copy of the input alignment with T's instead of U's | False |
+| `--replace_output_tu` | Generates a copy of the output alignment with T's instead of U's | False |
+| `--replace_input_ut` | Generates a copy of the input alignment with U's instead of T's | False |
+| `--replace_output_ut` | Generates a copy of the output alignment with U's instead of T's | False |
+
+## Unaligning the Alignment
+This function simply removes the gaps from the input or output alignment and creates and unaligned file of the sequences.
+
+Output files:
+
+* **`OUTFILE_STEM_unaligned_input.fasta`** - unaligned sequences of input alignment
+* **`OUTFILE_STEM_unaligned_output.fasta`** - unaligned sequences of output alignment
+
+| Parameter | Description | Default |
+| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
+| `--unalign_input` | Generates a copy of the input alignment with no gaps | False |
+| `--unalign_output` | Generates a copy of the output alignment with no gaps | False |
