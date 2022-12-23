@@ -59,13 +59,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#visualisation-functions">Visualisation functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#mini-alignments">Mini Alignments</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sequence-logos">Sequence logos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#statistics-plots">Statistics Plots</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#palettes">Palettes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#interpretation-functions">Interpretation Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#consensus-sequences">Consensus Sequences</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#position-frequency-probability-and-weight-matrices">Position Frequency, Probability and Weight Matrices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#statistics-plots">Statistics Plots</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#similarity-matrices">Similarity Matrices</a></li>
 </ul>
 </li>
@@ -113,7 +113,7 @@
 <li><p><a class="reference external" href="#cleaning-functions">Cleaning Functions</a></p></li>
 <li><p><a class="reference external" href="#visualisation-functions">Visualisation Functions</a></p></li>
 <li><p><a class="reference external" href="#interpretation-functions">Interpretation functions</a></p></li>
-<li><p>[Editing functions]</p></li>
+<li><p><a class="reference external" href="#editing-functions">Editing functions</a></p></li>
 </ol>
 <p>CIAlign is used to process multiple sequence alignments (MSAs) - sets of nucleotide or amino acid sequences which have already been aligned with an external tool.</p>
 <section id="input-files">
@@ -683,6 +683,75 @@
 </tbody>
 </table><p>NB: to see available fonts on your system, run CIAlign –list_fonts_only and view CIAlign_fonts.png</p>
 </section>
+<section id="statistics-plots">
+<h3>Statistics Plots<a class="headerlink" href="#statistics-plots" title="Permalink to this heading">¶</a></h3>
+<p>For each position in the alignment, these functions plot:</p>
+<ul class="simple">
+<li><p>Coverage (the number of non-gap residues)</p></li>
+<li><p>Information content</p></li>
+<li><p>Shannon entropy</p></li>
+</ul>
+<p><strong>Coverage</strong></p>
+<p><img alt="../_images/cov_small.png" src="../_images/cov_small.png" /></p>
+<p><strong>Information Content</strong></p>
+<p><img alt="../_images/ic_small.png" src="../_images/ic_small.png" /></p>
+<p><strong>Shannon Entropy</strong></p>
+<p><img alt="../_images/se_small.png" src="../_images/se_small.png" /></p>
+<p>Output files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_coverage.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment coverage</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_coverage.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment coverage</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_information_content.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment information content</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_information_content.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment information content</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_shannon_entropy.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment Shannon entropy</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_shannon_entropy.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment Shannon entropy</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--plot_stats_input</code></strong></td>
+<td>Plot the statistics for the input MSA</td>
+<td>False</td>
+</tr>
+<tr>
+<td><strong><code>--plot_stats_output</code></strong></td>
+<td>Plot the statistics for the output MSA</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_dpi</code></em></td>
+<td>DPI for coverage plot</td>
+<td>300</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_height</code></em></td>
+<td>Height for coverage plot (inches)</td>
+<td>3</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_width</code></em></td>
+<td>Width for coverage plot (inches)</td>
+<td>5</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_colour</code></em></td>
+<td>Colour for coverage plot (hex code or name)</td>
+<td>#007bf5</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_filetype</code></em></td>
+<td>File type for coverage plot (png, svg, tiff, jpg)</td>
+<td>png</td>
+</tr>
+</tbody>
+</table></section>
 <section id="palettes">
 <h3>Palettes<a class="headerlink" href="#palettes" title="Permalink to this heading">¶</a></h3>
 <p>This function sets the colour palette for the mini alignments. Currently available palettes are colour blind safe (CBS) and bright.</p>
@@ -815,69 +884,6 @@ For the “majority” based consensus sequences, where the two most frequent ch
 <td><em><code>--pwm_output_meme</code></em></td>
 <td>Output PPM formatted for <a href="https://meme-suite.org/meme">MEME</a> software</td>
 <td>False</td>
-</tr>
-</tbody>
-</table></section>
-<section id="statistics-plots">
-<h3>Statistics Plots<a class="headerlink" href="#statistics-plots" title="Permalink to this heading">¶</a></h3>
-<p>For each position in the alignment, these functions plot:</p>
-<ul class="simple">
-<li><p>Coverage (the number of non-gap residues)</p></li>
-<li><p>Information content</p></li>
-<li><p>Shannon entropy</p></li>
-</ul>
-<p>Output files:</p>
-<ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_coverage.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment coverage</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_coverage.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment coverage</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_information_content.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment information content</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_information_content.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment information content</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_shannon_entropy.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment Shannon entropy</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_shannon_entropy.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment Shannon entropy</p></li>
-</ul>
-<table border="1" class="docutils">
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><code>--plot_stats_input</code></strong></td>
-<td>Plot the statistics for the input MSA</td>
-<td>False</td>
-</tr>
-<tr>
-<td><strong><code>--plot_stats_output</code></strong></td>
-<td>Plot the statistics for the output MSA</td>
-<td>False</td>
-</tr>
-<tr>
-<td><em><code>--plot_stats_dpi</code></em></td>
-<td>DPI for coverage plot</td>
-<td>300</td>
-</tr>
-<tr>
-<td><em><code>--plot_stats_height</code></em></td>
-<td>Height for coverage plot (inches)</td>
-<td>3</td>
-</tr>
-<tr>
-<td><em><code>--plot_stats_width</code></em></td>
-<td>Width for coverage plot (inches)</td>
-<td>5</td>
-</tr>
-<tr>
-<td><em><code>--plot_stats_colour</code></em></td>
-<td>Colour for coverage plot (hex code or name)</td>
-<td>#007bf5</td>
-</tr>
-<tr>
-<td><em><code>--plot_stats_filetype</code></em></td>
-<td>File type for coverage plot (png, svg, tiff, jpg)</td>
-<td>png</td>
 </tr>
 </tbody>
 </table></section>

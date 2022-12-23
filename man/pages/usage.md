@@ -7,7 +7,7 @@
 5. [Cleaning Functions](#cleaning-functions)
 6. [Visualisation Functions](#visualisation-functions)
 7. [Interpretation functions](#interpretation-functions)
-8. [Editing functions]
+8. [Editing functions](#editing-functions)
 
 CIAlign is used to process multiple sequence alignments (MSAs) - sets of nucleotide or amino acid sequences which have already been aligned with an external tool.
 
@@ -250,6 +250,45 @@ Output_files:
 
 NB: to see available fonts on your system, run CIAlign --list_fonts_only and view CIAlign_fonts.png
 
+#### Statistics Plots
+For each position in the alignment, these functions plot:
+* Coverage (the number of non-gap residues)
+* Information content
+* Shannon entropy
+
+**Coverage**
+
+![](../images/cov_small.png)
+
+**Information Content**
+
+![](../images/ic_small.png)
+
+**Shannon Entropy**
+
+![](../images/se_small.png)
+
+
+Output files:
+
+* **`OUTFILE_STEM_input_coverage.png (or svg, tiff, jpg) `** - image showing the input alignment coverage
+* **`OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) `** - image showing the output alignment coverage
+* **`OUTFILE_STEM_input_information_content.png (or svg, tiff, jpg) `** - image showing the input alignment information content
+* **`OUTFILE_STEM_output_information_content.png (or svg, tiff, jpg) `** - image showing the output alignment information content
+* **`OUTFILE_STEM_input_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the input alignment Shannon entropy
+* **`OUTFILE_STEM_output_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the output alignment Shannon entropy
+
+| Parameter | Description | Default |
+| ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |
+| **`--plot_stats_input`** | Plot the statistics for the input MSA | False |
+| **`--plot_stats_output`** | Plot the statistics for the output MSA | False |
+| *`--plot_stats_dpi`* | DPI for coverage plot | 300 |
+| *`--plot_stats_height`* | Height for coverage plot (inches) | 3 |
+| *`--plot_stats_width`* | Width for coverage plot (inches) | 5 |
+| *`--plot_stats_colour`* | Colour for coverage plot (hex code or name) | #007bf5 |
+| *`--plot_stats_filetype`* | File type for coverage plot (png, svg, tiff, jpg) | png |
+
+
 #### Palettes
 
 This function sets the colour palette for the mini alignments. Currently available palettes are colour blind safe (CBS) and bright.
@@ -318,30 +357,6 @@ Output_files:
 | *`--pwm_output_meme`* | Output PPM formatted for [MEME](https://meme-suite.org/meme) software | False |
 
 
-#### Statistics Plots
-For each position in the alignment, these functions plot:
-* Coverage (the number of non-gap residues)
-* Information content
-* Shannon entropy
-
-Output files:
-
-* **`OUTFILE_STEM_input_coverage.png (or svg, tiff, jpg) `** - image showing the input alignment coverage
-* **`OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) `** - image showing the output alignment coverage
-* **`OUTFILE_STEM_input_information_content.png (or svg, tiff, jpg) `** - image showing the input alignment information content
-* **`OUTFILE_STEM_output_information_content.png (or svg, tiff, jpg) `** - image showing the output alignment information content
-* **`OUTFILE_STEM_input_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the input alignment Shannon entropy
-* **`OUTFILE_STEM_output_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the output alignment Shannon entropy
-
-| Parameter | Description | Default |
-| ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--plot_stats_input`** | Plot the statistics for the input MSA | False |
-| **`--plot_stats_output`** | Plot the statistics for the output MSA | False |
-| *`--plot_stats_dpi`* | DPI for coverage plot | 300 |
-| *`--plot_stats_height`* | Height for coverage plot (inches) | 3 |
-| *`--plot_stats_width`* | Width for coverage plot (inches) | 5 |
-| *`--plot_stats_colour`* | Colour for coverage plot (hex code or name) | #007bf5 |
-| *`--plot_stats_filetype`* | File type for coverage plot (png, svg, tiff, jpg) | png |
 
 
 #### Similarity Matrices
