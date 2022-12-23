@@ -296,7 +296,8 @@ def makeLinePlot(stat, dest, ylab, dpi=300, height=3, width=5,
     # c.plot(xx, p(xx))
     for sp in f.axes:
         sp.set_xticks(np.arange(0, xmax*1.1, x_div))
-        sp.set_xticklabels(np.arange(0, xmax*1.1, x_div), fontsize=fontsize,
+        sp.set_xticklabels([int(x) for x in np.arange(0, xmax*1.1, x_div)],
+                           fontsize=fontsize,
                            rotation='vertical')
         sp.set_yticks(np.arange(0, ymax*1.1, y_div))
         sp.set_yticklabels([
@@ -404,7 +405,7 @@ def sequence_logo(alignment,
                     height_sum_higher += height
         a.axis(limits)
         if rend - start < 25:
-            a.set_xticks(np.arange(rstart-0.5, rend, 1))
+            a.set_xticks([int(x) for x in np.arange(rstart-0.5, rend, 1)])
             a.set_xticklabels([int(x) for x in np.arange(rstart, rend+0.5, 1)])
         else:
             a.set_xticks([rstart, rend])
