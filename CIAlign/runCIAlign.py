@@ -580,7 +580,7 @@ def runCleaning(args, log, arr, nams, keeps):
         utilityFunctions.checkArrLength(arr, log)
 
     # Crop divergent
-    if args.crop_divergent:
+    if args.crop_divergent or args.all_options or args.clean:
         log.info("Removing divergent sequence ends")
         if not args.silent:
             print("Removing divergent sequence ends")
@@ -870,7 +870,7 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ):
     typ: str
         Either 'aa' - amino acid - or 'nt' - nucleotide
     '''
-    if args.make_sequence_logo or args.all_options:
+    if args.make_sequence_logo or args.all_options or args.visualise:
         figdpi = args.sequence_logo_dpi
         figrowlength = args.sequence_logo_nt_per_row
         logo_start = args.logo_start
