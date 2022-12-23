@@ -681,6 +681,29 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
+
+    # Crop divergent
+    if args.crop_divergent or args.all_options or args.clean:
+        log.info("Removing divergent sequence ends")
+        if not args.silent:
+            print("Removing divergent sequence ends")
+
+        A = parsingFunctions.cropDivergent(arr,
+                                           relativePositions,
+                                           rmfile,
+                                           log,
+                                           args.divergent_min_prop_ident,
+                                           args.divergent_min_prop_nongap,
+                                           args.divergent_buffer_size)
+
+        # Track what has been removed
+        arr, r, relativePositions = A
+        markupdict['crop_divergent'] = r
+        removed_cols = removed_cols | r
+        # Check there are some columns left
+        utilityFunctions.checkArrLength(arr, log)
+
+
     if args.remove_gaponly and not (args.all_options or
                                     args.remove_divergent or
                                     args.remove_insertions or
@@ -974,7 +997,7 @@ def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
     typ: str
         Either 'aa' - amino acid - or 'nt' - nucleotide
     '''
-    if args.make_sequence_logo or args.all_options:
+    if args.make_sequence_logo or args.all_options or args.visualise:
         figdpi = args.sequence_logo_dpi
         figrowlength = args.sequence_logo_nt_per_row
         logo_start, logo_end = utilityFunctions.updateStartEnd(
