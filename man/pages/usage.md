@@ -310,7 +310,12 @@ These functions provide additional analyses you may wish to perform on your alig
 
 #### Consensus Sequences
 This step generates a consensus sequence based on the cleaned alignment.  If no cleaning functions are performed, the consensus will be based on the input alignment.
-For the "majority" based consensus sequences, where the two most frequent characters are equally common a random character is selected.
+
+Consensus sequences can be `majority` - the most common character in each column is used, including gaps or `majority_nongap` - the most common non-gap character is used.
+
+Where the two most frequent characters are equally common a random character is selected.
+
+Once the consensus has been generated, gap positions are automatically removed, specifying `---consensus_keep_gaps` prevents this.
 
 Output files:
 
@@ -326,6 +331,7 @@ Output files:
 
 
 #### Position Frequency, Probability and Weight Matrices
+
 These functions are used to create a position weight matrix, position frequency matrix or position probability matrix for your input or output (cleaned) alignment. These are numerical representations of the alignment which can be used as input for various other software, for example to find regions of another sequence resembling part of your alignment. PFMs, PPMs and PWMs are described well in the Wikipedia article [here](https://en.wikipedia.org/wiki/Position_weight_matrix). 
 
 You can also specify a subsection of the alignment using the `pwm_start` and `pwm_end` arguments, positions should be relative to the input alignment.
@@ -357,9 +363,8 @@ Output_files:
 | *`--pwm_output_meme`* | Output PPM formatted for [MEME](https://meme-suite.org/meme) software | False |
 
 
-
-
 #### Similarity Matrices
+
 Generates a matrix showing the proportion of identical bases / amino acids between each pair of sequences in the MSA.
 
 Output file:
