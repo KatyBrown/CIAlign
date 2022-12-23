@@ -1,10 +1,11 @@
-## Requirements
+## Installation
+### Requirements
 * python >= 3.6
 * matplotlib >= 2.1.1
 * numpy >= 1.16.3
 * scipy >= 1.3.0
 
-## Installation
+### Recommendations
 The easiest way to install CIAlign is using conda or pip3.
 
 ### Conda
