@@ -380,9 +380,8 @@ Output file:
 | *`--make_simmatrix_dp`* | Number of decimal places to display in the similarity matrix output file | 4 |
 | *`--make_simmatrix_minoverlap`* | Minimum overlap between two sequences to have non-zero similarity in the similarity matrix | 1 |
 
-### Additional Functions
 
-#### Extracting sections from an alignment
+### Editing Functions
 
 #### Replacing U or T
 This function replaces the U nucleotides with T nucleotides or vice versa without otherwise changing the alignment.
