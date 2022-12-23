@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>title: CIAlign - Clean and Interpret Alignments author: Charlotte Tumescheit, Dr. Andrew E. Firth, Dr. Katherine Brown documentclass: article fontsize: 10pt mainfont: FreeSans geometry: [top=2cm, bottom=1.5cm, left=1cm, right=1cm] &mdash; CIAlign 1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> CIAlign
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="pages/introduction.html">CIAlign</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CIAlign</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">title: CIAlign - Clean and Interpret Alignments
+author: Charlotte Tumescheit, Dr. Andrew E. Firth, Dr. Katherine Brown
+documentclass: article
+fontsize: 10pt
+mainfont: FreeSans
+geometry: [top=2cm, bottom=1.5cm, left=1cm, right=1cm]</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/user_guide_template.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <hr class="docutils" />
+<section id="title-cialign-clean-and-interpret-alignments-author-charlotte-tumescheit-dr-andrew-e-firth-dr-katherine-brown-documentclass-article-fontsize-10pt-mainfont-freesans-geometry-top-2cm-bottom-1-5cm-left-1cm-right-1cm">
+<h1>title: CIAlign - Clean and Interpret Alignments
+author: Charlotte Tumescheit, Dr. Andrew E. Firth, Dr. Katherine Brown
+documentclass: article
+fontsize: 10pt
+mainfont: FreeSans
+geometry: [top=2cm, bottom=1.5cm, left=1cm, right=1cm]<a class="headerlink" href="#title-cialign-clean-and-interpret-alignments-author-charlotte-tumescheit-dr-andrew-e-firth-dr-katherine-brown-documentclass-article-fontsize-10pt-mainfont-freesans-geometry-top-2cm-bottom-1-5cm-left-1cm-right-1cm" title="Permalink to this heading">¶</a></h1>
+</section>
+<section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h1>
+<p>CIAlign is a command line tool which performs various functions to clean, visualise and analyse a multiple sequence alignment (MSA).</p>
+<ol class="simple">
+<li><p><a class="reference external" href="#citation">Citation</a><br></p></li>
+<li><p><a class="reference external" href="#functionality">Functionality</a><br></p></li>
+<li><p><a class="reference external" href="#mailing-list">Mailing List</a><br></p></li>
+</ol>
+<section id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Permalink to this heading">¶</a></h2>
+<p>If you found CIAlign useful, please cite:</p>
+<p><a class="reference external" href="https://peerj.com/articles/12983/">Tumescheit C, Firth AE, Brown K. 2022. CIAlign: A highly customisable command line tool to clean, interpret and visualise multiple sequence alignments. PeerJ 10:e12983 https://doi.org/10.7717/peerj.12983</a></p>
+</section>
+<section id="functionality">
+<h2>Functionality<a class="headerlink" href="#functionality" title="Permalink to this heading">¶</a></h2>
+<p>CIAlign allows the user to:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="cleaning_functions.html">Cleaning functions</a> - remove sources of noise from an MSA</p>
+<ul>
+<li><p><a class="reference external" href="cleaning_functions.html#remove-divergent">Remove sequences above a threshold level percentage of divergence from the majority</a></p></li>
+<li><p><a class="reference external" href="cleaning_functions.html#remove-insertions">Remove insertions which are not present in the majority of sequences</a></p></li>
+<li><p><a class="reference external" href="cleaning_functions.html#crop-ends">Crop poorly aligned sequence ends</a></p></li>
+<li><p><a class="reference external" href="cleaning_functions.html#remove-short">Remove short sequences below a threshold number of bases or amino acids</a></p></li>
+<li><p><a class="reference external" href="cleaning_functions.html#remove-gap-only">Remove columns containing only gaps</a></p></li>
+<li><p><a class="reference external" href="cleaning_functions.html#crop_divergent">Remove either end of an alignment where columns don’t meet a minimum identity threshold and coverage level</a>
+<br><br></p></li>
+</ul>
+</li>
+<li><p>Generate consensus sequences</p></li>
+<li><p>Visualise alignments</p>
+<ul>
+<li><p>Generate image files showing the alignment before and after using CIAlign cleaning functions and showing which columns and rows have been removed</p></li>
+<li><p>Draw sequence logos</p></li>
+<li><p>Visualise coverage and conservation at each position in the alignment</p></li>
+<li><p>Generate position frequency, position probability and position weight matrices based on the alignment and produce output formated to be used as input for the <a class="reference external" href="https://github.com/biointec/blamm">BLAMM</a> and <a class="reference external" href="https://meme-suite.org/meme/">MEME</a> motif analysis tools.</p></li>
+</ul>
+</li>
+<li><p>Analyse alignment statistics</p>
+<ul>
+<li><p>Generate a similarity matrix showing the percentage identity between each sequence pair</p></li>
+</ul>
+</li>
+<li><p>Make changes to the alignment</p>
+<ul>
+<li><p>Extract a section of the alignment</p></li>
+<li><p>Unalign the alignment</p></li>
+<li><p>Replace U with T, or T with U in a nucleotide alignment</p></li>
+</ul>
+</li>
+</ul>
+<p>CIAlign is designed to be highly customisable, allowing users to specify exactly which functions to run and which settings to use. It is also transparent, generating a clear log file and alignment markup showing exactly how the alignment has changed and what has been removed by which function.</p>
+</section>
+<section id="mailing-list">
+<h2>Mailing List<a class="headerlink" href="#mailing-list" title="Permalink to this heading">¶</a></h2>
+<p>Sign up <a class="reference external" href="https://t.co/tTyxFV6LR2">here</a> for updates when a new feature is added to CIAlign</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>python &gt;= 3.6</p></li>
+<li><p>matplotlib &gt;= 2.1.1</p></li>
+<li><p>numpy &gt;= 1.16.3</p></li>
+<li><p>scipy &gt;= 1.3.0</p></li>
+</ul>
+</section>
+<section id="recommendations">
+<h3>Recommendations<a class="headerlink" href="#recommendations" title="Permalink to this heading">¶</a></h3>
+<p>The easiest way to install CIAlign is using conda or pip3.</p>
+</section>
+<section id="conda">
+<h3>Conda<a class="headerlink" href="#conda" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">bioconda</span> <span class="pre">cialign</span></code></p>
+<p><a class="reference external" href="https://anaconda.org/bioconda/cialign">link</a></p>
+</section>
+<section id="pip3">
+<h3>pip3<a class="headerlink" href="#pip3" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">cialign</span></code></p>
+<p><a class="reference external" href="https://pypi.org/project/cialign/">link</a></p>
+</section>
+<section id="download">
+<h3>Download<a class="headerlink" href="#download" title="Permalink to this heading">¶</a></h3>
+<p>The current release of CIAlign can also be downloaded directly using <a class="reference external" href="https://github.com/KatyBrown/CIAlign/releases/latest">this link</a>,</p>
+<p>If you download the package directly, you will also need to add the CIAlign directory to your PATH environment variable as described <a class="reference external" href="https://gist.github.com/nex3/c395b2f8fd4b02068be37c961301caa7">here</a>## Usage</p>
+</section>
+<section id="basic-usage">
+<h3>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">CIAlign</span> <span class="pre">--infile</span> <span class="pre">INFILE</span> <span class="pre">--outfile_stem</span> <span class="pre">STEM</span> <span class="pre">--inifile</span> <span class="pre">my_config.ini</span></code></p>
+</section>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
+<p>Parameters can be specified in the command line or in a config file using the naming system below.</p>
+<p>A template config file is provided in <code class="docutils literal notranslate"><span class="pre">CIAlign/templates/ini_template.ini</span></code> - edit this file and provide the path to the –inifile argument.  If this argument is not provided command line arguments and defaults will be used.</p>
+<p>Parameters passed in the command line will take precedence over config file parameters, which take precedence over defaults.</p>
+<p>Command help can be accessed by typing <code class="docutils literal notranslate"><span class="pre">CIAlign</span> <span class="pre">--help</span></code></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--infile</code></td>
+<td>Path to input alignment file in FASTA format</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--inifile</code></td>
+<td>Path to config file</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--outfile_stem</code></td>
+<td>Prefix for output files, including the path to the output directory</td>
+<td>CIAlign</td>
+</tr>
+<tr>
+<td><code>--all</code></td>
+<td>Use all available functions with default parameters. Does not currently include crop_divergent</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--clean</code></td>
+<td>Use all available cleaning functions (except crop_divergent) with default parameters</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--visualise</code></td>
+<td>Use all available mini alignment visualisation functions with default parameters</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--interpret</code></td>
+<td>Use all available interpretation functions (except sequence logos) with default parameters</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--silent</code></td>
+<td>Do not print progress to the screen</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--help</code></td>
+<td>Show all available parameters with an explanation</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--version</code></td>
+<td>Show the version</td>
+<td>None</td>
+</tr>
+</tbody>
+</table><p>Beside these main parameters, the use of every function and corresponding thresholds can be specified by the user by adding parameters to the command line or by setting them in the configuration file. Available functions and their parameters will be specified in the following section.</p>
+<p>CIAlign always produces a log file, specifying which functions have been run with witch parameters and what has been removed. It also outputs a file that only specifies what has been removed with the original column positions and the sequence names.</p>
+<p>Output files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_log.txt</span></code></strong> - general log file</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_removed.txt</span></code></strong> - removed columns positions and sequence names text file</p></li>
+</ul>
+</section>
+<section id="cleaning-an-msa">
+<h3>Cleaning an MSA<a class="headerlink" href="#cleaning-an-msa" title="Permalink to this heading">¶</a></h3>
+<p>Each of these steps (if specified) will be performed sequentially in the order specified in the table below.</p>
+<p>The “cleaned” alignment after all steps have been performed will be saved as <strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_cleaned.fasta</span></code></strong></p>
+<p>remove_divergent, remove_insertions, crop_ends and crop divergent require three or more sequences in the alignment, remove_short and remove_gap_only require two or more sequences.</p>
+<p>The <strong>retain</strong> functions allow the user to specify sequences to keep regardless of the CIAlign results.</p>
+<section id="remove-divergent">
+<h4>Remove Divergent<a class="headerlink" href="#remove-divergent" title="Permalink to this heading">¶</a></h4>
+<p>Removes divergent sequences from the alignment -  sequences with &lt;= <code class="docutils literal notranslate"><span class="pre">remove_divergent_minperc</span></code> positions at which the most common residue in the alignment is present</p>
+<p><img alt="Remove Divergent" src="../images/remove_divergent.png" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--remove_divergent</code></strong></td>
+<td>Remove sequences with &lt;= <code>remove_divergent_minperc</code> positions at which the most common base / amino acid in the alignment is present</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_divergent_minperc</code></em></td>
+<td>Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved</td>
+<td>remove_divergent_minperc_def</td>
+<td>remove_divergent_minperc_min</td>
+<td>remove_divergent_minperc_max</td>
+</tr>
+<tr>
+<td><em><code>--remove_divergent_retain</code></em></td>
+<td>Do not remove sequences with this name when running the remove divergent function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_divergent_retain_str</code></em></td>
+<td>Do not remove sequences with names containing this character string when running the remove divergent function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_divergent_retain_list</code></em></td>
+<td>Do not remove sequences with names listed in this file when running the remove divergent function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table></section>
+<section id="remove-insertions">
+<h4>Remove Insertions<a class="headerlink" href="#remove-insertions" title="Permalink to this heading">¶</a></h4>
+<p>Removes insertions from the alignment which are found in &lt;= <code class="docutils literal notranslate"><span class="pre">insertion_min_perc</span></code> of the sequences.</p>
+<p><img alt="Remove Insertions" src="../images/remove_insertions.png" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--remove_insertions</code></strong></td>
+<td>Remove insertions found in &lt;= <code>insertion_min_perc</code> of sequences from the alignment</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--insertion_min_size</code></em></td>
+<td>Only remove insertions &gt;= this number of residues</td>
+<td>insertion_min_size_def</td>
+<td>insertion_min_size_min</td>
+<td>insertion_min_size_max</td>
+</tr>
+<tr>
+<td><em><code>--insertion_max_size</code></em></td>
+<td>Only remove insertions &lt;= this number of residues</td>
+<td>insertion_max_size_def</td>
+<td>insertion_max_size_min</td>
+<td>insertion_max_size_max</td>
+</tr>
+<tr>
+<td><em><code>--insertion_min_flank</code></em></td>
+<td>Minimum number of bases on either side of an insertion to classify it as an insertion</td>
+<td>insertion_min_flank_def</td>
+<td>insertion_min_flank_min</td>
+<td>insertion_min_flank_max</td>
+</tr>
+<tr>
+<td><em><code>--insertion_min_perc</code></em></td>
+<td>Remove insertions which are present in less than this proportion of sequences</td>
+<td>insertion_min_perc_def</td>
+<td>insertion_min_perc_min</td>
+<td>insertion_min_perc_max</td>
+</tr>
+</tbody>
+</table></section>
+<section id="crop-ends">
+<h4>Crop Ends<a class="headerlink" href="#crop-ends" title="Permalink to this heading">¶</a></h4>
+<p>Crops the ends of individual sequences if they contain a high proportion of gaps relative to the rest of the alignment.</p>
+<p><img alt="Crop Ends" src="../images/crop_ends.png" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--crop_ends</code></strong></td>
+<td>Crop the ends of sequences if they are poorly aligned</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_mingap_perc</code></em></td>
+<td>Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers.</td>
+<td>crop_ends_mingap_perc_def</td>
+<td>crop_ends_mingap_perc_min</td>
+<td>crop_ends_mingap_perc_max</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_redefine_perc</code></em></td>
+<td>Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end.</td>
+<td>crop_ends_redefine_perc_def</td>
+<td>crop_ends_redefine_perc_min</td>
+<td>crop_ends_redefine_perc_max</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_retain</code></em></td>
+<td>Do not crop sequences with this name when running the crop ends function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_retain_str</code></em></td>
+<td>Do not crop sequences with names containing this character string when running the crop ends function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_retain_list</code></em></td>
+<td>Do not crop sequences with names listed in this file when running the crop ends function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table><p>Note: if the sequences are short (e.g. &lt; 100), a low crop_ends_mingap_perc (e.g. 0.01) will result in a change of gap numbers that is too low (e.g. 0). If this happens, the change in gap numbers will be set to 2 and a warning will be printed.</p>
+</section>
+<section id="remove-short">
+<h4>Remove Short<a class="headerlink" href="#remove-short" title="Permalink to this heading">¶</a></h4>
+<p>Removes sequences blow a threshold length.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--remove_short</code></strong></td>
+<td>Remove sequences &lt;= <code>remove_min_length</code>  amino acids from the alignment</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_min_length</code></em></td>
+<td>Sequences are removed if they are shorter than this minimum length, excluding gaps.</td>
+<td>remove_min_length_def</td>
+<td>remove_min_length_min</td>
+<td>remove_min_length_max</td>
+</tr>
+<tr>
+<td><em><code>--remove_short_retain</code></em></td>
+<td>Do not remove sequences with this name when running the remove short function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_short_retain_str</code></em></td>
+<td>Do not remove sequences with names containing this character string when running the remove short function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_short_retain_list</code></em></td>
+<td>Do not remove sequences with names listed in this file when running the remove short function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table></section>
+<section id="keep-gap-only">
+<h4>Keep Gap Only<a class="headerlink" href="#keep-gap-only" title="Permalink to this heading">¶</a></h4>
+<p>Removes columns containing only gaps.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--keep_gaponly</code></strong></td>
+<td>Keep gap only columns in the alignment</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table></section>
+<section id="crop-divergent">
+<h4>Crop Divergent<a class="headerlink" href="#crop-divergent" title="Permalink to this heading">¶</a></h4>
+<p>Crops columns from the sides of alignment to leave only a single conserved section, based on a threshold percentage of identical residues and percentage of gaps in each column.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--crop_divergent</code></strong></td>
+<td>Crop either end of the alignment until &gt; <code>crop_divergent_min_prop_ident</code> residues in a column are identical and &gt; <code>crop_divergent_min_prop_nongap</code> residues are not gaps, over <code>buffer_size</code> consecutive columns</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--crop_divergent_min_prop_ident</code></em></td>
+<td>Minumum proportion of identical residues in a column to be retained by crop_divergent</td>
+<td>divergent_min_prop_ident_def</td>
+<td>divergent_min_prop_ident_min</td>
+<td>divergent_min_prop_ident_max</td>
+</tr>
+<tr>
+<td><em><code>--crop_divergent_min_prop_nongap</code></em></td>
+<td>Minumum proportion of non gap residues in a column to be retained by crop_divergent</td>
+<td>divergent_min_prop_nongap_def</td>
+<td>divergent_min_prop_nongap_min</td>
+<td>divergent_min_prop_nongap_max</td>
+</tr>
+<tr>
+<td><em><code>--crop_divergent_buffer_size</code></em></td>
+<td>Minumum number of consecutive columns which must meet the criteria for crop_divergent to be retained</td>
+<td>divergent_buffer_size_def</td>
+<td>divergent_buffer_size_min</td>
+<td>divergent_buffer_size_max</td>
+</tr>
+</tbody>
+</table></section>
+<section id="retain">
+<h4>Retain<a class="headerlink" href="#retain" title="Permalink to this heading">¶</a></h4>
+<p>These parameters allow the user to specify sequences to not edit with any of the rowwise functions, regardless of the CIAlign results. The rowwise functions are currently remove_divergent, crop_ends and remove_short.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--retain</code></strong></td>
+<td>Do not edit or remove sequences with this name when running any rowwise function (currently remove divergent, crop ends and remove short)</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><strong><code>--retain_str</code></strong></td>
+<td>Do not edit or remove sequences with names containing this character string when running any rowwise function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><strong><code>--retain_list</code></strong></td>
+<td>Do not edit or remove sequences with names listed in this file when running any rowwise function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table></section>
+</section>
+<section id="generating-a-consensus-sequence">
+<h3>Generating a Consensus Sequence<a class="headerlink" href="#generating-a-consensus-sequence" title="Permalink to this heading">¶</a></h3>
+<p>This step generates a consensus sequence based on the cleaned alignment.  If no cleaning functions are performed, the consensus will be based on the input alignment.
+For the “majority” based consensus sequences, where the two most frequent characters are equally common a random character is selected.</p>
+<p>Output files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_consensus.fasta</span></code></strong> - the consensus sequence only</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_with_consensus.fasta</span></code></strong> - the cleaned alignment plus the consensus</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--make_consensus</code></strong></td>
+<td>Make a consensus sequence based on the cleaned alignment</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--consensus_type</code></em></td>
+<td>Type of consensus sequence to make - can be majority, to use the most common character at each position in the consensus, even if this is a gap, or majority_nongap, to use the most common non-gap character at each position</td>
+<td>majority</td>
+</tr>
+<tr>
+<td><em><code>--consensus_keep_gaps</code></em></td>
+<td>If there are gaps in the consensus (if majority_nongap is used as consensus_type), should these be included in the consensus (True) or should this position in the consensus be deleted (False)</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--consensus_name</code></em></td>
+<td>Name to use for the consensus sequence in the output fasta file</td>
+<td>consensus</td>
+</tr>
+</tbody>
+</table></section>
+<section id="visualising-alignments">
+<h3>Visualising Alignments<a class="headerlink" href="#visualising-alignments" title="Permalink to this heading">¶</a></h3>
+<p>Each of these functions produces some kind of visualisation of your alignment.</p>
+<section id="mini-alignments">
+<h4>Mini Alignments<a class="headerlink" href="#mini-alignments" title="Permalink to this heading">¶</a></h4>
+<p>These functions produce “mini alignments” - images showing a small representation of your whole alignment, so that gaps and poorly aligned regions are clearly visible.</p>
+<p>Output files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span></code></strong> - the input alignment</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span></code></strong> - the cleaned output alignment</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_markup.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span></code></strong> - the input alignment with deleted rows and columns marked</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--plot_input</code></strong></td>
+<td>Plot a mini alignment - an image representing the input alignment</td>
+<td>False</td>
+</tr>
+<tr>
+<td><strong><code>--plot_output</code></strong></td>
+<td>Plot a mini alignment - an image representing the output alignment</td>
+<td>False</td>
+</tr>
+<tr>
+<td><strong><code>--plot_markup</code></strong></td>
+<td>Draws the input alignment but with the columns and rows which have been removed by each function marked up in corresponding colours</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--plot_dpi</code></em></td>
+<td>DPI for mini alignments</td>
+<td>300</td>
+</tr>
+<tr>
+<td><em><code>--plot_format</code></em></td>
+<td>Image format for mini alignments - can be png, svg, tiff or jpg</td>
+<td>png</td>
+</tr>
+<tr>
+<td><em><code>--plot_width</code></em></td>
+<td>Mini alignment width in inches</td>
+<td>5</td>
+</tr>
+<tr>
+<td><em><code>--plot_height</code></em></td>
+<td>Mini alignment height in inches</td>
+<td>3</td>
+</tr>
+<tr>
+<td><em><code>--plot_keep_numbers</code></em></td>
+<td>Label rows in mini alignments based on input alignment, rather than renumbering</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--plot_force_numbers</code></em></td>
+<td>Force all rows in mini alignments to be numbered rather than labelling e.g. every 10th row for larger plots Will cause labels to overlap in larger plots</td>
+<td>False</td>
+</tr>
+</tbody>
+</table></section>
+<section id="sequence-logos">
+<h4>Sequence logos<a class="headerlink" href="#sequence-logos" title="Permalink to this heading">¶</a></h4>
+<p>These functions draw sequence logos representing output (cleaned) alignment.  You can also specify a subsection of the alignment using the <code class="docutils literal notranslate"><span class="pre">logo_start</span></code> and <code class="docutils literal notranslate"><span class="pre">logo_end</span></code> arguments, positions should be relative to the input alignment. If no cleaning functions are specified, the logo will be based on your input alignment.</p>
+<p>Output_files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_logo_bar.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span></code></strong> - the alignment represented as a bar chart</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_logo_text.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span></code></strong> - the alignment represented as a standard sequence logo using text</p></li>
+</ul>
+<p><img alt="Sequence logo text" src="images/sequence_logo.png?raw=true" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--make_sequence_logo</code></strong></td>
+<td>Draw a sequence logo</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--sequence_logo_type</code></em></td>
+<td>Type of sequence logo - bar/text/both</td>
+<td>bar</td>
+</tr>
+<tr>
+<td><em><code>--sequence_logo_dpi</code></em></td>
+<td>DPI for sequence logo</td>
+<td>300</td>
+</tr>
+<tr>
+<td><em><code>--sequence_logo_font</code></em></td>
+<td>Font (see NB below) for bases / amino acids in a text based sequence logo</td>
+<td>monospace</td>
+</tr>
+<tr>
+<td><em><code>--sequence_logo_nt_per_row</code></em></td>
+<td>Number of bases / amino acids to show per row in the sequence logo, where the logo is too large to show on a single line</td>
+<td>50</td>
+</tr>
+<tr>
+<td><em><code>--sequence_logo_filetype</code></em></td>
+<td>Image file type to use for the sequence logo - can be png, svg, tiff or jpg</td>
+<td>png</td>
+</tr>
+<tr>
+<td><em><code>--logo_start</code></em></td>
+<td>Start sequence logo</td>
+<td>0</td>
+</tr>
+<tr>
+<td><em><code>--logo_end</code></em></td>
+<td>End of sequence logo</td>
+<td>MSA length</td>
+</tr>
+</tbody>
+</table><p>NB: to see available fonts on your system, run CIAlign –list_fonts_only and view CIAlign_fonts.png</p>
+</section>
+<section id="palettes">
+<h4>Palettes<a class="headerlink" href="#palettes" title="Permalink to this heading">¶</a></h4>
+<p>This function sets the colour palette for the mini alignments. Currently available palettes are colour blind safe (CBS) and bright.</p>
+<p><img alt="CBS palette" src="images/palettes_CBS.png?raw=true" />
+<img alt="Bright palette" src="images/palettes_bright.png?raw=true" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--palette</code></strong></td>
+<td>Colour palette. Currently implemented CBS (colourblind safe) and bright</td>
+<td>CBS</td>
+</tr>
+</tbody>
+</table></section>
+</section>
+<section id="analysing-alignment-statistics">
+<h3>Analysing Alignment Statistics<a class="headerlink" href="#analysing-alignment-statistics" title="Permalink to this heading">¶</a></h3>
+<p>These functions provide additional analyses you may wish to perform on your alignment.</p>
+<section id="position-frequency-probability-and-weight-matrices">
+<h4>Position Frequency, Probability and Weight Matrices<a class="headerlink" href="#position-frequency-probability-and-weight-matrices" title="Permalink to this heading">¶</a></h4>
+<p>These functions are used to create a position weight matrix, position frequency matrix or position probability matrix for your input or output (cleaned) alignment. These are numerical representations of the alignment which can be used as input for various other software, for example to find regions of another sequence resembling part of your alignment. PFMs, PPMs and PWMs are described well in the Wikipedia article <a class="reference external" href="https://en.wikipedia.org/wiki/Position_weight_matrix">here</a>.</p>
+<p>You can also specify a subsection of the alignment using the <code class="docutils literal notranslate"><span class="pre">pwm_start</span></code> and <code class="docutils literal notranslate"><span class="pre">pwm_end</span></code> arguments, positions should be relative to the input alignment.</p>
+<p>Output_files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_pwm_(input/output).txt</span></code></strong> - position weight matrix representing the alignment (or part of the alignment)</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_ppm_(input/output).txt</span></code></strong> - position probability matrix representing the alignment (or part of the alignment)</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_pfm_(input/output).txt</span></code></strong> - position frequency matrix representing the alignment (or part of the alignment)</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_ppm_meme_(input/output).txt</span></code></strong> - position probability matrix representing the alignment (or part of the alignment) in the format used by the MEME software suite.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_blamm_(input/output).png</span></code></strong> - position probability matrix representing the alignment (or part of the alignment) in the format used by the BLAMM software tool.</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--pwm_input</code></strong></td>
+<td>Generate a position frequency matrix, position probability matrix and position weight matrix based on the input alignment</td>
+<td>False</td>
+</tr>
+<tr>
+<td><strong><code>--pwm_output</code></strong></td>
+<td>Generate a position frequency matrix, position probability matrix and position weight matrix based on the cleaned output alignment</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--pwm_start</code></em></td>
+<td>Start the PWM and other matrices from this column of the input alignment</td>
+<td>None</td>
+</tr>
+<tr>
+<td><em><code>--pwm_end</code></em></td>
+<td>Start the PWM and other matrices from this column of the input alignment</td>
+<td>None</td>
+</tr>
+<tr>
+<td><em><code>--pwm_freqtype</code></em></td>
+<td>Type of background frequency matrix to use when generating the PWM. Should be 'equal', 'calc', 'calc2' or 'user'. 'equal', assume all residues are equally common, 'calc', frequency is calculated using the PFM,  'calc2', frequency is calculated using the full alignment (same as calc if pwm_start and pwm_end are not specified).</td>
+<td>equal</td>
+</tr>
+<tr>
+<td><em><code>--pwm_alphatype</code></em></td>
+<td>Alpha value to use as a pseudocount to avoid zero values in the PPM. Should be 'calc' or 'user'. If alphatype is 'calc', alpha is calculated as frequency(base) * (square root(n rows in alignment)), as described in Dave Tang's blog <a href="https://davetang.org/muse/2013/10/01/position-weight-matrix/">here</a>, which recreates the method used in <a href="doi.org/10.1038/nrg1315">Wasserman &amp; Sandelin 2004</a>. If alpha type is 'user' the user provides the value of alpha as <code>pwm_alphatype</code>. To run without pseudocounts set <code>pwm_alphatype</code> as user and <code>pwm_alphaval</code> as 0</td>
+<td>calc</td>
+</tr>
+<tr>
+<td><em><code>--pwm_alphaval</code></em></td>
+<td>User defined value of the alpha parameter to use as a pseudocount in the PPM.</td>
+<td>1</td>
+</tr>
+<tr>
+<td><em><code>--pwm_output_blamm</code></em></td>
+<td>Output PPM formatted for <a href="https://github.com/biointec/blamm">BLAMM</a> software</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--pwm_output_meme</code></em></td>
+<td>Output PPM formatted for <a href="https://meme-suite.org/meme">MEME</a> software</td>
+<td>False</td>
+</tr>
+</tbody>
+</table></section>
+<section id="statistics-plots">
+<h4>Statistics Plots<a class="headerlink" href="#statistics-plots" title="Permalink to this heading">¶</a></h4>
+<p>For each position in the alignment, these functions plot:</p>
+<ul class="simple">
+<li><p>Coverage (the number of non-gap residues)</p></li>
+<li><p>Information content</p></li>
+<li><p>Shannon entropy</p></li>
+</ul>
+<p>Output files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_coverage.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment coverage</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_coverage.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment coverage</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_information_content.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment information content</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_information_content.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment information content</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_shannon_entropy.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the input alignment Shannon entropy</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_shannon_entropy.png</span> <span class="pre">(or</span> <span class="pre">svg,</span> <span class="pre">tiff,</span> <span class="pre">jpg)</span> </code></strong> - image showing the output alignment Shannon entropy</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--plot_stats_input</code></strong></td>
+<td>Plot the statistics for the input MSA</td>
+<td>False</td>
+</tr>
+<tr>
+<td><strong><code>--plot_stats_output</code></strong></td>
+<td>Plot the statistics for the output MSA</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_dpi</code></em></td>
+<td>DPI for coverage plot</td>
+<td>300</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_height</code></em></td>
+<td>Height for coverage plot (inches)</td>
+<td>3</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_width</code></em></td>
+<td>Width for coverage plot (inches)</td>
+<td>5</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_colour</code></em></td>
+<td>Colour for coverage plot (hex code or name)</td>
+<td>#007bf5</td>
+</tr>
+<tr>
+<td><em><code>--plot_stats_filetype</code></em></td>
+<td>File type for coverage plot (png, svg, tiff, jpg)</td>
+<td>png</td>
+</tr>
+</tbody>
+</table></section>
+<section id="similarity-matrices">
+<h4>Similarity Matrices<a class="headerlink" href="#similarity-matrices" title="Permalink to this heading">¶</a></h4>
+<p>Generates a matrix showing the proportion of identical bases / amino acids between each pair of sequences in the MSA.</p>
+<p>Output file:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_input_similarity.tsv</span></code></strong> - similarity matrix for the input file</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_output_similarity.tsv</span></code></strong> - similarity matrix for the output file</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--make_similarity_matrix_input</code></strong></td>
+<td>Make a similarity matrix for the input alignment</td>
+<td>False</td>
+</tr>
+<tr>
+<td><strong><code>--make_similarity_matrix_output</code></strong></td>
+<td>Make a similarity matrix for the output alignment</td>
+<td>False</td>
+</tr>
+<tr>
+<td><em><code>--make_simmatrix_keepgaps</code></em></td>
+<td>0 - exclude positions which are gaps in either or both sequences from similarity calculations, 1 - exclude positions which are gaps in both sequences, 2 - include all positions</td>
+<td>0</td>
+</tr>
+<tr>
+<td><em><code>--make_simmatrix_dp</code></em></td>
+<td>Number of decimal places to display in the similarity matrix output file</td>
+<td>4</td>
+</tr>
+<tr>
+<td><em><code>--make_simmatrix_minoverlap</code></em></td>
+<td>Minimum overlap between two sequences to have non-zero similarity in the similarity matrix</td>
+<td>1</td>
+</tr>
+</tbody>
+</table></section>
+</section>
+<section id="additional-functions">
+<h3>Additional Functions<a class="headerlink" href="#additional-functions" title="Permalink to this heading">¶</a></h3>
+<section id="extracting-sections-from-an-alignment">
+<h4>Extracting sections from an alignment<a class="headerlink" href="#extracting-sections-from-an-alignment" title="Permalink to this heading">¶</a></h4>
+</section>
+<section id="replacing-u-or-t">
+<h4>Replacing U or T<a class="headerlink" href="#replacing-u-or-t" title="Permalink to this heading">¶</a></h4>
+<p>This function replaces the U nucleotides with T nucleotides or vice versa without otherwise changing the alignment.</p>
+<p>Output files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_T_input.fasta</span></code></strong> - input alignment with T’s instead of U’s</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_T_output.fasta</span></code></strong> - output alignment with T’s instead of U’s</p></li>
+</ul>
+<p>or</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_U_input.fasta</span></code></strong> - input alignment with U’s instead of T’s</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_U_output.fasta</span></code></strong> - output alignment with U’s instead of T’s</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--replace_input_tu</code></td>
+<td>Generates a copy of the input alignment with T's instead of U's</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--replace_output_tu</code></td>
+<td>Generates a copy of the output alignment with T's instead of U's</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--replace_input_ut</code></td>
+<td>Generates a copy of the input alignment with U's instead of T's</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--replace_output_ut</code></td>
+<td>Generates a copy of the output alignment with U's instead of T's</td>
+<td>False</td>
+</tr>
+</tbody>
+</table></section>
+<section id="unaligning-removing-gaps">
+<h4>Unaligning (removing gaps)<a class="headerlink" href="#unaligning-removing-gaps" title="Permalink to this heading">¶</a></h4>
+<p>This function simply removes the gaps from the input or output alignment and creates and unaligned file of the sequences.</p>
+<p>Output files:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_unaligned_input.fasta</span></code></strong> - unaligned sequences of input alignment</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_unaligned_output.fasta</span></code></strong> - unaligned sequences of output alignment</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--unalign_input</code></td>
+<td>Generates a copy of the input alignment with no gaps</td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>--unalign_output</code></td>
+<td>Generates a copy of the output alignment with no gaps</td>
+<td>False</td>
+</tr>
+</tbody>
+</table></section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Charlotte Tumescheit, Andrew Firth, Katy Brown.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

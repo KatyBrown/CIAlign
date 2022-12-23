@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cleaning Functions &mdash; CIAlign 1.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> CIAlign
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">CIAlign</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIAlign</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Cleaning Functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/cleaning_functions.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cleaning-functions">
+<h1>Cleaning Functions<a class="headerlink" href="#cleaning-functions" title="Permalink to this heading">¶</a></h1>
+<p>Each of these steps (if specified) will be performed sequentially in the order specified in the table below.</p>
+<p>The “cleaned” alignment after all steps have been performed will be saved as <strong><code class="docutils literal notranslate"><span class="pre">OUTFILE_STEM_cleaned.fasta</span></code></strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">remove_divergent</span></code>, <code class="docutils literal notranslate"><span class="pre">remove_insertions</span></code>, <code class="docutils literal notranslate"><span class="pre">crop_ends</span></code> and <code class="docutils literal notranslate"><span class="pre">crop</span> <span class="pre">divergent</span></code> require three or more sequences in the alignment, <code class="docutils literal notranslate"><span class="pre">remove_short</span></code> and <code class="docutils literal notranslate"><span class="pre">remove_gap_only</span></code> require two or more sequences.</p>
+<p>The <a class="reference external" href="#retain">retain</a> functions allow the user to specify sequences to keep regardless of the CIAlign results.</p>
+<section id="remove-divergent">
+<h2>Remove Divergent<a class="headerlink" href="#remove-divergent" title="Permalink to this heading">¶</a></h2>
+<p>Removes divergent sequences from the alignment -  sequences with &lt;= <code class="docutils literal notranslate"><span class="pre">remove_divergent_minperc</span></code> positions at which the most common residue in the alignment is present</p>
+<p><img alt="Remove Divergent" src="../_images/remove_divergent.png" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--remove_divergent</code></strong></td>
+<td>Remove sequences with &lt;= <code>remove_divergent_minperc</code> positions at which the most common base / amino acid in the alignment is present</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_divergent_minperc</code></em></td>
+<td>Minimum proportion of positions which should be identical to the most common base / amino acid in order to be preserved</td>
+<td>remove_divergent_minperc_def</td>
+<td>remove_divergent_minperc_min</td>
+<td>remove_divergent_minperc_max</td>
+</tr>
+<tr>
+<td><em><code>--remove_divergent_retain</code></em></td>
+<td>Do not remove sequences with this name when running the remove divergent function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_divergent_retain_str</code></em></td>
+<td>Do not remove sequences with names containing this character string when running the remove divergent function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_divergent_retain_list</code></em></td>
+<td>Do not remove sequences with names listed in this file when running the remove divergent function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table></section>
+<section id="remove-insertions">
+<h2>Remove Insertions<a class="headerlink" href="#remove-insertions" title="Permalink to this heading">¶</a></h2>
+<p>Removes insertions from the alignment which are found in &lt;= <code class="docutils literal notranslate"><span class="pre">insertion_min_perc</span></code> of the sequences.</p>
+<p><img alt="Remove Insertions" src="../_images/remove_insertions.png" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--remove_insertions</code></strong></td>
+<td>Remove insertions found in &lt;= <code>insertion_min_perc</code> of sequences from the alignment</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--insertion_min_size</code></em></td>
+<td>Only remove insertions &gt;= this number of residues</td>
+<td>insertion_min_size_def</td>
+<td>insertion_min_size_min</td>
+<td>insertion_min_size_max</td>
+</tr>
+<tr>
+<td><em><code>--insertion_max_size</code></em></td>
+<td>Only remove insertions &lt;= this number of residues</td>
+<td>insertion_max_size_def</td>
+<td>insertion_max_size_min</td>
+<td>insertion_max_size_max</td>
+</tr>
+<tr>
+<td><em><code>--insertion_min_flank</code></em></td>
+<td>Minimum number of bases on either side of an insertion to classify it as an insertion</td>
+<td>insertion_min_flank_def</td>
+<td>insertion_min_flank_min</td>
+<td>insertion_min_flank_max</td>
+</tr>
+<tr>
+<td><em><code>--insertion_min_perc</code></em></td>
+<td>Remove insertions which are present in less than this proportion of sequences</td>
+<td>insertion_min_perc_def</td>
+<td>insertion_min_perc_min</td>
+<td>insertion_min_perc_max</td>
+</tr>
+</tbody>
+</table></section>
+<section id="crop-ends">
+<h2>Crop Ends<a class="headerlink" href="#crop-ends" title="Permalink to this heading">¶</a></h2>
+<p>Crops the ends of individual sequences if they contain a high proportion of gaps relative to the rest of the alignment.</p>
+<p><img alt="Crop Ends" src="../_images/crop_ends.png" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--crop_ends</code></strong></td>
+<td>Crop the ends of sequences if they are poorly aligned</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_mingap_perc</code></em></td>
+<td>Minimum proportion of the sequence length (excluding gaps) that is the threshold for change in gap numbers.</td>
+<td>crop_ends_mingap_perc_def</td>
+<td>crop_ends_mingap_perc_min</td>
+<td>crop_ends_mingap_perc_max</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_redefine_perc</code></em></td>
+<td>Proportion of the sequence length (excluding gaps) that is being checked for change in gap numbers to redefine start/end.</td>
+<td>crop_ends_redefine_perc_def</td>
+<td>crop_ends_redefine_perc_min</td>
+<td>crop_ends_redefine_perc_max</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_retain</code></em></td>
+<td>Do not crop sequences with this name when running the crop ends function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_retain_str</code></em></td>
+<td>Do not crop sequences with names containing this character string when running the crop ends function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--crop_ends_retain_list</code></em></td>
+<td>Do not crop sequences with names listed in this file when running the crop ends function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table><p>Note: if the sequences are short (e.g. &lt; 100), a low crop_ends_mingap_perc (e.g. 0.01) will result in a change of gap numbers that is too low (e.g. 0). If this happens, the change in gap numbers will be set to 2 and a warning will be printed.</p>
+</section>
+<section id="remove-short">
+<h2>Remove Short<a class="headerlink" href="#remove-short" title="Permalink to this heading">¶</a></h2>
+<p>Removes sequences blow a threshold length.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--remove_short</code></strong></td>
+<td>Remove sequences &lt;= <code>remove_min_length</code>  amino acids from the alignment</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_min_length</code></em></td>
+<td>Sequences are removed if they are shorter than this minimum length, excluding gaps.</td>
+<td>remove_min_length_def</td>
+<td>remove_min_length_min</td>
+<td>remove_min_length_max</td>
+</tr>
+<tr>
+<td><em><code>--remove_short_retain</code></em></td>
+<td>Do not remove sequences with this name when running the remove short function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_short_retain_str</code></em></td>
+<td>Do not remove sequences with names containing this character string when running the remove short function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--remove_short_retain_list</code></em></td>
+<td>Do not remove sequences with names listed in this file when running the remove short function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table></section>
+<section id="keep-gap-only">
+<h2>Keep Gap Only<a class="headerlink" href="#keep-gap-only" title="Permalink to this heading">¶</a></h2>
+<p>Removes columns containing only gaps.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--keep_gaponly</code></strong></td>
+<td>Keep gap only columns in the alignment</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table></section>
+<section id="crop-divergent">
+<h2>Crop Divergent<a class="headerlink" href="#crop-divergent" title="Permalink to this heading">¶</a></h2>
+<p>Crops columns from the sides of alignment to leave only a single conserved section, based on a threshold percentage of identical residues and percentage of gaps in each column.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--crop_divergent</code></strong></td>
+<td>Crop either end of the alignment until &gt; <code>crop_divergent_min_prop_ident</code> residues in a column are identical and &gt; <code>crop_divergent_min_prop_nongap</code> residues are not gaps, over <code>buffer_size</code> consecutive columns</td>
+<td>False</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><em><code>--crop_divergent_min_prop_ident</code></em></td>
+<td>Minumum proportion of identical residues in a column to be retained by crop_divergent</td>
+<td>divergent_min_prop_ident_def</td>
+<td>divergent_min_prop_ident_min</td>
+<td>divergent_min_prop_ident_max</td>
+</tr>
+<tr>
+<td><em><code>--crop_divergent_min_prop_nongap</code></em></td>
+<td>Minumum proportion of non gap residues in a column to be retained by crop_divergent</td>
+<td>divergent_min_prop_nongap_def</td>
+<td>divergent_min_prop_nongap_min</td>
+<td>divergent_min_prop_nongap_max</td>
+</tr>
+<tr>
+<td><em><code>--crop_divergent_buffer_size</code></em></td>
+<td>Minumum number of consecutive columns which must meet the criteria for crop_divergent to be retained</td>
+<td>divergent_buffer_size_def</td>
+<td>divergent_buffer_size_min</td>
+<td>divergent_buffer_size_max</td>
+</tr>
+</tbody>
+</table></section>
+<section id="retain">
+<h2>Retain<a class="headerlink" href="#retain" title="Permalink to this heading">¶</a></h2>
+<p>These parameters allow the user to specify sequences to not edit with any of the rowwise functions, regardless of the CIAlign results. The rowwise functions are currently remove_divergent, crop_ends and remove_short.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default Value</th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>--retain</code></strong></td>
+<td>Do not edit or remove sequences with this name when running any rowwise function (currently remove divergent, crop ends and remove short)</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><strong><code>--retain_str</code></strong></td>
+<td>Do not edit or remove sequences with names containing this character string when running any rowwise function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr>
+<td><strong><code>--retain_list</code></strong></td>
+<td>Do not edit or remove sequences with names listed in this file when running any rowwise function</td>
+<td>None</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Charlotte Tumescheit, Andrew Firth, Katy Brown.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
