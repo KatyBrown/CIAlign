@@ -6,7 +6,7 @@ CIAlign is a command line tool which performs various functions to clean, visual
 2. [Citation](#citation)
 3. [Mailing List](#mailing-list)
 4. [Installation](installation.html)
-5. [Manual](usage.html)
+5. [Usage](usage.html)
 
 ![Example](../images/example.png)
 

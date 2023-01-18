@@ -7,7 +7,7 @@
 5. [Cleaning Functions](#cleaning-functions)
 6. [Visualisation Functions](#visualisation-functions)
 7. [Interpretation functions](#interpretation-functions)
-8. [Editing functions]
+8. [Editing functions](#editing-functions)
 
 CIAlign is used to process multiple sequence alignments (MSAs) - sets of nucleotide or amino acid sequences which have already been aligned with an external tool.
 
@@ -250,6 +250,45 @@ Output_files:
 
 NB: to see available fonts on your system, run CIAlign --list_fonts_only and view CIAlign_fonts.png
 
+#### Statistics Plots
+For each position in the alignment, these functions plot:
+* Coverage (the number of non-gap residues)
+* Information content
+* Shannon entropy
+
+**Coverage**
+
+![](../images/cov_small.png)
+
+**Information Content**
+
+![](../images/ic_small.png)
+
+**Shannon Entropy**
+
+![](../images/se_small.png)
+
+
+Output files:
+
+* **`OUTFILE_STEM_input_coverage.png (or svg, tiff, jpg) `** - image showing the input alignment coverage
+* **`OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) `** - image showing the output alignment coverage
+* **`OUTFILE_STEM_input_information_content.png (or svg, tiff, jpg) `** - image showing the input alignment information content
+* **`OUTFILE_STEM_output_information_content.png (or svg, tiff, jpg) `** - image showing the output alignment information content
+* **`OUTFILE_STEM_input_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the input alignment Shannon entropy
+* **`OUTFILE_STEM_output_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the output alignment Shannon entropy
+
+| Parameter | Description | Default |
+| ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |
+| **`--plot_stats_input`** | Plot the statistics for the input MSA | False |
+| **`--plot_stats_output`** | Plot the statistics for the output MSA | False |
+| *`--plot_stats_dpi`* | DPI for coverage plot | 300 |
+| *`--plot_stats_height`* | Height for coverage plot (inches) | 3 |
+| *`--plot_stats_width`* | Width for coverage plot (inches) | 5 |
+| *`--plot_stats_colour`* | Colour for coverage plot (hex code or name) | #007bf5 |
+| *`--plot_stats_filetype`* | File type for coverage plot (png, svg, tiff, jpg) | png |
+
+
 #### Palettes
 
 This function sets the colour palette for the mini alignments. Currently available palettes are colour blind safe (CBS) and bright.
@@ -271,7 +310,12 @@ These functions provide additional analyses you may wish to perform on your alig
 
 #### Consensus Sequences
 This step generates a consensus sequence based on the cleaned alignment.  If no cleaning functions are performed, the consensus will be based on the input alignment.
-For the "majority" based consensus sequences, where the two most frequent characters are equally common a random character is selected.
+
+Consensus sequences can be `majority` - the most common character in each column is used, including gaps or `majority_nongap` - the most common non-gap character is used.
+
+Where the two most frequent characters are equally common a random character is selected.
+
+Once the consensus has been generated, gap positions are automatically removed, specifying `---consensus_keep_gaps` prevents this.
 
 Output files:
 
@@ -287,6 +331,7 @@ Output files:
 
 
 #### Position Frequency, Probability and Weight Matrices
+
 These functions are used to create a position weight matrix, position frequency matrix or position probability matrix for your input or output (cleaned) alignment. These are numerical representations of the alignment which can be used as input for various other software, for example to find regions of another sequence resembling part of your alignment. PFMs, PPMs and PWMs are described well in the Wikipedia article [here](https://en.wikipedia.org/wiki/Position_weight_matrix). 
 
 You can also specify a subsection of the alignment using the `pwm_start` and `pwm_end` arguments, positions should be relative to the input alignment.
@@ -318,33 +363,8 @@ Output_files:
 | *`--pwm_output_meme`* | Output PPM formatted for [MEME](https://meme-suite.org/meme) software | False |
 
 
-#### Statistics Plots
-For each position in the alignment, these functions plot:
-* Coverage (the number of non-gap residues)
-* Information content
-* Shannon entropy
-
-Output files:
-
-* **`OUTFILE_STEM_input_coverage.png (or svg, tiff, jpg) `** - image showing the input alignment coverage
-* **`OUTFILE_STEM_output_coverage.png (or svg, tiff, jpg) `** - image showing the output alignment coverage
-* **`OUTFILE_STEM_input_information_content.png (or svg, tiff, jpg) `** - image showing the input alignment information content
-* **`OUTFILE_STEM_output_information_content.png (or svg, tiff, jpg) `** - image showing the output alignment information content
-* **`OUTFILE_STEM_input_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the input alignment Shannon entropy
-* **`OUTFILE_STEM_output_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the output alignment Shannon entropy
-
-| Parameter | Description | Default |
-| ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |
-| **`--plot_stats_input`** | Plot the statistics for the input MSA | False |
-| **`--plot_stats_output`** | Plot the statistics for the output MSA | False |
-| *`--plot_stats_dpi`* | DPI for coverage plot | 300 |
-| *`--plot_stats_height`* | Height for coverage plot (inches) | 3 |
-| *`--plot_stats_width`* | Width for coverage plot (inches) | 5 |
-| *`--plot_stats_colour`* | Colour for coverage plot (hex code or name) | #007bf5 |
-| *`--plot_stats_filetype`* | File type for coverage plot (png, svg, tiff, jpg) | png |
-
-
 #### Similarity Matrices
+
 Generates a matrix showing the proportion of identical bases / amino acids between each pair of sequences in the MSA.
 
 Output file:
@@ -360,9 +380,8 @@ Output file:
 | *`--make_simmatrix_dp`* | Number of decimal places to display in the similarity matrix output file | 4 |
 | *`--make_simmatrix_minoverlap`* | Minimum overlap between two sequences to have non-zero similarity in the similarity matrix | 1 |
 
-### Additional Functions
 
-#### Extracting sections from an alignment
+### Editing Functions
 
 #### Replacing U or T
 This function replaces the U nucleotides with T nucleotides or vice versa without otherwise changing the alignment.

@@ -1,0 +1,1 @@
+man/index.rst
