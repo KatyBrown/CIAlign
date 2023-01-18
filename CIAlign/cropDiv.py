@@ -93,6 +93,6 @@ def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
     # Find the position at the beginning of the buffer
     # Reverse if cropping the 3' end of the alignment
     if start:
-        return (i - buffer + 1)
+        return (i - buffer + 2)
     else:
         return (np.shape(arr)[1] - i + buffer - 1)

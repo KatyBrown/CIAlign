@@ -171,7 +171,6 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
     # removes whole columns
     if "crop_divergent" in markupdict:
         colour = colD['crop_divergent']
-
         for col in markupdict['crop_divergent']:
 
             a.add_patch(matplotlib.patches.Rectangle(
