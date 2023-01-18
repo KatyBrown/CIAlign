@@ -1,5 +1,7 @@
 ![CI](https://github.com/KatyBrown/CIAlign/actions/workflows/main.yml/badge.svg)
 # CIAlign
+CIAlign documentation is now available via [ReadTheDocs](https://cialign.readthedocs.io/en/latest/)
+
 ## Summary
 CIAlign allows the user to:
 
