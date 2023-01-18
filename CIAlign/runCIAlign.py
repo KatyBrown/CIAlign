@@ -456,6 +456,8 @@ def setupSection(args, log, arr):
         Set containing the indices of the removed columns
     '''
     orig_width = np.shape(arr)[1]
+    assert args.section_end - args.section_start > 5, (
+        "Section must be at least 5 residues in length")
     log.info("Cropping alignment to keep columns %i to %i" % (
         args.section_start, args.section_end))
     if not args.silent:

@@ -177,11 +177,6 @@ class ConsensusSeqSequenceLogoTest(unittest.TestCase):
         self.dest = 'seq_logo_test.png'
 
     def tearDown(self):
-        coloursNT = CIAlign.utilityFunctions.getNtColours()
-        for base in coloursNT.keys():
-            b = base.replace("*", "stop")
-            if os.path.exists("%s_temp.png" % b):
-                os.remove("%s_temp.png" % b)
         os.remove(self.dest)
 
     @parameterized.expand([['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 0, 50],
@@ -202,11 +197,6 @@ class ConsensusSeqCoverageSequenceLogoBarTest(unittest.TestCase):
         self.dest = 'seq_logo_bar_test.png'
 
     def tearDown(self):
-        coloursAA = CIAlign.utilityFunctions.getAAColours()
-        for base in coloursAA.keys():
-            b = base.replace("*", "stop")
-            if os.path.exists("%s_temp.png" % b):
-                os.remove("%s_temp.png" % b)
         os.remove(self.dest)
 
 
