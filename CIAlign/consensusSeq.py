@@ -3,7 +3,7 @@
 import matplotlib
 from math import log
 import numpy as np
-# import scipy.interpolate as interpolate
+import scipy.interpolate as interpolate
 import matplotlib.pyplot as plt
 import operator
 import matplotlib.patheffects
@@ -14,6 +14,7 @@ try:
 except ImportError:
     import utilityFunctions
 import os
+import scipy.stats
 matplotlib.use('Agg')
 
 
@@ -112,7 +113,7 @@ def PixelsToPoints(pixels, dpi):
     return (points)
 
 
-def getLetters(typ='nt', fontname='monospace', dpi=500):
+def getLetters(typ='nt', fontname='monospace', dpi=500, palette="CBS"):
     '''
     Generates a temporary image file for every letter (4 nt or 20 aa)
     Each letter extends to the full length of both axes
@@ -134,12 +135,12 @@ def getLetters(typ='nt', fontname='monospace', dpi=500):
     '''
     # obtain color scheme depending on nt or aa alignment
     if typ == 'nt':
-        colours = utilityFunctions.getNtColours()
+        colours = utilityFunctions.getNtColours(palette)
     elif typ == 'aa':
-        colours = utilityFunctions.getAAColours()
+        colours = utilityFunctions.getAAColours(palette)
     # for each possible base/aa create temporary plot
     for base in colours.keys():
-        f = plt.figure(figsize=(1, 1), dpi=dpi, edgecolor='black')
+        f = plt.figure(figsize=(0.8, 1), dpi=dpi, edgecolor='black')
         a = f.add_subplot(1, 1, 1)
         a.set_xlim(0, 1)
         a.set_ylim(0, 1)
@@ -223,8 +224,8 @@ def findConsensus(alignment, log, consensus_type="majority"):
     return consensus, coverage
 
 
-def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
-                     colour='#007bf5'):
+def makeLinePlot(stat, dest, ylab, dpi=300, height=3, width=5,
+                 colour='#007bf5'):
     '''
     Creates a plot of the coverage
 
@@ -235,6 +236,9 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
 
     dest: str
         folder to store file
+
+    ylab: str
+        label for y axis
 
     dpi: int
         DPI value (default: 500)
@@ -254,10 +258,15 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     '''
 
     fontsize = 1500 / dpi
-    x = np.arange(0, len(coverage), 1)
-    y = coverage
+    x = np.arange(0, len(stat), 1)
+    y = stat
 
     xmax = x.max()
+    ymax = max(y)
+
+    x_div = 10**(math.floor(np.log10(xmax))) / 5
+    y_div = 10**(math.floor(np.log10(ymax))) / 2
+
     # used for polynomial interpolation
     # xmin = x.min()
     # N = 100
@@ -266,34 +275,36 @@ def makeCoveragePlot(coverage, dest, dpi=300, height=3, width=5,
     # plain plotting of the coverage
     f = plt.figure(figsize=(width, height), dpi=dpi)
     a = f.add_subplot(2, 1, 1)
-    a.plot(x, y, color=colour)
+    a.plot(x, y, color=colour, lw=1)
     a.set_xlabel('Position', fontsize=fontsize)
-    a.set_ylabel('Coverage', fontsize=fontsize)
-    a.set_xticks([0, xmax])
-    a.set_xticklabels([0, xmax], fontsize=fontsize)
-    a.set_yticks(np.arange(0, 1.1, 0.5))
-    a.set_yticklabels(np.arange(0, 1.1, 0.5), fontsize=fontsize)
+    a.set_ylabel(ylab, fontsize=fontsize)
 
-    # b = f.add_subplot('212')
+    b = f.add_subplot(2, 1, 2)
+
+    # 30 represents number of points to make between T.min and T.max
+    # interpolating the coverage function to make it smooth
+    xnew = np.linspace(x.min(), x.max(), 30)
+    spline = interpolate.make_interp_spline(x, y, k=3)
+    b.plot(xnew, spline(xnew), color=colour, lw=1)
+    b.set_xlabel('Position', fontsize=fontsize)
+    b.set_ylabel('%s (Smoothed)' % ylab, fontsize=fontsize)
 
     # polynomial interpolation leaving this in just in case
     # c = f.add_subplot('313')
     # z = np.polyfit(x, bla, 30)
     # p = np.poly1d(z)
     # c.plot(xx, p(xx))
-    # xnew = np.linspace(x.min(),x.max(),300)
-    # 300 represents number of points to make between T.min and T.max
-
-    # interpolating the coverage function to make it smooth
-    # t, c, k = interpolate.splrep(x, y, s=0, k=4)
-    # spline = interpolate.BSpline(t, c, k, extrapolate=False)
-    # b.plot(xx, spline(xx), color=colour)
-    # b.set_xlabel('Position', fontsize=fontsize)
-    # b.set_ylabel('Coverage (Smoothed)', fontsize=fontsize)
-    # b.set_xticks([0, xmax])
-    # b.set_xticklabels([0, xmax], fontsize=fontsize)
-    # b.set_yticks(np.arange(0, 1.1, 0.5))
-    # b.set_yticklabels(np.arange(0, 1.1, 0.5), fontsize=fontsize)
+    for sp in f.axes:
+        sp.set_xticks(np.arange(0, xmax*1.1, x_div))
+        sp.set_xticklabels([int(x) for x in np.arange(0, xmax*1.1, x_div)],
+                           fontsize=fontsize,
+                           rotation='vertical')
+        sp.set_yticks(np.arange(0, ymax*1.1, y_div))
+        sp.set_yticklabels([
+            "%.1f" % y for y in np.arange(0, ymax*1.1, y_div)],
+            fontsize=fontsize)
+        sp.set_xlim(0, xmax)
+    f.tight_layout()
     f.savefig(dest, dpi=dpi, bbox_inches='tight')
 
 
@@ -304,7 +315,8 @@ def sequence_logo(alignment,
                   figdpi=300,
                   figrowlength=50,
                   start=0,
-                  end=0):
+                  end=0,
+                  palette='CBS'):
     '''
     Creates a sequence logo based on an entropy calculation using letters
     Scales the letters according to the information content of the alignment
@@ -351,9 +363,9 @@ def sequence_logo(alignment,
     if alignment_width < figrowlength:
         figrowlength = alignment_width
     nsegs = math.ceil(alignment_width / figrowlength)
-    f = plt.figure(figsize=(figrowlength, nsegs*2), dpi=figdpi)
+    f = plt.figure(figsize=(figrowlength, nsegs*4), dpi=figdpi)
     gs = gridspec.GridSpec(ncols=1, nrows=nsegs)
-    getLetters(typ=typ, fontname=figfontname, dpi=figdpi)
+    getLetters(typ=typ, fontname=figfontname, dpi=figdpi, palette=palette)
     rstart = start
     rend = rstart + figrowlength
 
@@ -377,9 +389,8 @@ def sequence_logo(alignment,
             unique, counts = np.unique(alignment[:, i],
                                        return_counts=True)
             count = dict(zip(unique, counts))
-            height_per_base, info_per_base = calc_entropy(count,
-                                                          len(alignment[:, 0]),
-                                                          typ=typ)
+            height_per_base, info_per_base, fq = calc_entropy(
+                count, len(alignment[:, 0]), typ=typ)
             height_sum_higher = 0
             Z = zip(height_per_base.keys(), height_per_base.values())
             Z = sorted(Z, key=lambda x: x[1])
@@ -393,9 +404,13 @@ def sequence_logo(alignment,
 
                     height_sum_higher += height
         a.axis(limits)
-        a.set_xticks([rstart, rend])
-        a.set_xticklabels([rstart, rend])
-
+        if rend - start < 25:
+            a.set_xticks([int(x) for x in np.arange(rstart-0.5, rend, 1)])
+            a.set_xticklabels([int(x) for x in np.arange(rstart, rend+0.5, 1)])
+        else:
+            a.set_xticks([rstart, rend])
+            a.set_xticklabels([rstart, rend])
+        a.set_xlim(rstart, rstart+figrowlength)
         a.spines['right'].set_visible(False)
         a.spines['top'].set_visible(False)
         if n == (nsegs - 1):
@@ -403,11 +418,12 @@ def sequence_logo(alignment,
         a.set_ylabel("Bit Score")
         rstart += figrowlength
         rend += figrowlength
+
     # obtain colours
     if typ == 'nt':
-        allbases = utilityFunctions.getNtColours()
+        allbases = utilityFunctions.getNtColours(palette=palette)
     elif typ == 'aa':
-        allbases = utilityFunctions.getAAColours()
+        allbases = utilityFunctions.getAAColours(palette=palette)
     for base in allbases:
         b = base.replace("*", "stop")
         os.unlink("%s_temp.png" % b)
@@ -422,7 +438,8 @@ def sequence_bar_logo(alignment,
                       figdpi=300,
                       figrowlength=50,
                       start=0,
-                      end=0):
+                      end=0,
+                      palette='CBS'):
     '''
     Creates a sequence logo based on an entropy calculation using bars
     Scales the bars according to the information content of the alignment
@@ -490,11 +507,11 @@ def sequence_bar_logo(alignment,
         ind = np.arange(rstart, rend)
 
         if typ == "nt":
-            element_list = utilityFunctions.getNtColours()
-            colours = utilityFunctions.getNtColours()
+            element_list = utilityFunctions.getNtColours(palette=palette)
+            colours = utilityFunctions.getNtColours(palette=palette)
         elif typ == "aa":
-            element_list = utilityFunctions.getAAColours()
-            colours = utilityFunctions.getAAColours()
+            element_list = utilityFunctions.getAAColours(palette=palette)
+            colours = utilityFunctions.getAAColours(palette=palette)
         height_list = {}
 
         for element in element_list:
@@ -506,8 +523,8 @@ def sequence_bar_logo(alignment,
         for i in range(rstart, rend):
             unique, counts = np.unique(alignment[:, i], return_counts=True)
             count = dict(zip(unique, counts))
-            height_per_base, info_per_base = calc_entropy(count, seq_count,
-                                                          typ)
+            height_per_base, info_per_base, fr = calc_entropy(count, seq_count,
+                                                              typ)
             bottom_height.append(0)
 
             # need a list of each nt/aa separately to plot them as bars
@@ -581,18 +598,22 @@ def calc_entropy(count, seq_count, typ):
         freq_per_base[element] = 0
         height_per_base[element] = 0
         entropy_per_base[element] = 0
-
+    if seq_count == 0:
+        return height_per_base, info_per_base, 0
     # correct for small sample sizes
-    sample_size_correction = (1/log(s, 2)) * ((s-1)/(2*seq_count))
+
+    sample_size_correction = (s-1) / (2 * np.log(2) * seq_count)
     gap_correction = seq_count
     if count.get("-"):
         seq_count -= count.get("-")
+
     # correct for gaps, since they lower the information content
     gap_correction = seq_count/gap_correction
+
     entropy = 0
-    if seq_count == 0:
-        return height_per_base, info_per_base
+
     # calculate entropy, from that information, from that height
+    freqs = []
     for base, quantity in count.items():
         if base != "-":
             frequency = quantity/seq_count
@@ -600,6 +621,8 @@ def calc_entropy(count, seq_count, typ):
             entropy -= frequency*log(frequency, 2)
             info_per_base[base] = max_entropy + frequency*log(frequency, 2)
             entropy_per_base[base] = -frequency * log(frequency, 2)
+            freqs.append(frequency)
+
     information_per_column = max_entropy - entropy - sample_size_correction
 
     # if the information content is constant throughout the column,
@@ -616,4 +639,31 @@ def calc_entropy(count, seq_count, typ):
                                      freq_per_base[base] *
                                      information_per_column)
 
-    return height_per_base, info_per_base
+    return height_per_base, info_per_base, freqs
+
+
+def calcConservationAli(alignment, typ):
+    '''
+    Calculate alignment conservation as the heights the letters would
+    be in a sequence logo.
+
+    alignment: np.array
+        The alignment stored as a numpy array
+
+    typ: str
+        nt or aa
+    '''
+    alignment_width = len(alignment[0, :])
+    seq_count = len(alignment[:, 0])
+    heights_per_col = []
+    ents = []
+    for i in range(0, alignment_width):
+        unique, counts = np.unique(alignment[:, i], return_counts=True)
+        count = dict(zip(unique, counts))
+        height_per_base, info_per_base, freqs = calc_entropy(count, seq_count,
+                                                             typ)
+        heights_per_col.append(height_per_base)
+        ent = scipy.stats.entropy(freqs)
+        ents.append(ent)
+    heights = [sum(x.values()) for x in heights_per_col]
+    return (heights, ents)

@@ -13,7 +13,7 @@ except ImportError:
 matplotlib.use('Agg')
 
 
-def replaceUbyT(arr):
+def replaceUbyT(arr, rev):
     '''
     Replaces all Us by Ts in the alignment.
 
@@ -27,8 +27,10 @@ def replaceUbyT(arr):
     arr: np.array
         2D numpy array of sequences with Ts instead of Us.
     '''
-
-    arr = np.where(arr == "U", "T", arr)
+    if not rev:
+        arr = np.where(arr == "T", "U", arr)
+    else:
+        arr = np.where(arr == "U", "T", arr)
     return (arr)
 
 
@@ -81,7 +83,7 @@ def FastaToArray(infile, log=None, outfile_stem=None):
         for line in input:
             line = line.strip()
             if len(line) == 0:
-                continue  # todo: test!
+                continue
             if line[0] == ">":
                 seqs.append([s.upper() for s in seq])
                 nams.append(nam)
@@ -92,7 +94,7 @@ def FastaToArray(infile, log=None, outfile_stem=None):
                     if log:
                         log.error(formatErrorMessage)
                     print(formatErrorMessage)
-                    exit()
+                    exit(1)
                 seq += list(line)
     seqs.append(np.array([s.upper() for s in seq]))
     nams.append(nam)
@@ -119,11 +121,12 @@ def getPalette(palette='CBS'):
     '''
     if palette.lower() == 'cbs':
         p = palettes.CBSafe()
-
+    if palette.lower() == 'bright':
+        p = palettes.Bright()
     return (p)
 
 
-def getAAColours(pal='CBS'):
+def getAAColours(palette='CBS'):
     '''
     Generates a dictionary which assigns a colour to each amino acid.
     Based on the "RasmMol" amino colour scheme and the table here:
@@ -143,7 +146,7 @@ def getAAColours(pal='CBS'):
         Dictionary where keys are single letter amino acid codes and
         values are hexadecimal codes for colours
     '''
-    pal = getPalette(palette=pal)
+    pal = getPalette(palette=palette)
     return {'D': pal['red_aa'],
             'E': pal['red_aa'],
             'C': pal['yellow_aa'],
@@ -175,7 +178,7 @@ def getAAColours(pal='CBS'):
             }
 
 
-def getNtColours(pal='CBS'):
+def getNtColours(palette='CBS'):
     '''
     Generates a dictionary which assigns a colour to each nucleotide (plus grey
     for "N" and white for "-")
@@ -191,7 +194,7 @@ def getNtColours(pal='CBS'):
         Dictionary where keys are single letter nucleotide codes and
         values are hexadecimal codes for colours
     '''
-    pal = getPalette(palette=pal)
+    pal = getPalette(palette=palette)
     return {'A': pal['green_nt'],
             'G': pal['yellow_nt'],
             'T': pal['red_nt'],
@@ -230,10 +233,11 @@ def getMarkupColours(pal='CBS'):
     pal = getPalette(palette=pal)
     return {'remove_insertions': pal['remove_insertions'],
             'crop_ends': pal['crop_ends'],
-            'remove_gaponly': pal['remove_gaponly'],
+            'remove_gap_only': pal['remove_gap_only'],
             'remove_short': pal['remove_short'],
             'remove_divergent': pal['remove_divergent'],
-            'crop_divergent': pal['crop_divergent']}
+            'crop_divergent': pal['crop_divergent'],
+            'user': pal['user']}
 
 
 def writeOutfile(outfile, arr, nams, removed, rmfile=None):
@@ -267,7 +271,7 @@ def writeOutfile(outfile, arr, nams, removed, rmfile=None):
     out.close()
 
 
-def seqType(arr):
+def seqType(arr, log):
     '''
     Detects if an alignment is of nucleotides or amino acids using pre-built
     dictionarys of amino acid and nucleotide codes.
@@ -308,16 +312,15 @@ def seqType(arr):
             aa_count += 1
             ch += 1
         if ch == 0:
+            log.error("Unknown nucleotides or amino acids detected.\
+                       Please fix your MSA.")
             print("Unknown nucleotides or amino acids detected.\
                   Please fix your MSA.")
-            exit()
-
+            exit(1)
     if nt_count == len(arr):
         return "nt"
     if aa_count == len(arr):
         return "aa"
-    print("MSA type couldn't be established. Please fix your MSA.")
-    exit()
 
 
 def updateNams(nams, removed_seqs):
@@ -368,11 +371,11 @@ not all the same length."""
     if 0 in np.shape(arr):
         log.error(emptyAlignmentMessage)
         print(emptyAlignmentMessage)
-        exit()
+        exit(1)
     if len(np.shape(arr)) == 1:
         log.error(differentLengthsMessage)
         print(differentLengthsMessage)
-        exit()
+        exit(1)
 
 
 def listFonts(outfile):
@@ -504,9 +507,10 @@ def configRetainSeqs(retain, retainS, retainL, nams, fname, log, silent):
         if not os.path.exists(retainL):
             raise FileNotFoundError("""
 List of sequences to retain %s not found""" % retainL)
-        # Add the sequence names to the keeps set
-        keeps = keeps | set([line.strip()
-                             for line in open(retainL).readlines()])
+
+        with open(retainL) as infile:
+            for line in infile:
+                keeps.add(line.strip())
 
     # If a string to match is specified
     if retainS is not None and len(retainS[0].strip()) != 0:
@@ -520,7 +524,8 @@ List of sequences to retain %s not found""" % retainL)
                     rr += 1
             if rr == 0:
                 # Warn if there are no matches
-                log.warn("""No sequence names matching "%s" were found""" % rs)
+                log.warning("""No sequence names matching "%s" were found"""
+                            % rs)
                 if not silent:
                     print("""Warning: No sequence names matching \
 "%s" were found""" % rs)
@@ -534,7 +539,7 @@ Some sequences listed to be retained were not found: %s""" % (" ".join(
                                                                   nams))))
 
     # Convert the result to an array
-    keeps_arr = np.array(list(keeps))
+    keeps_arr = np.array(sorted(list(keeps)))
 
     # Log the sequence names identified
     if len(keeps_arr) != 0:
@@ -542,3 +547,98 @@ Some sequences listed to be retained were not found: %s""" % (" ".join(
 %s function: %s""" % (fname, ", ".join(sorted(list(keeps)))))
 
     return (keeps_arr)
+
+
+def updateStartEnd(start, end, removed):
+    '''
+    Updates the start and end positions of a subsection of an array taking
+    into account positions that have been removed i.e. if the user
+    wants columns 10:20 of the input FASTA but 5 and 15 have been removed,
+    then in the updated alignment they would want 9:18.
+
+    Parameters
+    ----------
+    start: int
+        The start position in the unedited alignment
+    end: int
+        The end position in the unedited alignment
+    removed: set
+        Set of integers representing positions which have been removed from
+        the alignment
+
+    Returns
+    -------
+    newstart: int
+        The updated start position
+    newend: int
+        The updated end position
+    '''
+    newstart = start
+    newend = end
+    if len(removed) != 0:
+        for r in sorted(removed):
+            if r < newstart:
+                newstart -= 1
+                newend -= 1
+            elif r < newend:
+                newend -= 1
+    return (newstart, newend)
+
+
+def removeColumns(rmAbsolute, relativePositions,
+                  arr, log, rmfile, function_name, write=True):
+    '''
+    Function to remove a column from an array shared by removeInsertions,
+    removeGapOnly. Removes the columns, calculates the
+    positions of these columns in the input alignment, writes positions
+    removed to the log file and the removed file.
+
+    Parameters
+    ----------
+    rmAbsolute: list
+        List of absolute positions (positions in current alignment) to
+        be removed
+    relativePositions: list
+        A list of integers representing columns in the alignment, from which
+        values are removed as columns are removed from the alignment.
+    arr: np.array
+        The alignment stored as a numpy array
+    log: logging.Logger
+        An open log file object
+    rmfile: str
+        Path to a file in which to store a list of removed sequences
+    function_name: str
+        The name of the function which removed these columns for logging
+    Returns
+    -------
+    arr: np.array
+        The cleaned alignment stored as a numpy array
+    relativePositions: list
+        A list of integers representing columns in the alignment, from which
+        values are removed as columns are removed from the alignment, minus
+        the columns removed using this function.
+    r: set
+        A set of column numbers of sequences which have been removed
+    '''
+    outrm = open(rmfile, "a")
+    if outrm.closed:
+        print('file is closed')
+    # make a list of positions to remove
+    rm_relative = set()
+    for n in rmAbsolute:
+        rm_relative.add(relativePositions[n])
+    for n in rm_relative:
+        relativePositions.remove(n)
+    # for n in absolutePositions:
+    #     relativePositions.remove(n)
+    rmpos = np.array(list(rmAbsolute))
+
+    keeppos = np.arange(0, np.shape(arr)[1])
+    keeppos = np.invert(np.in1d(keeppos, rmpos))
+    if len(rmpos) != 0 and write:
+        rmpos_str = [str(x) for x in sorted(rm_relative)]
+        log.info("Removing sites %s" % (", ".join(rmpos_str)))
+        outrm.write("%s\t%s\n" % (function_name, ",".join(rmpos_str)))
+    outrm.close()
+    arr = arr[:, keeppos]
+    return (arr, relativePositions, rm_relative)

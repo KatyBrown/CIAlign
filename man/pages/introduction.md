@@ -41,7 +41,7 @@ CIAlign allows the user to:
   
 **Edit**
 
-* [Extract a section](usage.html#extracting-sections-from-an-alignment) of the alignment.
+* [Extract a section](usage.html#extracting-part-of-the-alignment) of the alignment.
 * [Unalign](usage.html#unaligning-removing-gaps) the alignment.
 * [Replace U with T, or T with U](usage.html#replacing-u-or-t) in a nucleotide alignment.
 

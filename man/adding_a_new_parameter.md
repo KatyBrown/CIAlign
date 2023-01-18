@@ -10,7 +10,7 @@ To add a parameter:
 * Edit the function itself in the relevant module file, including adding the parameter to the function definition and describing it in the docstring, add comments if needed to explain your steps
 * Update templates/ini_template.ini
 * Edit the unit tests for the appropriate module file to include the new parameter
-* Run unit tests in the root directoy as `python -m unittest tests/*py` and ensure that they pass
+* Run unit tests in the root directoy as `coverage -m pytest tests/*.py` then `coverage html and ensure that they pass and that module file coverage is 100%
 * Check the code is pep8 compliant by running `pep8 CIAlign/*`
 
 To edit the manual:

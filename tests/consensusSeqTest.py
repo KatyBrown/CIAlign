@@ -7,20 +7,15 @@ in CIAlign folder
 
 import unittest
 from unittest import mock
-from mock import patch
-from parameterized import parameterized, parameterized_class
-
-import sys
+from parameterized import parameterized
 import logging
 import numpy as np
-from Bio import AlignIO
 import os
-from os import path
-import pandas as pd
 import matplotlib.pyplot as plt
 
 import CIAlign
 import CIAlign.consensusSeq as consensusSeq
+import CIAlign.utilityFunctions as utilityFunctions
 from tests.helperFunctions import readMSA
 
 class ConsensusSeqTests(unittest.TestCase):
@@ -80,6 +75,10 @@ class ConsensusSeqTests(unittest.TestCase):
             ["./tests/test_files/consensus_example_aa.fasta", "majority_nongap",
             ['L', 'Q', 'N', 'P', 'R', 'V', 'T', 'Q', 'H', 'S', 'V', 'P', 'V', 'R', 'R', 'Y'],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.03, 0.03, 0.03, 0.03, 0.03],],
+            ["./tests/test_files/consensus_example_aa_gaps.fasta", "majority_nongap",
+            ['L', 'Q', 'N', 'P', 'R', 'V', 'T', 'Q', 'H', 'S', 'V', 'P', 'V', 'R', 'N', 'Y'],
+            [0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97,
+             0.03, 0.03, 0.03, 0, 0.03],],            
     ])
     def testFindConsensus(self, MSA, type, expected_consensus, expected_coverage):
         alignment, names = readMSA(MSA)
@@ -93,8 +92,8 @@ class ConsensusSeqTests(unittest.TestCase):
 
     @parameterized.expand([
             [{'-': 1, 'C': 1, 'G': 3, 'U': 1}, 6, 'nt',
-            {'A': 0.0, 'G': 0.25, 'T': 0.0, 'C': 0.08,
-            'N': 0.0, '-': 0.0, 'U': 0.08, 'R': 0.0, 'Y': 0.0, 'S': 0.0,
+            {'A': 0.0, 'G': 0.13, 'T': 0.0, 'C': 0.04,
+            'N': 0.0, '-': 0.0, 'U': 0.04, 'R': 0.0, 'Y': 0.0, 'S': 0.0,
             'W': 0.0, 'K': 0.0, 'M': 0.0, 'B': 0.0, 'D': 0.0, 'H': 0.0, 'V': 0.0, 'X': 0.0},
             {'A': 0, 'G': 1.56, 'T': 0, 'C': 1.54, 'N': 0, '-': 0, 'U': 1.54,
             'R': 0, 'Y': 0, 'S': 0, 'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0, 'X': 0}],
@@ -102,14 +101,23 @@ class ConsensusSeqTests(unittest.TestCase):
             [{'V': 32}, 32, 'aa',
             {'D': 0.0, 'E': 0.0, 'C': 0.0, 'M': 0.0, 'K': 0.0, 'R': 0.0,
             'S': 0.0, 'T': 0.0, 'F': 0.0, 'Y': 0.0, 'N': 0.0, 'Q': 0.0, 'G': 0.0,
-            'L': 0.0, 'V': 4.25, 'I': 0.0, 'A': 0.0, 'W': 0.0, 'H': 0.0, 'P': 0.0,
+            'L': 0.0, 'V': 3.89, 'I': 0.0, 'A': 0.0, 'W': 0.0, 'H': 0.0, 'P': 0.0,
              'X': 0.0, '-': 0.0, 'B': 0.0, 'Z': 0.0, 'J': 0.0, '*': 0.0, 'U': 0.0, 'O': 0.0},
             {'D': 0, 'E': 0, 'C': 0, 'M': 0, 'K': 0, 'R': 0, 'S': 0, 'T': 0,
              'F': 0, 'Y': 0, 'N': 0, 'Q': 0, 'G': 0, 'L': 0, 'V': 4.32, 'I': 0,
               'A': 0, 'W': 0, 'H': 0, 'P': 0, 'X': 0, '-': 0, 'B': 0, 'Z': 0, 'J': 0, '*': 0, 'U': 0, 'O': 0}],
+            
+            [{}, 0, 'nt',
+             {'A': 0, 'G': 0, 'T': 0, 'C': 0, 'N': 0, '-': 0, 'U': 0,
+              'R': 0, 'Y': 0, 'S': 0, 'W': 0, 'K': 0, 'M': 0, 'B': 0,
+              'D': 0, 'H': 0, 'V': 0, 'X': 0},
+             {'A': 0, 'G': 0, 'T': 0, 'C': 0, 'N': 0, '-': 0, 'U': 0,
+              'R': 0, 'Y': 0, 'S': 0, 'W': 0, 'K': 0, 'M': 0, 'B': 0,
+              'D': 0, 'H': 0, 'V': 0, 'X': 0}]
+
     ])
     def test_calc_entropy(self, count, seq_count, type, expected_height, expected_info):
-        height, info = consensusSeq.calc_entropy(count, seq_count, type)
+        height, info, freq = consensusSeq.calc_entropy(count, seq_count, type)
         height_rounded = dict([key, round(value, 2)] for key, value in height.items())
         info_rounded = dict([key, round(value, 2)] for key, value in info.items())
         self.assertEqual(height_rounded, expected_height)
@@ -159,8 +167,8 @@ class ConsensusSeqCoveragePlotTest(unittest.TestCase):
     def tearDown(self):
         os.remove(self.dest)
 
-    def testMakeCoveragePlot(self):
-        consensusSeq.makeCoveragePlot([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.03, 0.03, 0.03, 0.03, 0.03], self.dest)
+    def testMakeLinePlot(self):
+        consensusSeq.makeLinePlot([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.03, 0.03, 0.03, 0.03, 0.03], self.dest, "x")
         self.assertTrue(os.path.isfile(self.dest))
 
 class ConsensusSeqSequenceLogoTest(unittest.TestCase):
@@ -169,17 +177,19 @@ class ConsensusSeqSequenceLogoTest(unittest.TestCase):
         self.dest = 'seq_logo_test.png'
 
     def tearDown(self):
-        coloursNT = CIAlign.utilityFunctions.getNtColours()
-        for base in coloursNT.keys():
-            b = base.replace("*", "stop")
-            if os.path.exists("%s_temp.png" % b):
-                os.remove("%s_temp.png" % b)
         os.remove(self.dest)
 
-    def testMakeCoveragePlot(self):
-        alignment, names = readMSA("./tests/test_files/consensus_example_nt.fasta")
-        consensusSeq.sequence_logo(alignment, self.dest)
+    @parameterized.expand([['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 0, 50],
+                           ['tests/test_files/consensus_example_nt.fasta', 'nt', 0, 0, 50],
+                           ['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 15, 10],
+                           ['tests/test_files/consensus_example_aa.fasta', 'aa', 0, 100, 50],
+                           ['tests/test_files/consensus_example_long.fasta', 'aa', 20, 200, 50]])
+    def testSequenceLogo(self, fasta, typ, start, end, figrowlength):
+        alignment, names = readMSA(fasta)
+        consensusSeq.sequence_logo(alignment, self.dest, typ=typ, start=start,
+                                   end=end, figrowlength=figrowlength)
         self.assertTrue(os.path.isfile(self.dest))
+
 
 class ConsensusSeqCoverageSequenceLogoBarTest(unittest.TestCase):
 
@@ -187,14 +197,40 @@ class ConsensusSeqCoverageSequenceLogoBarTest(unittest.TestCase):
         self.dest = 'seq_logo_bar_test.png'
 
     def tearDown(self):
-        coloursAA = CIAlign.utilityFunctions.getAAColours()
-        for base in coloursAA.keys():
-            b = base.replace("*", "stop")
-            if os.path.exists("%s_temp.png" % b):
-                os.remove("%s_temp.png" % b)
         os.remove(self.dest)
 
-    def testMakeCoveragePlot(self):
-        alignment, names = readMSA("./tests/test_files/consensus_example_aa.fasta")
-        consensusSeq.sequence_bar_logo(alignment, self.dest, 'aa')
+
+    @parameterized.expand([['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 0, 50],
+                           ['tests/test_files/consensus_example_nt.fasta', 'nt', 0, 0, 50],
+                           ['tests/test_files/consensus_example_nt.fasta', 'nt', 1, 15, 10],
+                           ['tests/test_files/consensus_example_aa.fasta', 'aa', 0, 100, 50],
+                           ['tests/test_files/consensus_example_long.fasta', 'aa', 20, 200, 50]])
+    def testSequenceBarLogo(self, fasta, typ, start, end, figrowlength):
+        alignment, names = readMSA(fasta)
+        consensusSeq.sequence_bar_logo(alignment, self.dest, typ,
+                                       start=start, end=end,
+                                       figrowlength=figrowlength)
         self.assertTrue(os.path.isfile(self.dest))
+
+class ConsensusSeqConservation(unittest.TestCase):
+    def setUp(self):
+        self.arr, nams = utilityFunctions.FastaToArray(
+            "tests/test_files/consensus_example_nt.fasta")
+
+    def tearDown(self):
+        pass
+
+    @parameterized.expand([[np.array([0.388, 0.224, 0.764, 0.273, 0.273,
+                                      0.273, 0.273, 0.273, 0.273, 1.639,
+                                      0.989, 0.989, 0.388, 0.388, 0.388,
+                                      0.764]),
+                            np.array([0.868, 0.95, 0.5, 0.0, 0.0,
+                                      0.0, 0.0, 0.0, 0.0, 0.0,
+                                      0.451, 0.451, 0.868, 0.868, 0.868,
+                                      0.5])]])
+    def testCalcConservationAli(self, expected_heights, expected_ents):
+        heights, ents = consensusSeq.calcConservationAli(self.arr, 'nt')
+        heights = np.array(heights).round(3)
+        ents = np.array(ents).round(3)
+        self.assertTrue(np.array_equal(heights, expected_heights))
+        self.assertTrue(np.array_equal(ents, expected_ents))

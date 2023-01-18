@@ -4,24 +4,13 @@
 python3 -m unittest tests.miniAlignmentsTest
 in CIAlign folder
 '''
-
+from parameterized import parameterized
 import unittest
 from unittest import mock
-from mock import patch
-from parameterized import parameterized, parameterized_class
-
-import sys
 import logging
 import numpy as np
-from Bio import AlignIO
 import os
-from os import path
-import pandas as pd
-import matplotlib.pyplot as plt
-
 from matplotlib import image
-
-import CIAlign
 import CIAlign.miniAlignments as miniAlignments
 from tests.helperFunctions import readMSA
 import skimage.metrics
@@ -31,11 +20,11 @@ class MiniAlignmentsTests(unittest.TestCase):
     def testArrNumeric(self):
         alignment, names = readMSA("./tests/test_files/consensus_example_nt.fasta")
         arr_expected = [[1, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 0, 4, 2, 4, 3],
-                    [1, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 0, 4, 2, 4, 2],
-                    [1, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 0, 0, 1, 2, 4],
-                    [1, 1, 1, 2, 4, 2, 4, 4, 0, 4, 4, 0, 4, 2, 4, 2],
-                    [4, 2, 1, 3, 3, 3, 3, 3, 3, 4, 4, 0, 4, 2, 4, 2],
-                    [2, 4, 0, 3, 3, 3, 3, 3, 3, 4, 2, 1, 2, 4, 0, 2],]
+                        [1, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 0, 4, 2, 4, 2],
+                        [1, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 0, 0, 1, 2, 4],
+                        [1, 1, 1, 2, 4, 2, 4, 4, 0, 4, 4, 0, 4, 2, 4, 2],
+                        [4, 2, 1, 3, 3, 3, 3, 3, 3, 4, 4, 0, 4, 2, 4, 2],
+                        [2, 4, 0, 3, 3, 3, 3, 3, 3, 4, 2, 1, 2, 4, 0, 2],]
 
         arr_int, colour_map = miniAlignments.arrNumeric(alignment,'nt')
 
@@ -69,12 +58,14 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         self.alignment, self.names = readMSA("./tests/test_files/example1.fasta")
         self.dest = "./tests/test_files/test_mini_markup.png"
         self.legend = "./tests/test_files/test_mini_markup_legend.png"
-        expected = image.imread('./tests/test_files/expected_mini_ali_markup.png')
+        expected = image.imread('./tests/test_files/expected_mini_ali_markup.png').round(3)
         markup_dict = {'remove_divergent': {'Seq1'},
-                        'remove_gaponly': {89, 90, 91, 92, 93, 94, 95},
-                        'remove_insertions': {22, 23, 24, 25, 26, 27},
-                        'crop_ends': {'Seq5': ((np.array([]), np.array([92, 93, 94, 95])))},
-                        'remove_short': {'Seq6'}}
+                       'remove_gap_only': {89, 90, 91, 92, 93, 94, 95},
+                       'remove_insertions': {22, 23, 24, 25, 26, 27},
+                       'crop_ends': {'Seq5': ((np.array([1, 2, 3]), np.array([92, 93, 94, 95])))},
+                       'remove_short': {'Seq6'},
+                       'crop_divergent': {0, 1, 88, 89},
+                       'user': {19, 20}}
 
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
@@ -83,20 +74,22 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
                                              'nt', 300, None, 5, 3,
                                              True, markup_dict, False)
 
-        mini_alignment = image.imread(self.dest)
+        mini_alignment = image.imread(self.dest).round(3)
+
         # added a bit of leeway to allow for images created on different
         # machines - they are visually identical but have minor differences
         # in rendering - look for 95% structural similarity
         simi = skimage.metrics.structural_similarity(expected,
                                                      mini_alignment,
                                                      channel_axis=-1)
-        self.assertTrue(simi > 0.9)
+
+        self.assertTrue(simi > 0.95)
 
     @parameterized.expand([
-            ['./tests/test_files/example1.fasta', './tests/test_files/expected_mini_ali.png', 'nt'],
-            ['./tests/test_files/example2.fasta', './tests/test_files/expected_mini_ali_aa.png', 'aa'],
+            ['./tests/test_files/example1.fasta', './tests/test_files/expected_mini_ali.png', 'nt', True],
+            ['./tests/test_files/example2.fasta', './tests/test_files/expected_mini_ali_aa.png', 'aa', False],
     ])
-    def testDrawMiniAlignment(self, input, expected, type):
+    def testDrawMiniAlignment(self, input, expected, type, keep_numbers):
         self.alignment, self.names = readMSA(input)
         self.dest = "./tests/test_files/test_mini.png"
         self.legend = ""
@@ -105,8 +98,17 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
             miniAlignments.drawMiniAlignment(self.alignment, self.names, logger, self.dest,
-                                                                type, 300, None, 5, 3,
-                                                                False, None, False)
+                                                                type, 300,
+                                                                title="test",
+                                                                width=5,
+                                                                height=3,
+                                                                markup=False,
+                                                                markupdict=None,
+                                                                ret=False,
+                                                                orig_nams=['Seq1', 'Seq2', 'Seq3', 'Seq4', 'Seq5', 'Seq6', 'Seq7'],
+                                                                keep_numbers=keep_numbers,
+                                                                force_numbers=False,
+                                                                palette='CBS')
 
         mini_alignment = image.imread(self.dest)
         
@@ -116,7 +118,8 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         simi = skimage.metrics.structural_similarity(expected,
                                                      mini_alignment,
                                                      channel_axis=-1)
-        self.assertTrue(simi > 0.9)
+        self.assertTrue(simi > 0.95)
+
 
 class DrawMarkUpTest(unittest.TestCase):
 
@@ -126,7 +129,7 @@ class DrawMarkUpTest(unittest.TestCase):
         self.ali_width = len(self.alignment[0])
         self.ali_height = len(self.alignment)
         self.markup_dict = {'remove_divergent': {'Seq1'},
-                        'remove_gaponly': {89, 90, 91, 92, 93, 94, 95},
+                        'remove_gap_only': {89, 90, 91, 92, 93, 94, 95},
                         'remove_insertions': {22, 23, 24, 25, 26, 27},
                         'crop_ends': {'Seq5': ((np.array([]), np.array([92, 93, 94, 95])))},
                         'remove_short': {'Seq6'}}
@@ -144,6 +147,7 @@ class DrawMarkUpTest(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("./tests/test_files/test_mini_legend.png"):
             os.remove("./tests/test_files/test_mini_legend.png")
+        os.remove(self.dest)
 
     def testDrawMarkUp(self):
         # add markup to mini plot

@@ -382,6 +382,17 @@ Output file:
 
 
 ### Editing Functions
+#### Extracting part of the alignment
+This function allows the user to specify a start and end position to isolate part of the alignment, using the --section_start and --section_end position. The section must be at least 5 residues in length. The section which has been isolated will then be used for all other processing with CIAlign. 
+
+If parsing functions are also specified, the positions output in the log files will be relative to the original input file, rather than the section.
+
+
+| Parameter | Description | Default |
+| ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
+| `--get_section` | Allows the user to specify a section of the alignment to be extracted and processed| False |
+| `--section_start` | Start position in the original alignment for the section to be extracted | None |
+| `--section_end` | End position in the original alignment for the section to be extracted | None |
 
 #### Replacing U or T
 This function replaces the U nucleotides with T nucleotides or vice versa without otherwise changing the alignment.

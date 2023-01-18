@@ -56,7 +56,51 @@ def CBSafe():
               'remove_insertions': "#9db341",
               'remove_divergent': "#7066bc",
               'crop_ends': '#020545',
+              'remove_gap_only': '#f9c1d2',
+              'remove_short': "#c85133",
+              'crop_divergent': '#ff00d1',
+              'user': '#fff4a3'})
+    return (b)
+
+
+def Bright():
+    '''
+    Returns the hexadecimal values for a colour blind safe colour palette
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    dict
+        A dictionary containing the hexadecimal values for the colours used
+        in the CIAlign mini alignments
+    '''
+    b = base()
+    b.update({'yellow_nt': "#ffd500",
+              'red_nt': "#64bc3c",
+              'green_nt': "#f20707",
+              'blue_nt': "#0907f2",
+              'grey_nt': "#c7d1d0",
+              'red_aa': "#f20707",
+              'yellow_aa': "#ffd500",
+              'blue_aa':  "#0907f2",
+              'orange_aa': "#f4aa03",
+              'midblue_aa': "#03b5f4",
+              'cyan_aa': "#03f4dd",
+              'lightgrey_aa': '#f0f4f4',
+              'green_aa': "#64bc3c",
+              'darkgrey_aa': "#808080",
+              'purple_aa': '#6f0cac',
+              'paleblue_aa': '#cde3f8',
+              'peach_aa': "#f8e7cd",
+              'tan_aa': "#d2a867",
+              'remove_insertions': "#9db341",
+              'remove_divergent': "#7066bc",
+              'crop_ends': '#020545',
               'remove_gaponly': '#f9c1d2',
               'remove_short': "#c85133",
-              'crop_divergent': '#ff00d1'})
+              'crop_divergent': '#ff00d1',
+              'user': '#fff4a3'})
     return (b)

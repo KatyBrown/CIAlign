@@ -11,7 +11,7 @@ except ImportError:
     from _version import __version__
 
 
-def float_range(mini, maxi):
+def float_range(mini, maxi, default):
     '''
     Defines a type for argparse of a float with a fixed range
 
@@ -34,6 +34,7 @@ def float_range(mini, maxi):
     # Based on solution from @georg-w stack overflow qu. 55324449
     mini = float(mini)
     maxi = float(maxi)
+    default = float(default)
 
     def float_range_checker(arg):
         try:
@@ -41,7 +42,7 @@ def float_range(mini, maxi):
         except ValueError:
             raise configargparse.ArgumentTypeError(
                 "Must be a floating point number")
-        if f < mini or f > maxi:
+        if (f < mini or f > maxi) and not f == default:
             raise configargparse.ArgumentTypeError(
                 "Must be in range [%s .. %s]" % (mini, maxi))
         return (f)
@@ -49,7 +50,7 @@ def float_range(mini, maxi):
     return (float_range_checker)
 
 
-def int_range(mini, maxi, n_col):
+def int_range(mini, maxi, n_col, default):
     '''
     Defines a type for argparse of an integer with a fixed range, where
     the maximum value is a function of the number of columns
@@ -76,6 +77,10 @@ def int_range(mini, maxi, n_col):
         maxi_val = eval(maxi)
     except TypeError:
         maxi_val = int(maxi)
+    try:
+        default_val = eval(default)
+    except TypeError:
+        default_val = int(default)
 
     def int_range_checker(arg):
         try:
@@ -83,7 +88,7 @@ def int_range(mini, maxi, n_col):
         except ValueError:
             raise configargparse.ArgumentTypeError("Must be an integer")
 
-        if f < mini or f > maxi_val:
+        if (f < mini or f > maxi_val) and not f == default_val:
             raise configargparse.ArgumentTypeError(
                 "Must be in range [%s .. %s (%s)]" % (mini, maxi, maxi_val))
         return (f)
@@ -189,56 +194,6 @@ def getParser():
                        Default: %(default)s",
                  action='store_true')
 
-    # Crop Ends
-    optional.add("--crop_ends", dest="crop_ends",
-                 action="store_true",
-                 help="Crop the ends of sequences if they are poorly aligned. \
-                 Default: %(default)s")
-
-    optional.add("--crop_ends_mingap_perc", dest='crop_ends_mingap_perc',
-                 type=float_range(minis['crop_ends_mingap_perc'],
-                                  maxis['crop_ends_mingap_perc']),
-                 default=defs['crop_ends_mingap_perc'],
-                 help="Minimum proportion of the sequence length (excluding \
-                     gaps) that is the threshold for change in gap numbers. \
-                     Default: %(default)s",
-                 metavar="(float, %s..%s)" % (minis['crop_ends_mingap_perc'],
-                                              maxis['crop_ends_mingap_perc']))
-
-    optional.add("--crop_ends_redefine_perc", dest='crop_ends_redefine_perc',
-                 type=float_range(minis['crop_ends_redefine_perc'],
-                                  maxis['crop_ends_redefine_perc']),
-                 default=defs['crop_ends_redefine_perc'],
-                 help="Proportion of the sequence length (excluding gaps) \
-                       that is being checked for change in gap numbers to \
-                       redefine start/end. Default: %(default)s",
-                 metavar="(float, %s..%s)" % (
-                     minis['crop_ends_redefine_perc'],
-                     maxis['crop_ends_redefine_perc']))
-
-    optional.add("--crop_ends_retain", dest="retain_seqs_ce",
-                 action="append", default=None, metavar="(string)",
-                 help="""Do not crop the sequence with this name when \
-                         running the crop_ends function. Can be specified \
-                         multiple times. Default: %(default)s""")
-
-    optional.add("--crop_ends_retain_str", dest="retain_seqs_ceS",
-                 action="append", default=None, type=str,
-                 metavar="(string)",
-                 help="""Do not crop sequences with names containing \
-                         this word (character string) when \
-                         running the crop_ends function. \
-                         Case sensitive. \
-                         Default: %(default)s""")
-
-    optional.add("--crop_ends_retain_list", dest="retain_seqs_ceL",
-                 type=str, default=None,
-                 metavar="(string)",
-                 help="""Do not crop the sequences listed in this file when \
-                         running the crop_ends function. \
-                         Sequence names must exactly match the FASTA infile. \
-                         Default: %(default)s""")
-
     # Remove divergent sequences
     optional.add("--remove_divergent", dest="remove_divergent",
                  action="store_true",
@@ -249,7 +204,8 @@ def getParser():
     optional.add("--remove_divergent_minperc", dest="remove_divergent_minperc",
                  default=defs['remove_divergent_minperc'],
                  type=float_range(minis['remove_divergent_minperc'],
-                                  maxis['remove_divergent_minperc']),
+                                  maxis['remove_divergent_minperc'],
+                                  defs['remove_divergent_minperc']),
                  help="Minimum proportion of positions which should be \
                        identical to the most common base / amino acid in \
                        order to be preserved. \
@@ -293,8 +249,8 @@ def getParser():
 
     optional.add("--insertion_min_size", dest="insertion_min_size",
                  type=int_range(minis['insertion_min_size'],
-                                maxis['insertion_max_size'],
-                                n_col),
+                                maxis['insertion_min_size'],
+                                n_col, defs['insertion_min_size']),
                  default=defs['insertion_min_size'],
                  help="Only remove insertions >= this number of residues. \
                        Default: %(default)s",
@@ -305,7 +261,8 @@ def getParser():
     optional.add("--insertion_max_size", dest="insertion_max_size",
                  type=int_range(minis['insertion_max_size'],
                                 maxis['insertion_max_size'],
-                                n_col),
+                                n_col,
+                                defs['insertion_max_size']),
                  default=defs['insertion_max_size'],
                  help="Only remove insertions <= this number of residues. \
                        Default: %(default)s",
@@ -316,7 +273,8 @@ def getParser():
     optional.add("--insertion_min_flank", dest="insertion_min_flank",
                  type=int_range(minis['insertion_min_flank'],
                                 maxis['insertion_min_flank'],
-                                n_col),
+                                n_col,
+                                defs['insertion_min_flank']),
                  default=defs['insertion_min_flank'],
                  help="Minimum number of bases on either side of an insertion \
                        to classify it as an insertion.\
@@ -327,7 +285,8 @@ def getParser():
 
     optional.add("--insertion_min_perc", dest="insertion_min_perc",
                  type=float_range(minis['insertion_min_perc'],
-                                  maxis['insertion_min_perc']),
+                                  maxis['insertion_min_perc'],
+                                  defs['insertion_min_perc']),
                  default=defs['insertion_min_perc'],
                  help="Remove insertions which are present in less than this \
                        proportion of sequences.\
@@ -335,6 +294,58 @@ def getParser():
                  metavar="(float, %s..%s)" % (
                      minis['insertion_min_perc'],
                      maxis['insertion_min_perc']))
+
+    # Crop Ends
+    optional.add("--crop_ends", dest="crop_ends",
+                 action="store_true",
+                 help="Crop the ends of sequences if they are poorly aligned. \
+                 Default: %(default)s")
+
+    optional.add("--crop_ends_mingap_perc", dest='crop_ends_mingap_perc',
+                 type=float_range(minis['crop_ends_mingap_perc'],
+                                  maxis['crop_ends_mingap_perc'],
+                                  defs['crop_ends_mingap_perc']),
+                 default=defs['crop_ends_mingap_perc'],
+                 help="Minimum proportion of the sequence length (excluding \
+                     gaps) that is the threshold for change in gap numbers. \
+                     Default: %(default)s",
+                 metavar="(float, %s..%s)" % (minis['crop_ends_mingap_perc'],
+                                              maxis['crop_ends_mingap_perc']))
+
+    optional.add("--crop_ends_redefine_perc", dest='crop_ends_redefine_perc',
+                 type=float_range(minis['crop_ends_redefine_perc'],
+                                  maxis['crop_ends_redefine_perc'],
+                                  defs['crop_ends_redefine_perc']),
+                 default=defs['crop_ends_redefine_perc'],
+                 help="Proportion of the sequence length (excluding gaps) \
+                       that is being checked for change in gap numbers to \
+                       redefine start/end. Default: %(default)s",
+                 metavar="(float, %s..%s)" % (
+                     minis['crop_ends_redefine_perc'],
+                     maxis['crop_ends_redefine_perc']))
+
+    optional.add("--crop_ends_retain", dest="retain_seqs_ce",
+                 action="append", default=None, metavar="(string)",
+                 help="""Do not crop the sequence with this name when \
+                         running the crop_ends function. Can be specified \
+                         multiple times. Default: %(default)s""")
+
+    optional.add("--crop_ends_retain_str", dest="retain_seqs_ceS",
+                 action="append", default=None, type=str,
+                 metavar="(string)",
+                 help="""Do not crop sequences with names containing \
+                         this word (character string) when \
+                         running the crop_ends function. \
+                         Case sensitive. \
+                         Default: %(default)s""")
+
+    optional.add("--crop_ends_retain_list", dest="retain_seqs_ceL",
+                 type=str, default=None,
+                 metavar="(string)",
+                 help="""Do not crop the sequences listed in this file when \
+                         running the crop_ends function. \
+                         Sequence names must exactly match the FASTA infile. \
+                         Default: %(default)s""")
 
     # Remove Short
     optional.add("--remove_short", dest="remove_short",
@@ -345,59 +356,14 @@ def getParser():
     optional.add("--remove_min_length", dest="remove_min_length",
                  type=int_range(minis['remove_min_length'],
                                 maxis['remove_min_length'],
-                                n_col),
+                                n_col,
+                                defs['remove_min_length']),
                  default=defs['remove_min_length'],
                  help="Sequences are removed if they are shorter than this \
                        minimum length, excluding gaps. Default: %(default)s",
                  metavar="(int, %s..%s)" % (
                      minis['remove_min_length'],
                      maxis['remove_min_length']))
-
-    # Crop Divergent
-    optional.add("--crop_divergent", dest="crop_divergent",
-                 help="""Crop ends of sequences which are highly
-                         divergent. Default %(default)s""",
-                 action="store_true")
-
-    optional.add("--crop_divergent_min_prop_ident",
-                 dest="divergent_min_prop_ident",
-                 type=float_range(minis['divergent_min_prop_ident'],
-                                  maxis['divergent_min_prop_ident']),
-                 default=defs['divergent_min_prop_ident'],
-                 help="""The minimum proportion of sequences which should \
-                         have the same residue in each column for crop \
-                         divergent. Default: %(default)s""",
-                 metavar="(float, %s..%s)" % (
-                     minis['divergent_min_prop_ident'],
-                     maxis['divergent_min_prop_ident']))
-
-    optional.add("--crop_divergent_min_prop_nongap",
-                 dest="divergent_min_prop_nongap",
-
-                 type=float_range(minis['divergent_min_prop_nongap'],
-                                  maxis['divergent_min_prop_nongap']),
-                 default=defs['divergent_min_prop_nongap'],
-                 help="""The minimum proportion of sequences which should \
-                         have the non-gap residues in each column \
-                         for crop divergent. Default: %(default)s""",
-                 metavar="(float, %s..%s)" % (
-                     minis['divergent_min_prop_nongap'],
-                     maxis['divergent_min_prop_nongap']))
-
-    optional.add("--crop_divergent_buffer_size",
-                 dest="divergent_buffer_size",
-                 type=int_range(minis['divergent_buffer_size'],
-                                maxis['divergent_buffer_size'],
-                                n_col),
-                 default=defs['divergent_buffer_size'],
-                 help="""The number of consecutive columns which should meet \
-                         the min_prop_ident and min_prop_nongap criteria \
-                         to pass filtering by crop_divergent. \
-                         Default: %(default)s""",
-                 metavar="(int, %s..%s)" % (
-                     minis['divergent_buffer_size'],
-                     maxis['divergent_buffer_size']))
-
     optional.add("--remove_short_retain", dest="retain_seqs_rs",
                  action="append", default=None, metavar="(string)",
                  help="""Do not remove the sequence with this name when \
@@ -421,6 +387,61 @@ def getParser():
                          Sequence names must exactly match the FASTA infile. \
                          Default: %(default)s""")
 
+    # keep gap only
+    optional.add("--keep_gaponly", dest="remove_gaponly",
+                 action="store_false",
+                 help="Keep gap only columns in the alignment. Default: \
+                       %(default)s")
+
+    # Crop Divergent
+    optional.add("--crop_divergent", dest="crop_divergent",
+                 help="""Crop ends of sequences which are highly
+                         divergent. Default: %(default)s""",
+                 action="store_true")
+
+    optional.add("--crop_divergent_min_prop_ident",
+                 dest="divergent_min_prop_ident",
+                 type=float_range(minis['divergent_min_prop_ident'],
+                                  maxis['divergent_min_prop_ident'],
+                                  defs['divergent_min_prop_ident']),
+                 default=defs['divergent_min_prop_ident'],
+                 help="""The minimum proportion of sequences which should \
+                         have the same residue in each column for crop \
+                         divergent. Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['divergent_min_prop_ident'],
+                     maxis['divergent_min_prop_ident']))
+
+    optional.add("--crop_divergent_min_prop_nongap",
+                 dest="divergent_min_prop_nongap",
+
+                 type=float_range(minis['divergent_min_prop_nongap'],
+                                  maxis['divergent_min_prop_nongap'],
+                                  defs['divergent_min_prop_nongap']),
+                 default=defs['divergent_min_prop_nongap'],
+                 help="""The minimum proportion of sequences which should \
+                         have the non-gap residues in each column \
+                         for crop divergent. Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['divergent_min_prop_nongap'],
+                     maxis['divergent_min_prop_nongap']))
+
+    optional.add("--crop_divergent_buffer_size",
+                 dest="divergent_buffer_size",
+                 type=int_range(minis['divergent_buffer_size'],
+                                maxis['divergent_buffer_size'],
+                                n_col,
+                                defs['divergent_buffer_size']),
+                 default=defs['divergent_buffer_size'],
+                 help="""The number of consecutive columns which should meet \
+                         the min_prop_ident and min_prop_nongap criteria \
+                         to pass filtering by crop_divergent. \
+                         Default: %(default)s""",
+                 metavar="(int, %s..%s)" % (
+                     minis['divergent_buffer_size'],
+                     maxis['divergent_buffer_size']))
+
+    # Retain
     optional.add("--retain", dest="retain_seqs",
                  action="append", default=None, type=str, metavar="(string)",
                  help="""Do not remove the sequence with this name when \
@@ -447,12 +468,6 @@ def getParser():
                           crop_ends). \
                          Sequence names must exactly match the FASTA infile. \
                          Default: %(default)s""")
-
-    # keep gap only
-    optional.add("--keep_gaponly", dest="remove_gaponly",
-                 action="store_false",
-                 help="Keep gap only columns in the alignment. Default: \
-                       %(default)s")
 
     # Consensus
     optional.add("--make_consensus", dest="make_consensus",
@@ -529,6 +544,13 @@ def getParser():
                  Will cause labels to overlap on large plots. \
                  Default: %(default)s")
 
+    # Colours
+    optional.add("--palette", dest="palette", type=str,
+                 default="CBS", metavar="(str",
+                 help="Colour palette. Currently implemented \
+                       CBS (colour blind safe) or bright. \
+                       Default: %(default)s")
+
     # Sequence logos
     optional.add("--make_sequence_logo", dest="make_sequence_logo",
                  action="store_true",
@@ -571,39 +593,102 @@ def getParser():
                  help="Make a swatch showing available fonts. \
                        Default: %(default)s")
 
-    # Coverage
-    optional.add("--plot_coverage_input", dest="plot_coverage_input",
+    # PWM function
+    optional.add("--pwm_input", dest="pwm_input",
+                 action="store_true", default=False,
+                 help="Generate a position frequency matrix, position \
+                       probability matrix and position weight matrix based \
+                       on the input alignment. Default: %(default)s")
+
+    optional.add("--pwm_output", dest="pwm_output",
+                 action="store_true", default=False,
+                 help="Generate a position frequency matrix, position \
+                       probability matrix and position weight matrix based \
+                       on the output alignment. Default: %(default)s")
+
+    optional.add("--pwm_start", dest="pwm_start",
+                 type=int, default=None, metavar="(int)",
+                 help="Start column of the PWM. Default: %(default)s")
+
+    optional.add("--pwm_end", dest="pwm_end",
+                 type=int, default=None, metavar="(int",
+                 help="End column of the PWM. Default: %(default)s")
+
+    optional.add("--pwm_freqtype", dest="pwm_freqtype",
+                 type=str, default="equal", metavar="(str",
+                 help="Type of background frequency matrix to use when \
+                       generating the PWM. Should be 'equal', 'calc', 'calc2' \
+                       or user. 'equal', assume all residues are equally \
+                       common, 'calc', frequency is calculated using the PFM, \
+                       'calc2', frequency is calculated using the full \
+                       alignment (same as calc if pwm_start and pwm_end are \
+                       not specified). Default: %(default)s")
+
+    optional.add("--pwm_alphatype", dest="pwm_alphatype",
+                 type=str, default="calc", metavar="(str",
+                 help="Alpha value to use as a pseudocount to avoid zero \
+                       values in the PPM. Should be 'calc' or 'user'. \
+                       If alphatype is 'calc', alpha is calculated as \
+                       frequency(base) * (square root(n rows in alignment)), \
+                       as described in Dave Tang's blog here: \
+                       https://davetang.org/muse/2013/10/01/\
+                       position-weight-matrix/, \
+                       which recreates the method used in \
+                       doi.org/10.1038/nrg1315. If alpha type is 'user' \
+                       the user provides the value of alpha as pwm_alphatype. \
+                       To run without pseudocounts set pwm_alphatype as user \
+                       and pwm_alphaval as 0. Default: %(default)s")
+
+    optional.add("--pwm_alphaval", dest="pwm_alphaval",
+                 type=float, default=1.0, metavar="(int",
+                 help="User defined value of the alpha parameter to use as a \
+                       pseudocount in the PPM. Default: %(default)s")
+
+    optional.add("--pwm_output_blamm", dest="pwm_output_blamm",
+                 action="store_true", default=False,
+                 help="Output PPM formatted for BLAMM software \
+                       https://github.com/biointec/blamm. \
+                       Default: %(default)s")
+
+    optional.add("--pwm_output_meme", dest="pwm_output_meme",
+                 action="store_true", default=False,
+                 help="Output PPM formatted for MEME software \
+                       https://meme-suite.org/meme \
+                       Default: %(default)s")
+
+    # Plots
+    optional.add("--plot_stats_input", dest="plot_stats_input",
                  action="store_true",
-                 help="Plot the coverage of the input MSA. Default: \
+                 help="Plot statistics about the input MSA. Default: \
                        %(default)s")
 
-    optional.add("--plot_coverage_output", dest="plot_coverage_output",
+    optional.add("--plot_stats_output", dest="plot_stats_output",
                  action="store_true",
-                 help="Plot the coverage of the output MSA. Default: \
+                 help="Plot statistics about the output MSA. Default: \
                        %(default)s")
 
-    optional.add("--plot_coverage_dpi", dest="plot_coverage_dpi",
+    optional.add("--plot_stats_dpi", dest="plot_stats_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for coverage plot. Default: %(default)s")
 
-    optional.add("--plot_coverage_height", dest="plot_coverage_height",
+    optional.add("--plot_stats_height", dest="plot_stats_height",
                  type=int, default=3, metavar="(int)",
-                 help="Height for coverage plot (inches). Default: \
+                 help="Height for statistics plots (inches). Default: \
                        %(default)s")
 
-    optional.add("--plot_coverage_width", dest="plot_coverage_width",
+    optional.add("--plot_stats_width", dest="plot_stats_width",
                  type=int, default=5, metavar="(int)",
-                 help="Width for coverage plot (inches). Default: \
+                 help="Width for statistics plots (inches). Default: \
                        %(default)s")
 
-    optional.add("--plot_coverage_colour", dest="plot_coverage_colour",
+    optional.add("--plot_stats_colour", dest="plot_stats_colour",
                  type=str, default='#007bf5', metavar="(string)",
-                 help="Colour for coverage plot (hex code or name). \
+                 help="Colour for statistics plots (hex code or name). \
                        Default: %(default)s")
 
-    optional.add("--plot_coverage_filetype", dest="plot_coverage_filetype",
+    optional.add("--plot_stats_filetype", dest="plot_stats_filetype",
                  type=str, default='png', metavar="(string)",
-                 help="File type for coverage plot (png, svg, tiff, jpg). \
+                 help="File type for statistics plots (png, svg, tiff, jpg). \
                        Default: %(default)s")
 
     # Similarity Matrix
@@ -639,6 +724,7 @@ def getParser():
                        gaps in both sequences, 2 - consider all positions \
                        regardless of gaps. Default: %(default)s")
 
+
     # Unalign function
     optional.add("--unalign_input", dest="unalign_input",
                  action="store_true", default=False,
@@ -651,16 +737,48 @@ def getParser():
                      gaps. Default: %(default)s")
 
     # Replace Us by Ts function
-    optional.add("--replace_input", dest="replace_input",
+    optional.add("--replace_input_ut", dest="replace_input_ut",
                  action="store_true",
                  default=False,
                  help="Replaces all Us by Ts in input alignment. \
                      Default: %(default)s")
 
-    optional.add("--replace_output", dest="replace_output",
+    optional.add("--replace_output_ut", dest="replace_output_ut",
                  action="store_true", default=False,
                  help="Replaces all Us by Ts in output alignment. \
                      Default: %(default)s")
+    # Replace Ts by Us function
+    optional.add("--replace_input_tu", dest="replace_input_tu",
+                 action="store_true",
+                 default=False,
+                 help="Replaces all Ts by Us in input alignment. \
+                     Default: %(default)s")
+
+    optional.add("--replace_output_tu", dest="replace_output_tu",
+                 action="store_true", default=False,
+                 help="Replaces all Ts by Us in output alignment. \
+                     Default: %(default)s")
+
+    # Section
+    optional.add("--get_section", dest="get_section",
+                 action="store_true", default=False,
+                 help="Retrieve and process a section of the alignment, \
+                       requires the \
+                       section_start and section_end parameters. All \
+                       logging is relative to the original start position. \
+                       Default: %(default)s")
+
+    optional.add("--section_start", dest="section_start",
+                 type=int, default=None, metavar="(int",
+                 help="Start position (column) for a section of the alignment \
+                 to be isolated. 0-based - the first column is column 0. \
+                 Default: %(default)s")
+
+    optional.add("--section_end", dest="section_end",
+                 type=int, default=None, metavar="(int",
+                 help="End position (column) for a section of the alignment \
+                 to be isolated. 0-based - the first column is column 0. \
+                 Default: %(default)s")
 
     # Help function
     optional.add('-h', '--help', action='help',
