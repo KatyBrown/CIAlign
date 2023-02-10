@@ -567,6 +567,27 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         # Check there are some columns left
         utilityFunctions.checkArrLength(arr, log)
 
+    # Remove empty columns created by crop divergent
+    if (args.crop_divergent
+            and args.remove_gaponly) or args.all_options or args.clean:
+        log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
+
+        A = parsingFunctions.removeGapOnly(arr,
+                                           relativePositions,
+                                           rmfile,
+                                           log)
+        # Track what has been removed
+        arr, r, relativePositions = A
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
+        # Check there are still some positions left
+        utilityFunctions.checkArrLength(arr, log)
+
     # Remove insertions
     if args.remove_insertions or args.all_options or args.clean:
         log.info("Removing insertions")
