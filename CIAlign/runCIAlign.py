@@ -10,6 +10,7 @@ try:
     import CIAlign.similarityMatrix as similarityMatrix
     import CIAlign.consensusSeq as consensusSeq
     import CIAlign.matrices as matrices
+    import CIAlign.cropDiv as cropDiv
 except ImportError:
     import utilityFunctions
     import parsingFunctions
@@ -17,6 +18,7 @@ except ImportError:
     import similarityMatrix
     import consensusSeq
     import matrices
+    import cropDiv
 
 
 def run(args, log):
@@ -40,6 +42,7 @@ def run(args, log):
         keeps = setupRetains(args, nams, log)
         arr, nams, markupdict, removed_r, removed_c = runCleaning(args,
                                                                   log,
+                                                                  typ,
                                                                   orig_arr,
                                                                   arr,
                                                                   nams,
@@ -151,6 +154,8 @@ def whichFunctions(args):
             args.remove_short,
             args.remove_gaponly,
             args.crop_divergent,
+            args.crop_ltrs,
+            args.crop_tirs,
             args.clean,
             args.all_options]):
         which_functions.append("cleaning")
@@ -471,7 +476,7 @@ def setupSection(args, log, arr):
     return (arr, removed_c)
 
 
-def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
+def runCleaning(args, log, typ, orig_arr, arr, nams, keeps, removed_c):
     '''
     Run the cleaning functions
 
@@ -551,6 +556,20 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         log.info("Removing divergent sequence ends")
         if not args.silent:
             print("Removing divergent sequence ends")
+        if args.crop_divergent_auto:
+            cd_params = cropDiv.getParamsCropDivergent(
+                arr, typ, args.divergent_buffer_size)
+            min_prop_ident_L = cd_params['left_ident']
+            min_prop_ident_R = cd_params['left_nongap']
+            min_prop_nongap_L = cd_params['right_ident']
+            min_prop_nongap_R = cd_params['right_nongap']
+            log.info("Selected parameters for crop divergent: %s" % (
+                str(cd_params)))
+        else:
+            min_prop_ident_L = args.divergent_min_prop_ident_L
+            min_prop_ident_R = args.divergent_min_prop_nongap_L
+            min_prop_nongap_L = args.divergent_min_prop_ident_R
+            min_prop_nongap_R = args.divergent_min_prop_nongap_R
 
         A = parsingFunctions.cropDivergent(arr,
                                            relativePositions,
@@ -558,6 +577,10 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
                                            log,
                                            args.divergent_min_prop_ident,
                                            args.divergent_min_prop_nongap,
+                                           min_prop_ident_L,
+                                           min_prop_nongap_L,                                           
+                                           min_prop_ident_R,
+                                           min_prop_nongap_R,                                          
                                            args.divergent_buffer_size)
 
         # Track what has been removed
@@ -632,6 +655,91 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         # Check there are still some columns left
         utilityFunctions.checkArrLength(arr, log)
 
+    if args.crop_ltrs:
+        log.info("Finding LTRs")
+        if not args.silent:
+            print ("Finding LTRs")
+        A = parsingFunctions.cropLTRs(arr,
+                                      relativePositions,
+                                      rmfile,
+                                      log,
+                                      args.ltrs_window_size,
+                                      args.ltrs_window_int,
+                                      args.ltrs_minscore,
+                                      args.outfile_stem)
+
+        # Track what has been removed
+        arr, r, relativePositions, ltr_pos = A
+        markupdict['crop_ltrs'] = r
+        markupdict['crop_ltrs_pos'] = ltr_pos
+        removed_cols = removed_cols | r
+        # Check there are some columns left
+        utilityFunctions.checkArrLength(arr, log)           
+
+    # Remove empty columns created by crop divergent
+    if (args.crop_ltrs
+            and args.remove_gaponly):
+        log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
+
+        A = parsingFunctions.removeGapOnly(arr,
+                                           relativePositions,
+                                           rmfile,
+                                           log)
+        # Track what has been removed
+        arr, r, relativePositions = A
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
+        # Check there are still some positions left
+        utilityFunctions.checkArrLength(arr, log)
+
+    if args.crop_tirs:
+        log.info("Finding TIRs")
+        if not args.silent:
+            print ("Finding TIRs")
+        A = parsingFunctions.cropTIRs(arr,
+                                      relativePositions,
+                                      rmfile,
+                                      log,
+                                      args.tirs_mingap,
+                                      args.tirs_minlen,
+                                      args.tirs_maxlen,
+                                      args.outfile_stem)
+
+        # Track what has been removed
+        arr, r, relativePositions, tir_pos = A
+        markupdict['crop_tirs'] = r
+        markupdict['crop_tirs_pos'] = tir_pos
+        removed_cols = removed_cols | r
+        # Check there are some columns left
+        utilityFunctions.checkArrLength(arr, log)           
+
+    # Remove empty columns created by crop divergent
+    if (args.crop_tirs
+            and args.remove_gaponly):
+        log.info("Removing gap only columns")
+        if not args.silent:
+            print("Removing gap only columns")
+
+        A = parsingFunctions.removeGapOnly(arr,
+                                           relativePositions,
+                                           rmfile,
+                                           log)
+        # Track what has been removed
+        arr, r, relativePositions = A
+        if 'remove_gaponly' in markupdict:
+            markupdict['remove_gaponly'].update(r)
+        else:
+            markupdict['remove_gaponly'] = r
+        removed_cols = removed_cols | r
+        # Check there are still some positions left
+        utilityFunctions.checkArrLength(arr, log)
+
+            
     # Crop Ends
     if args.crop_ends or args.all_options or args.clean:
         # doesn't remove any whole columns or rows

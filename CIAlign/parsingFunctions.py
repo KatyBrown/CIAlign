@@ -6,11 +6,15 @@ try:
     import CIAlign.cropDiv as cropDiv
     import CIAlign.insertions as insertions
     import CIAlign.utilityFunctions as utilityFunctions
+    import CIAlign.LTRs as LTRs
+    import CIAlign.TIRs as TIRs
 except ImportError:
     import cropSeq
     import cropDiv
     import insertions
     import utilityFunctions
+    import LTRs
+    import TIRs
 matplotlib.use('Agg')
 
 
@@ -353,7 +357,10 @@ def removeGapOnly(arr, relativePositions, rmfile, log):
 
 
 def cropDivergent(arr, relativePositions, rmfile, log,
-                  min_prop_ident, min_prop_nongap, buffer_size):
+                  min_prop_ident, min_prop_nongap, 
+                  min_prop_ident_L, min_prop_nongap_L,                   
+                  min_prop_ident_R, min_prop_nongap_R,                  
+                  buffer_size):
     '''
     Find the new start and end postion if the alignment is cropped
     to remove divergent flanking sequences.
@@ -403,18 +410,46 @@ def cropDivergent(arr, relativePositions, rmfile, log,
     out = open(rmfile, "a")
     if out.closed:
         print('file is closed')
+    if not all([min_prop_ident_L is not None,
+               min_prop_nongap_L is not None,
+               min_prop_ident_R is not None,
+               min_prop_nongap_R is not None]):
+        assert not any([min_prop_ident_L is not None,
+                       min_prop_nongap_L is not None,
+                       min_prop_ident_R is not None,
+                       min_prop_nongap_R is not None]), """
+To use the crop divergent function asymmetrically all four of
+min_prop_ident_L, min_prop_ident_R, min_prop_nongap_L and min_prop_ident_R
+must be specified"""
+    if min_prop_ident_L is not None and min_prop_nongap_L is not None:
+        new_start = cropDiv.cropDivergentPos(arr,
+                                             min_prop_ident_L,
+                                             min_prop_nongap_L,
+                                             buffer_size,
+                                             start=True)
+    else:
+        new_start = cropDiv.cropDivergentPos(arr,
+                                             min_prop_ident,
+                                             min_prop_nongap,
+                                             buffer_size,
+                                             start=True)
+    if min_prop_ident_R is not None and min_prop_nongap_R is not None:
 
-    new_start = cropDiv.cropDivergentPos(arr,
-                                         min_prop_ident,
-                                         min_prop_nongap,
-                                         buffer_size,
-                                         start=True)
-    new_end = cropDiv.cropDivergentPos(arr,
-                                       min_prop_ident,
-                                       min_prop_nongap,
-                                       buffer_size,
-                                       start=False)
+        new_end = cropDiv.cropDivergentPos(arr,
+                                           min_prop_ident_R,
+                                           min_prop_nongap_R,
+                                           buffer_size,
+                                           start=False)
+    else:
+        new_end = cropDiv.cropDivergentPos(arr,
+                                           min_prop_ident,
+                                           min_prop_nongap,
+                                           buffer_size,
+                                           start=False)
+
     rmStart = np.arange(0, new_start)
+    new_start_rel = relativePositions[new_start]
+    new_end_rel = relativePositions[new_end]
     rmEnd = np.arange(new_end, np.shape(arr)[1])
 
     absolutePositions = np.append(rmStart, rmEnd)
@@ -433,10 +468,114 @@ def cropDivergent(arr, relativePositions, rmfile, log,
     if len(rmpos) != 0:
         rmpos_str = [str(x) for x in rm_relative]
         log.info("Cropping divergent ends - keeping positions %i-%i" % (
-            new_start, new_end))
+            new_start_rel, new_end_rel))
         log.info("Removed positions: %s" % (",".join(rmpos_str)))
         out.write("crop_divergent\t%s\n" % (",".join(rmpos_str)))
     out.close()
     arr = arr[:, keeppos]
     # return (arr, set(rmpos), relativePositions)
     return (arr, set(rm_relative), relativePositions)
+
+
+def cropLTRs(arr, relativePositions, rmfile, log,
+             window_size, window_int, minscore, outfile_stem):
+    log.info("Cropping based on estimated LTRs\n")
+    out = open(rmfile, "a")
+    if out.closed:
+        print('file is closed')
+    
+    ltr_pos = LTRs.findLTRs(arr, outfile_stem, window_size,
+                            window_int, minscore)
+    if ltr_pos[0] is None:
+        log.info("LTRs not identified\n")
+        ls = 0
+        le = 0
+        rs = np.shape(arr)[1] - 1
+        re = np.shape(arr)[1] - 1
+    else:
+        ls, le, rs, re = [int(x) for x in ltr_pos]
+
+
+    rmStart = np.arange(0, ls)
+    rmEnd = np.arange(re, np.shape(arr)[1])
+    leftstart = relativePositions[ls]
+    leftend = relativePositions[le]
+    rightstart = relativePositions[rs]
+    rightend = relativePositions[re]
+
+    absolutePositions = np.append(rmStart, rmEnd)
+
+    rm_relative = set()
+    for n in absolutePositions:
+        rm_relative.add(relativePositions[n])
+    for n in rm_relative:
+        relativePositions.remove(n)
+    # for n in absolutePositions:
+    #     relativePositions.remove(n)
+    rmpos = np.array(list(absolutePositions))
+
+    keeppos = np.arange(ls, re)
+
+    if ltr_pos[0] is not None:
+        rmpos_str = [str(x) for x in rm_relative]
+        log.info("LTRs identified at positions %i-%i and %i-%i" % (
+            leftstart, leftend, rightstart, rightend))
+        log.info("Cropping based on LTRs - keeping positions %i-%i" % (
+            leftstart, rightend))
+        log.info("Removed positions: %s" % (",".join(rmpos_str)))
+        out.write("crop_ltrs\t%s\n" % (",".join(rmpos_str)))
+    out.close()
+    arr = arr[:, keeppos]
+    return (arr, set(rm_relative), relativePositions, [leftstart, leftend,
+                                                       rightstart, rightend])
+
+
+def cropTIRs(arr, relativePositions, rmfile, log, mingap,
+             minlen, maxlen, outstem):
+    log.info("Cropping based on estimated TIRs\n")
+    out = open(rmfile, "a")
+    if out.closed:
+        print('file is closed')
+    
+    tir_pos = TIRs.findTIRs(arr, mingap, minlen, maxlen, outstem)
+
+    if tir_pos[0] is None:
+        log.info("TIRs not identified\n")
+        ls = 0
+        le = 0
+        rs = np.shape(arr)[1] - 1
+        re = np.shape(arr)[1] - 1
+    else:
+        ls, le, rs, re = [int(x) for x in tir_pos]
+
+
+    rmStart = np.arange(0, ls)
+    rmEnd = np.arange(re, np.shape(arr)[1])
+    leftstart = relativePositions[ls]
+    leftend = relativePositions[le]
+    rightstart = relativePositions[rs]
+    rightend = relativePositions[re]
+
+    absolutePositions = np.append(rmStart, rmEnd)
+
+    rm_relative = set()
+    for n in absolutePositions:
+        rm_relative.add(relativePositions[n])
+    for n in rm_relative:
+        relativePositions.remove(n)
+
+
+    keeppos = np.arange(ls, re)
+
+    if tir_pos[0] is not None:
+        rmpos_str = [str(x) for x in rm_relative]
+        log.info("TIRs identified at positions %i-%i and %i-%i" % (
+            leftstart, leftend, rightstart, rightend))
+        log.info("Cropping based on TIRs - keeping positions %i-%i" % (
+            leftstart, rightend))
+        log.info("Removed positions: %s" % (",".join(rmpos_str)))
+        out.write("crop_tirs\t%s\n" % (",".join(rmpos_str)))
+    out.close()
+    arr = arr[:, keeppos]
+    return (arr, set(rm_relative), relativePositions, [leftstart, leftend,
+                                                       rightstart, rightend])    

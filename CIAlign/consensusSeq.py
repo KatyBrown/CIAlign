@@ -13,6 +13,7 @@ try:
     import CIAlign.utilityFunctions as utilityFunctions
 except ImportError:
     import utilityFunctions
+
 import os
 import scipy.stats
 matplotlib.use('Agg')
@@ -667,3 +668,5 @@ def calcConservationAli(alignment, typ):
         ents.append(ent)
     heights = [sum(x.values()) for x in heights_per_col]
     return (heights, ents)
+
+

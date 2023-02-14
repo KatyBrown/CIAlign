@@ -59,6 +59,8 @@ def CBSafe():
               'remove_gap_only': '#f9c1d2',
               'remove_short': "#c85133",
               'crop_divergent': '#ff00d1',
+              'crop_ltrs': '#1e7507',
+              'crop_tirs': '#ffb900',
               'user': '#fff4a3'})
     return (b)
 
@@ -102,5 +104,7 @@ def Bright():
               'remove_gaponly': '#f9c1d2',
               'remove_short': "#c85133",
               'crop_divergent': '#ff00d1',
+              'crop_ltrs': '#1e7507',
+              'crop_tirs': '#ffb900',
               'user': '#fff4a3'})
     return (b)

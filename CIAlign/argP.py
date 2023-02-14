@@ -399,6 +399,18 @@ def getParser():
                          divergent. Default: %(default)s""",
                  action="store_true")
 
+    optional.add("--crop_divergent_auto", dest="crop_divergent_auto",
+                 help="""Automatically select appropriate min_prop_ident \
+                 and min_prop_nongap for the crop divergent function. \
+                 Overrides crop_divergent_min_prop_ident, \
+                 crop_divergent_min_prop_nongap, \
+                 crop_divergent_min_prop_ident_L, \
+                 crop_divergent_min_prop_nongap_L, \
+                 crop_divergent_min_prop_ident_R, \
+                 crop_divergent_min_prop_nongap_R. \
+                 Default: %(default)s""",
+                 action="store_true")
+
     optional.add("--crop_divergent_min_prop_ident",
                  dest="divergent_min_prop_ident",
                  type=float_range(minis['divergent_min_prop_ident'],
@@ -414,7 +426,6 @@ def getParser():
 
     optional.add("--crop_divergent_min_prop_nongap",
                  dest="divergent_min_prop_nongap",
-
                  type=float_range(minis['divergent_min_prop_nongap'],
                                   maxis['divergent_min_prop_nongap'],
                                   defs['divergent_min_prop_nongap']),
@@ -426,6 +437,81 @@ def getParser():
                      minis['divergent_min_prop_nongap'],
                      maxis['divergent_min_prop_nongap']))
 
+    optional.add("--crop_divergent_min_prop_ident_L",
+                 dest="divergent_min_prop_ident_L",
+                 type=float_range(minis['divergent_min_prop_ident'],
+                                  maxis['divergent_min_prop_ident'],
+                                  defs['divergent_min_prop_ident']),
+                 default=None,
+                 help="""The minimum proportion of sequences which should \
+                         have the same residue in each column for crop \
+                         divergent - left side only. Overrides \
+                         crop_divergent_min_prop_ident. Must be \
+                         specified in combination with \
+                         crop_divergent_min_prop_nongap_L
+                         crop_divergent_min_prop_ident_R and \
+                         crop_divergent_min_prop_nongap_R. \
+                         Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['divergent_min_prop_ident'],
+                     maxis['divergent_min_prop_ident']))
+
+    optional.add("--crop_divergent_min_prop_nongap_L",
+                 dest="divergent_min_prop_nongap_L",
+                 type=float_range(minis['divergent_min_prop_nongap'],
+                                  maxis['divergent_min_prop_nongap'],
+                                  defs['divergent_min_prop_nongap']),
+                 default=None,
+                 help="""The minimum proportion of sequences which should \
+                         have the non-gap residues in each column \
+                         for crop divergent - left side only. Overrides \
+                         crop_divergent_min_prop_nongap. Must be \
+                         specified in combination with \
+                         crop_divergent_min_prop_ident_L, \
+                         crop_divergent_min_prop_nongap_R and \
+                         crop_divergent_min_prop_ident_R. \
+                         Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['divergent_min_prop_nongap'],
+                     maxis['divergent_min_prop_nongap']))
+
+    optional.add("--crop_divergent_min_prop_ident_R",
+                 dest="divergent_min_prop_ident_R",
+                 type=float_range(minis['divergent_min_prop_ident'],
+                                  maxis['divergent_min_prop_ident'],
+                                  defs['divergent_min_prop_ident']),
+                 default=None,
+                 help="""The minimum proportion of sequences which should \
+                         have the same residue in each column for crop \
+                         divergent - right side only. Overrides \
+                         crop_divergent_min_prop_ident. Must be \
+                         specified in combination with \
+                         crop_divergent_min_prop_nongap_R, \
+                         crop_divergent_min_prop_ident_L, \
+                         and crop_divergent_min_prop_nongap_L. \
+                         Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['divergent_min_prop_ident'],
+                     maxis['divergent_min_prop_ident']))
+
+    optional.add("--crop_divergent_min_prop_nongap_R",
+                 dest="divergent_min_prop_nongap_R",
+                 type=float_range(minis['divergent_min_prop_nongap'],
+                                  maxis['divergent_min_prop_nongap'],
+                                  defs['divergent_min_prop_nongap']),
+                 default=None,
+                 help="""The minimum proportion of sequences which should \
+                         have the non-gap residues in each column \
+                         for crop divergent - right side only. Overrides \
+                         crop_divergent_min_prop_nongap. Must be \
+                         specified in combination with \
+                         crop_divergent_min_prop_ident_R, \
+                         crop_divergent_min_prop_ident_L and \
+                         crop_divergent_min_prop_nongap_L. \
+                         Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['divergent_min_prop_nongap'],
+                     maxis['divergent_min_prop_nongap']))
     optional.add("--crop_divergent_buffer_size",
                  dest="divergent_buffer_size",
                  type=int_range(minis['divergent_buffer_size'],
@@ -440,6 +526,94 @@ def getParser():
                  metavar="(int, %s..%s)" % (
                      minis['divergent_buffer_size'],
                      maxis['divergent_buffer_size']))
+
+
+    # Crop LTRs
+    optional.add("--crop_ltrs", dest="crop_ltrs",
+                 help="""Crop ends of sequences by estimating LTR positions \
+                 based on sequence similarity. \
+                 Default: %(default)s""",
+                 action="store_true")
+
+    optional.add("--crop_ltrs_window_size",
+                 dest="ltrs_window_size",
+                 type=float_range(minis['ltrs_window_size'],
+                                  maxis['ltrs_window_size'],
+                                  defs['ltrs_window_size']),
+                 default=defs['ltrs_window_size'],
+                 help="""The window size to use when estimating the position \
+                 of LTRs. Should approximate the estimated size of \
+                 the LTRs. Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['ltrs_window_size'],
+                     maxis['ltrs_window_size']))
+
+    optional.add("--crop_ltrs_window_int",
+                 dest="ltrs_window_int",
+                 type=float_range(minis['ltrs_window_int'],
+                                  maxis['ltrs_window_int'],
+                                  defs['ltrs_window_int']),
+                 default=defs['ltrs_window_int'],
+                 help="""The interval between windows when estimating \
+                 the position of LTRs. Smaller values will be more accurate \
+                 but also slower. Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['ltrs_window_int'],
+                     maxis['ltrs_window_int']))
+
+    optional.add("--crop_ltrs_minscore",
+                 dest="ltrs_minscore",
+                 type=float_range(minis['ltrs_minscore'],
+                                  maxis['ltrs_minscore'],
+                                  defs['ltrs_minscore']),
+                 default=defs['ltrs_minscore'],
+                 help="""The minimum alignment score to classify LTRs. \
+                 Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['ltrs_minscore'],
+                     maxis['ltrs_minscore']))
+
+    optional.add("--crop_tirs", dest="crop_tirs",
+                 help="""Crop ends of sequences by estimating TIR positions \
+                 based on idenitical inverted kmers \
+                 Default: %(default)s""",
+                 action="store_true")
+
+    optional.add("--crop_tirs_mingap",
+                 dest="tirs_mingap",
+                 type=float_range(minis['tirs_mingap'],
+                                  maxis['tirs_mingap'],
+                                  defs['tirs_mingap']),
+                 default=defs['tirs_mingap'],
+                 help="""The minimum gap between terminal inverted repeats \
+                 Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['tirs_mingap'],
+                     maxis['tirs_mingap']))
+
+    optional.add("--crop_tirs_minlen",
+                 dest="tirs_minlen",
+                 type=float_range(minis['tirs_minlen'],
+                                  maxis['tirs_minlen'],
+                                  defs['tirs_minlen']),
+                 default=defs['tirs_minlen'],
+                 help="""The minimum length for terminal inverted repeats \
+                 Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['tirs_minlen'],
+                     maxis['tirs_minlen']))
+
+    optional.add("--crop_tirs_maxlen",
+                 dest="tirs_maxlen",
+                 type=float_range(minis['tirs_maxlen'],
+                                  maxis['tirs_maxlen'],
+                                  defs['tirs_maxlen']),
+                 default=defs['tirs_maxlen'],
+                 help="""The maximum length for terminal inverted repeats \
+                 Default: %(default)s""",
+                 metavar="(float, %s..%s)" % (
+                     minis['tirs_maxlen'],
+                     maxis['tirs_maxlen']))
 
     # Retain
     optional.add("--retain", dest="retain_seqs",

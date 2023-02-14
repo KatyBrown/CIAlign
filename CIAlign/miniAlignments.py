@@ -179,7 +179,45 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
             a.hlines(np.arange(ali_height), col-0.5, col+0.5, zorder=47,
                      color='black',
                      lw=lineweight_h)
+    # removes whole columns
+    if "crop_ltrs" in markupdict:
+        colour = colD['crop_ltrs']
+        for col in markupdict['crop_ltrs']:
 
+            a.add_patch(matplotlib.patches.Rectangle(
+                    (col-0.5, -0.5), 1, ali_height, color=colour, zorder=46,
+                    lw=0))
+            a.hlines(np.arange(ali_height), col-0.5, col+0.5, zorder=47,
+                     color='black',
+                     lw=lineweight_h)
+
+    if "crop_ltrs_pos" in markupdict:
+        ltr_pos = markupdict['crop_ltrs_pos']
+        a.hlines(-1.2,
+                 ltr_pos[0], ltr_pos[1],
+                 zorder=100, lw=2, clip_on=False, color='black')
+        a.hlines(-1.2,
+                 ltr_pos[2], ltr_pos[3],
+                 zorder=100, lw=2, clip_on=False, color='black')
+    if "crop_tirs" in markupdict:
+        colour = colD['crop_tirs']
+        for col in markupdict['crop_tirs']:
+
+            a.add_patch(matplotlib.patches.Rectangle(
+                    (col-0.5, -0.5), 1, ali_height, color=colour, zorder=46,
+                    lw=0))
+            a.hlines(np.arange(ali_height), col-0.5, col+0.5, zorder=47,
+                     color='black',
+                     lw=lineweight_h)
+
+    if "crop_tirs_pos" in markupdict:
+        ltr_pos = markupdict['crop_tirs_pos']
+        a.hlines(-1.2,
+                 ltr_pos[0], ltr_pos[1],
+                 zorder=100, lw=2, clip_on=False, color='black')
+        a.hlines(-1.2,
+                 ltr_pos[2], ltr_pos[3],
+                 zorder=100, lw=2, clip_on=False, color='black')
     # removes whole rows
     if "remove_short" in markupdict:
         colour = colD['remove_short']
@@ -231,6 +269,8 @@ def drawMarkUpLegend(outfile, palette="CBS"):
                  'remove_short': 'Too Short',
                  'remove_gap_only': 'Gap Only',
                  'crop_divergent': 'Crop Divergent',
+                 'crop_ltrs': 'Crop LTRs',
+                 'crop_tirs': 'Crop TIRs',
                  'user': 'User'}
     L = len(functions)
     for i, (func, txt) in enumerate(functions.items()):

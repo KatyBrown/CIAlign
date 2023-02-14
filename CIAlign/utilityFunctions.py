@@ -237,6 +237,8 @@ def getMarkupColours(pal='CBS'):
             'remove_short': pal['remove_short'],
             'remove_divergent': pal['remove_divergent'],
             'crop_divergent': pal['crop_divergent'],
+            'crop_ltrs': pal['crop_ltrs'],
+            'crop_tirs': pal['crop_tirs'],
             'user': pal['user']}
 
 

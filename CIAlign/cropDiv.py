@@ -2,6 +2,41 @@
 
 import copy
 import numpy as np
+try:
+    import CIAlign.consensusSeq as consensusSeq
+except ImportError:
+    import consensusSeq
+
+def getIdent(col_nongap):
+    # Count how many of each nt/aa there are
+    C = np.unique(col_nongap, return_counts=True)
+    # Find which nt/aa is the most common
+    which_max = C[1] == max(C[1])
+    # Find how many times the most common nt/aa occurs
+    max_col_count = C[1][which_max][0]
+    max_col_prop = max_col_count / len(col_nongap)
+    return (max_col_prop)
+
+
+def getParamsCropDivergent(arr, typ, window_size=50):
+    consensus, cov = consensusSeq.findConsensus(arr, "", 'majority_nongap')
+    cov_minus = cov[::-1]
+    idents = [getIdent(arr[:, i]) for i in np.arange(np.shape(arr)[1])]
+    idents_minus = idents[::-1]
+    cutoffD = dict()
+    Ltyps = ['left_nongap', 'right_nongap', 'left_ident', 'right_ident']
+    for sw in np.arange(len(cov)-window_size):
+        for L, Ltyp in zip([cov, cov_minus, idents, idents_minus], Ltyps):
+            window = L[sw:sw+window_size]
+            mmean = np.mean(window)
+            mmin = np.min(window)
+            if mmin > 0.5:
+                if mmin > (mmean * 0.8):
+                    if typ not in cutoffD:
+                        cutoffD[Ltyp] = mmin
+            if len(cutoffD) == 4:
+                break
+    return (cutoffD)
 
 
 def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
@@ -62,15 +97,7 @@ def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
             passfail.append(False)
             continue
         else:
-            # Count how many of each nt/aa there are
-            C = np.unique(col_nongap, return_counts=True)
-
-            # Find which nt/aa is the most common
-            which_max = C[1] == max(C[1])
-
-            # Find how many times the most common nt/aa occurs
-            max_col_count = C[1][which_max][0]
-            max_col_prop = max_col_count / len(col_nongap)
+            max_col_prop = getIdent(col_nongap)
 
             # Check if there are enough identical residues
             pass_ident = max_col_prop >= min_prop_ident
