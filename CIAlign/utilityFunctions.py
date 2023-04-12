@@ -79,12 +79,23 @@ def FastaToArray(infile, log=None, outfile_stem=None):
     seqs = []
     nam = ""
     seq = ""
+    psl = 0
+    nseq = 0
     with open(infile) as input:
         for line in input:
             line = line.strip()
             if len(line) == 0:
                 continue
             if line[0] == ">":
+                sl = len([s.upper() for s in seq])
+                if sl != psl and nseq > 1:
+                    print (nseq, sl, psl)
+                    raise ValueError ("""
+ERROR: The sequences you provided may not be aligned - all the sequences \
+are not the same length""")
+
+                psl = sl
+                nseq += 1
                 seqs.append([s.upper() for s in seq])
                 nams.append(nam)
                 seq = []
@@ -96,6 +107,12 @@ def FastaToArray(infile, log=None, outfile_stem=None):
                     print(formatErrorMessage)
                     exit(1)
                 seq += list(line)
+    sl = len([s.upper() for s in seq])
+    if sl != psl and nseq > 1:
+        print (nseq, sl, psl)
+        raise ValueError ("""
+ERROR: The sequences you provided may not be aligned - all the sequences \
+are not the same length""")    
     seqs.append(np.array([s.upper() for s in seq]))
     nams.append(nam)
     arr = np.array(seqs[1:])
