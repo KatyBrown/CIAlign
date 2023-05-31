@@ -242,8 +242,23 @@ def setupArrays(args, log):
                                               args.outfile_stem)
     # check if names are unique.append(
     if len(nams) > len(set(nams)):
-        print("Error! Your input alignmnent has duplicate names!")
-        exit()
+        if args.deduplicate_ids:
+            rms = np.array([])
+            nams_arr = np.array(nams)
+            unique_nams, counts = np.unique(nams_arr, return_counts=True)
+            dups = unique_nams[counts > 1]
+            for dup in dups:
+                which_dup = np.where(nams_arr == dup)[0]
+                rms = np.append(rms, which_dup[1:])
+            rms = rms.astype(int)
+            print ("Removing all except the first sequence for duplicated IDs")
+            log.info("Removing duplicate sequence IDs %s from rows %s" % (
+                ", ".join(nams_arr[rms]), ", ".join(rms.astype(str))))
+            nams = np.delete(nams_arr, rms)
+            arr = np.delete(arr, rms, axis=0)
+        else:
+            print("Error! Your input alignmnent has duplicate names!")
+            exit()
 
     # Check the alignment array isn't empty
     utilityFunctions.checkArrLength(arr, log)

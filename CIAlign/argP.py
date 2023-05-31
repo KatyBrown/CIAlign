@@ -759,6 +759,14 @@ def getParser():
                  help="Replaces all Ts by Us in output alignment. \
                      Default: %(default)s")
 
+    # Dedup function
+    optional.add("--deduplicate_ids", dest="deduplicate_ids",
+                 action="store_true",
+                 default=False,
+                 help="Remove sequences with duplicate names from the input. \
+                       Assumes that that the sequences will also be identical \
+                       and keeps only the first instance of each duplicated \
+                       name")
     # Section
     optional.add("--get_section", dest="get_section",
                  action="store_true", default=False,
