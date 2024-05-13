@@ -2,7 +2,7 @@ psutil==5.8.0
 matplotlib==3.3.4
 numpy>=1.19
 scikit_image==0.19.2
-pandas==0.25.3
+pandas>=0.25.3
 mock==4.0.3
 ConfigArgParse==1.4
 parameterized==0.8.1
