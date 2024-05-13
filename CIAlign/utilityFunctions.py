@@ -11,7 +11,8 @@ try:
 except ImportError:
     import palettes
 matplotlib.use('Agg')
-
+import logging
+logging.getLogger('matplotlib.font_manager').disabled = True
 
 def replaceUbyT(arr, rev):
     '''
@@ -422,7 +423,8 @@ def listFonts(outfile):
             matplotlib.font_manager._rebuild()
         except AttributeError:
             pass
-        flist = matplotlib.font_manager.get_fontconfig_fonts()
+        flist = matplotlib.font_manager.findSystemFonts(
+            fontpaths=None, fontext='ttf')
         flist2 = set()
         checkglyphs = [108, 112, 65, 71, 84, 67]
         for fname in flist:
