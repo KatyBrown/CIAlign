@@ -553,9 +553,9 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
         arr, r, relativePositions = A
 
         if 'remove_gap_only' in markupdict:
-            markupdict['remove_gaponly'].update(r)
+            markupdict['remove_gap_only'].update(r)
         else:
-            markupdict['remove_gaponly'] = r
+            markupdict['remove_gap_only'] = r
 
         # Check there are some columns left
         removed_cols = removed_cols | r
@@ -677,10 +677,10 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
                                            log)
         # Track what has been removed
         arr, r, relativePositions = A
-        if 'remove_gaponly' in markupdict:
-            markupdict['remove_gaponly'].update(r)
+        if 'remove_gap_only' in markupdict:
+            markupdict['remove_gap_only'].update(r)
         else:
-            markupdict['remove_gaponly'] = r
+            markupdict['remove_gap_only'] = r
         removed_cols = removed_cols | r
         # Check there are still some positions left
         utilityFunctions.checkArrLength(arr, log)
@@ -712,10 +712,10 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
                                            rmfile,
                                            log)
         arr, r, relativePositions = A
-        if 'remove_gaponly' in markupdict:
-            markupdict['remove_gaponly'].update(r)
+        if 'remove_gap_only' in markupdict:
+            markupdict['remove_gap_only'].update(r)
         else:
-            markupdict['remove_gaponly'] = r
+            markupdict['remove_gap_only'] = r
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
 
@@ -737,10 +737,10 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
                                            log)
         arr, r, relativePositions = A
         # Track what has been removed
-        if 'remove_gaponly' in markupdict:
-            markupdict['remove_gaponly'].update(r)
+        if 'remove_gap_only' in markupdict:
+            markupdict['remove_gap_only'].update(r)
         else:
-            markupdict['remove_gaponly'] = r
+            markupdict['remove_gap_only'] = r
         removed_cols = removed_cols | r
         # Check there are some columns left
         utilityFunctions.checkArrLength(arr, log)
