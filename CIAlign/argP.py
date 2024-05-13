@@ -765,8 +765,13 @@ def getParser():
                  default=False,
                  help="Remove sequences with duplicate names from the input. \
                        Assumes that that the sequences will also be identical \
-                       and keeps only the first instance of each duplicated \
+                       and keeps only the first /last (default first) \
+                       instance of each duplicated \
                        name")
+    optional.add("--duporder", dest='duporder', type=str,
+                 default='first',
+                 help="Set to first to keep only the first instance of \
+                       each duplicated name or last to keep only the last")
     # Section
     optional.add("--get_section", dest="get_section",
                  action="store_true", default=False,
