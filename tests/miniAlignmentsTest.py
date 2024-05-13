@@ -82,7 +82,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         simi = skimage.metrics.structural_similarity(expected,
                                                      mini_alignment,
                                                      channel_axis=-1,
-                                                     data_range=(0, 1))
+                                                     data_range=1)
 
         self.assertTrue(simi > 0.95)
 
@@ -119,7 +119,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         simi = skimage.metrics.structural_similarity(expected,
                                                      mini_alignment,
                                                      channel_axis=-1,
-                                                     data_range=(0, 1))
+                                                     data_range=1)
         self.assertTrue(simi > 0.95)
 
 
