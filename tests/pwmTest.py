@@ -38,6 +38,9 @@ class PWMTests(unittest.TestCase):
                                   sep="\t", header=None, index_col=0)
                 tab.columns = pd.RangeIndex(np.shape(tab)[1])
                 self.matrices[mat][string] = tab
+                if mat == 'pfm':
+                    self.matrices[mat][string] = self.matrices[
+                        mat][string].astype(np.int64)
 
             for stat in ['alpha', 'freq']:
                 self.matrices[stat][string] = np.load(
@@ -73,6 +76,7 @@ class PWMTests(unittest.TestCase):
     def testmakePFM(self, typ, subtyp):
         arr = self.arrs[subtyp]
         PFM, RNA = matrices.makePFM(arr, typ)
+        PFM.dtype = np.int64
         pandas.testing.assert_frame_equal(PFM, self.matrices['pfm'][subtyp],
                                           check_names=False)
 
@@ -84,6 +88,7 @@ class PWMTests(unittest.TestCase):
         PFM = self.matrices['pfm'][subtyp]
         alpha = self.matrices['alpha'][subtyp]
         PPM = matrices.makePPM(PFM, alpha).round(3)
+        PPM.dtype = np.int64
         pandas.testing.assert_frame_equal(PPM, self.matrices['ppm'][subtyp])
 
 
@@ -94,6 +99,7 @@ class PWMTests(unittest.TestCase):
         PPM = self.matrices['ppm'][subtyp]
         freq = self.matrices['freq'][subtyp]
         PWM = matrices.makePWM(PPM, freq)
+        PWM.dtype = np.int64
         pandas.testing.assert_frame_equal(PWM, self.matrices['pwm'][subtyp])
 
 
@@ -116,7 +122,7 @@ class PWMTests(unittest.TestCase):
                            ['xxx', 'nt', 'dna', True, np.zeros((1, 1))]])
     def testgetFreq(self, freqtype, typ, subtyp, RNA, expected):
         logger = logging.getLogger('path.to.module.under.test')
-        PFM = self.matrices['pfm'][subtyp]
+        PFM = self.matrices['pfm'][subtyp].astype(np.int64)
         if freqtype == 'calc2':
             PFM2 = self.matrices['pfm']['dna_large']
         else:
