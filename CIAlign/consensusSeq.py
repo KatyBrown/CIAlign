@@ -145,20 +145,28 @@ def getLetters(typ='nt', fontname='monospace', dpi=500, palette="CBS"):
         a.set_xlim(0, 1)
         a.set_ylim(0, 1)
         fs = getFontSize(f, a, 1)
-        a.text(0.5, 0.02, base, fontsize=fs*0.95,
-               fontdict={'family': 'monospace',
-                         'name': fontname},
-               color=colours[base], va='baseline',
-               ha='center')
+        if base != 'Q':
+            a.text(0.5, 0.02, base, fontsize=fs*0.95,
+                   fontdict={'family': 'monospace',
+                             'name': fontname},
+                   color=colours[base], va='baseline',
+                   ha='center')
+        else:
+            a.text(0.5, 0.1, base, fontsize=fs*0.85,
+                   fontdict={'family': 'monospace',
+                             'name': fontname},
+                   color=colours[base], va='baseline',
+                   ha='center')            
+        a.set_ylim(0, 1)
         plt.gca().set_axis_off()
         a.margins(0, 0)
         f.subplots_adjust(top=1, bottom=0, right=1, left=0,
-                          wspace=None, hspace=None)
+                          wspace=None, hspace=0)
         a.set_frame_on(False)
         # temporarily save plot in working directory
         base = base.replace("*", "stop")
         f.savefig("%s_temp.png" % base, dpi=500,
-                  pad_inches=0.1)
+                  pad_inches=0.5)
         plt.close()
 
 
@@ -316,7 +324,8 @@ def sequence_logo(alignment,
                   figrowlength=50,
                   start=0,
                   end=0,
-                  palette='CBS'):
+                  palette='CBS',
+                  return_fig=False):
     '''
     Creates a sequence logo based on an entropy calculation using letters
     Scales the letters according to the information content of the alignment
@@ -368,7 +377,6 @@ def sequence_logo(alignment,
     getLetters(typ=typ, fontname=figfontname, dpi=figdpi, palette=palette)
     rstart = start
     rend = rstart + figrowlength
-
     for n in range(nsegs):
 
         if rend > (alignment_width + start):
@@ -428,6 +436,8 @@ def sequence_logo(alignment,
         b = base.replace("*", "stop")
         os.unlink("%s_temp.png" % b)
     # save plot using figname
+    if return_fig:
+        return (f)
     f.savefig(figname, dpi=figdpi, bbox_inches='tight')
     plt.close()
 
@@ -439,7 +449,8 @@ def sequence_bar_logo(alignment,
                       figrowlength=50,
                       start=0,
                       end=0,
-                      palette='CBS'):
+                      palette='CBS',
+                      return_fig=False):
     '''
     Creates a sequence logo based on an entropy calculation using bars
     Scales the bars according to the information content of the alignment
@@ -513,7 +524,6 @@ def sequence_bar_logo(alignment,
             element_list = utilityFunctions.getAAColours(palette=palette)
             colours = utilityFunctions.getAAColours(palette=palette)
         height_list = {}
-
         for element in element_list:
             height_list[element] = []
 
@@ -525,6 +535,7 @@ def sequence_bar_logo(alignment,
             count = dict(zip(unique, counts))
             height_per_base, info_per_base, fr = calc_entropy(count, seq_count,
                                                               typ)
+            print (height_per_base)
             bottom_height.append(0)
 
             # need a list of each nt/aa separately to plot them as bars
@@ -546,6 +557,8 @@ def sequence_bar_logo(alignment,
         axes.spines['top'].set_visible(False)
         rstart += figrowlength
         rend += figrowlength
+    if return_fig:
+        return (f)
     # save plot as figname
     plt.savefig(figname, bbox_inches='tight', dpi=figdpi)
     plt.close()
