@@ -36,19 +36,14 @@ def run(args, log):
     else:
         removed_c = set()
 
-    if "cleaning" in functions:
-        keeps = setupRetains(args, nams, log)
-        arr, nams, markupdict, removed_r, removed_c = runCleaning(args,
-                                                                  log,
-                                                                  orig_arr,
-                                                                  arr,
-                                                                  nams,
-                                                                  keeps,
-                                                                  removed_c)
-    else:
-        markupdict = dict()
-        removed_c = set()
-        removed_r = set()
+    keeps = setupRetains(args, nams, log)
+    arr, nams, markupdict, removed_r, removed_c = runCleaning(args,
+                                                              log,
+                                                              orig_arr,
+                                                              arr,
+                                                              nams,
+                                                              keeps,
+                                                              removed_c)
 
     if "matrices" in functions:
         # Make similarity matrices
@@ -248,10 +243,15 @@ def setupArrays(args, log):
             unique_nams, counts = np.unique(nams_arr, return_counts=True)
             dups = unique_nams[counts > 1]
             for dup in dups:
-                which_dup = np.where(nams_arr == dup)[0]
-                rms = np.append(rms, which_dup[1:])
+                if args.duporder == 'first':
+                    which_dup = np.where(nams_arr == dup)[0]
+                    rms = np.append(rms, which_dup[1:])
+                elif args.duporder == 'last':
+                    which_dup = np.where(nams_arr == dup)[-1]
+                    rms = np.append(rms, which_dup[:-1])                    
             rms = rms.astype(int)
-            print ("Removing all except the first sequence for duplicated IDs")
+            print ("Removing all except the %s sequence for duplicated IDs" % 
+                   args.duporder)
             log.info("Removing duplicate sequence IDs %s from rows %s" % (
                 ", ".join(nams_arr[rms]), ", ".join(rms.astype(str))))
             nams = np.delete(nams_arr, rms)
