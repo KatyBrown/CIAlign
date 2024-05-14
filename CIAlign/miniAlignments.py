@@ -319,10 +319,10 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
     a.set_ylim(-0.5, ali_height-0.5)
 
     # generate the numeric version of the array
-    if arr == 'standard':
+    if plot_type == 'standard':
         arr2, cm = arrNumeric(arr, typ, palette)
-    elif arr == 'boolean':
-        consensusSeq.compareAlignmentConsensus(consensus, arr)
+    elif plot_type == 'boolean':
+        consensusSeq.compareAlignmentConsensus(arr)
     # display it on the axis
     a.imshow(arr2, cmap=cm, aspect='auto', interpolation='nearest')
 
