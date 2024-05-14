@@ -682,7 +682,8 @@ def calcConservationAli(alignment, typ):
     heights = [sum(x.values()) for x in heights_per_col]
     return (heights, ents)
 
-def compareAlignmentConsensus(consensus, arr):
+def compareAlignmentConsensus(arr):
+  consensus, _ = np.array(findConsensus(arr, ''))
   bool_array = np.array([])
   bool_arrL = np.empty(dtype=bool, shape=(0, np.shape(consensus)[1]))
   for e in range(1, (len(consensus[:,0])+1)):
