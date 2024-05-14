@@ -9,6 +9,7 @@ import operator
 import matplotlib.patheffects
 import math
 from matplotlib import gridspec
+import copy
 try:
     import CIAlign.utilityFunctions as utilityFunctions
 except ImportError:
@@ -680,3 +681,20 @@ def calcConservationAli(alignment, typ):
         ents.append(ent)
     heights = [sum(x.values()) for x in heights_per_col]
     return (heights, ents)
+
+def compareAlignmentConsensus(consensus, arr):
+  bool_array = np.array([])
+  bool_arrL = np.empty(dtype=bool, shape=(0, np.shape(consensus)[1]))
+  for e in range(1, (len(consensus[:,0])+1)):
+    z = e-1
+    for i in range(1, (len(consensus[0,:])+1)):
+      x = i-1
+      if consensus[z,x] == arr[x]:
+        bool_array = np.append(bool_array, [True], axis=None)
+      else:
+        bool_array = np.append(bool_array, [False], axis=None)
+    bool_arrL = np.vstack([bool_arrL, bool_array])
+    bool_array = np.array([])
+  new_arr = copy.deepcopy(bool_arrL)
+  new_arr = bool_arrL.astype(bool)
+  return new_arr
