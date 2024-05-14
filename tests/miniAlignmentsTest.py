@@ -99,7 +99,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
             miniAlignments.drawMiniAlignment(self.alignment, self.names, logger, self.dest,
-                                                                type, 300,
+                                                                type, 'standard', 300,
                                                                 title="test",
                                                                 width=5,
                                                                 height=3,
@@ -139,11 +139,11 @@ class DrawMarkUpTest(unittest.TestCase):
         with mock.patch.object(logger, 'debug') as mock_debug:
             # make mini plot without markup
             self.mini_plot = miniAlignments.drawMiniAlignment(self.alignment, self.names, logger, self.dest,
-                                                                'nt', 300, None, 5, 3,
+                                                                'nt', 'standard', 300, None, 5, 3,
                                                                 False, None, True)
             # make mini plot with markup
             self.mini_plot_expected = miniAlignments.drawMiniAlignment(self.alignment, self.names, logger, self.dest,
-                                                                'nt', 300, None, 5, 3,
+                                                                'nt', 'standard', 300, None, 5, 3,
                                                                 True, self.markup_dict, True)
 
     def tearDown(self):
