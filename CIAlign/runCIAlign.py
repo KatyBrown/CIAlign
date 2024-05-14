@@ -249,10 +249,10 @@ def setupArrays(args, log):
                     rms = np.append(rms, which_dup[1:])
                 elif args.duporder == 'last':
                     which_dup = np.where(nams_arr == dup)[-1]
-                    rms = np.append(rms, which_dup[:-1])                    
+                    rms = np.append(rms, which_dup[:-1])
             rms = rms.astype(int)
-            print ("Removing all except the %s sequence for duplicated IDs" % 
-                   args.duporder)
+            print("Removing all except the %s sequence for duplicated \
+                  IDs" % args.duporder)
             log.info("Removing duplicate sequence IDs %s from rows %s" % (
                 ", ".join(nams_arr[rms]), ", ".join(rms.astype(str))))
             nams = np.delete(nams_arr, rms)
@@ -719,7 +719,6 @@ def runCleaning(args, log, orig_arr, arr, nams, keeps, removed_c):
             markupdict['remove_gap_only'] = r
         removed_cols = removed_cols | r
         utilityFunctions.checkArrLength(arr, log)
-
 
     if args.remove_gaponly and not (args.all_options or
                                     args.remove_divergent or

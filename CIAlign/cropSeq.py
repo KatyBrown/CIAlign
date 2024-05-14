@@ -57,7 +57,7 @@ def determineStartEnd(sequence, name, log,
     end = len(sequence) - findValue(sequence[::-1], mingap_perc, redefine_perc)
     if start > end:
         return (0, 0)
-    return(start, end)
+    return (start, end)
 
 
 def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
@@ -111,7 +111,7 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
 
     # for very short sequences it is not desirable to redefine
     if seq_length < 21:
-        return(gaps[0] + 1)
+        return (gaps[0] + 1)
     # this pattern doesn't indicate an incomplete sequence, set start to 0
     if gaps[boundary1] < boundary3:
         return 0
@@ -125,7 +125,7 @@ def findValue(sequence, mingap_perc=0.05, redefine_perc=0.1):
         return position
 
     # if none of above, take the first nt/aa as start of the sequence
-    return(gaps[0] + 1)
+    return (gaps[0] + 1)
 
 
 def countGaps(sequence):

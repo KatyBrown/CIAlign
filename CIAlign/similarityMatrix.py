@@ -67,4 +67,4 @@ def calculateSimilarityMatrix(arr, nams, minoverlap=1,
             out.write("%s\t%s\n" % (
                     nams[i], "\t".join([str(round(L, dp)) for L in line])))
         out.close()
-    return(ident)
+    return (ident)

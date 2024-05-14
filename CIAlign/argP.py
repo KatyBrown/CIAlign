@@ -730,7 +730,6 @@ def getParser():
                        gaps in both sequences, 2 - consider all positions \
                        regardless of gaps. Default: %(default)s")
 
-
     # Unalign function
     optional.add("--unalign_input", dest="unalign_input",
                  action="store_true", default=False,

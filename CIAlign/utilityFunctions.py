@@ -6,13 +6,14 @@ import warnings
 import matplotlib.font_manager
 import sys
 import os
+import logging
 try:
     import CIAlign.palettes as palettes
 except ImportError:
     import palettes
 matplotlib.use('Agg')
-import logging
 logging.getLogger('matplotlib.font_manager').disabled = True
+
 
 def replaceUbyT(arr, rev):
     '''
@@ -90,8 +91,7 @@ def FastaToArray(infile, log=None, outfile_stem=None):
             if line[0] == ">":
                 sl = len([s.upper() for s in seq])
                 if sl != psl and nseq > 1:
-                    print (nseq, sl, psl)
-                    raise ValueError ("""
+                    raise ValueError("""
 ERROR: The sequences you provided may not be aligned - all the sequences \
 are not the same length""")
 
@@ -110,10 +110,9 @@ are not the same length""")
                 seq += list(line)
     sl = len([s.upper() for s in seq])
     if sl != psl and nseq > 1:
-        print (nseq, sl, psl)
-        raise ValueError ("""
+        raise ValueError("""
 ERROR: The sequences you provided may not be aligned - all the sequences \
-are not the same length""")    
+are not the same length""")
     seqs.append(np.array([s.upper() for s in seq]))
     nams.append(nam)
     arr = np.array(seqs[1:])
