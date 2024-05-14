@@ -323,6 +323,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
         arr2, cm = arrNumeric(arr, typ, palette)
     elif plot_type == 'boolean':
         consensusSeq.compareAlignmentConsensus(arr)
+        cm = matplotlib.colormaps['jet']
     # display it on the axis
     a.imshow(arr2, cmap=cm, aspect='auto', interpolation='nearest')
 
