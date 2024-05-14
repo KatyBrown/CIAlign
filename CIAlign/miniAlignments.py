@@ -4,8 +4,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 try:
     import CIAlign.utilityFunctions as utilityFunctions
+    import CIAlign.consensusSeq as consensusSeq
 except ImportError:
     import utilityFunctions
+    import consensusSeq
 import math
 matplotlib.use('Agg')
 
@@ -245,7 +247,7 @@ def drawMarkUpLegend(outfile, palette="CBS"):
                    dpi=100, bbox_inches='tight')
 
 
-def drawMiniAlignment(arr, nams, log, outfile, typ,
+def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
                       dpi=300, title=None, width=5, height=3, markup=False,
                       markupdict=None, ret=False, orig_nams=[],
                       keep_numbers=False, force_numbers=False, palette="CBS"):
@@ -317,7 +319,11 @@ def drawMiniAlignment(arr, nams, log, outfile, typ,
     a.set_ylim(-0.5, ali_height-0.5)
 
     # generate the numeric version of the array
-    arr2, cm = arrNumeric(arr, typ, palette)
+    if plot_type == 'standard':
+        arr2, cm = arrNumeric(arr, typ, palette)
+    elif plot_type == 'boolean':
+        arr2 = consensusSeq.compareAlignmentConsensus(arr)
+        cm = matplotlib.colormaps['jet']
     # display it on the axis
     a.imshow(arr2, cmap=cm, aspect='auto', interpolation='nearest')
 
