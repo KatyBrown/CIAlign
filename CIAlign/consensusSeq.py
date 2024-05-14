@@ -683,19 +683,33 @@ def calcConservationAli(alignment, typ):
     return (heights, ents)
 
 def compareAlignmentConsensus(arr):
-  consensus, _ = np.array(findConsensus(arr, ''))
-  bool_array = np.array([])
-  bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
-  for e in range(1, (len(arr[:,0])+1)):
-    z = e-1
+    '''
+    Compares the alignment of the inputted array to the consensus of that array, and outputs a boolean array.
+
+    alignment: arr
+        The alignment stored as a numpy array
+
+    return:
+    a numpy array stored as new_arr, which is a boolean array comparing the arr to the consensus of it.
+    '''
+    consensus, _ = np.array(findConsensus(arr, ''))
+    bool_array = np.array([])
+    bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
+    # declares the numpy arrays
+    for e in range(1, (len(arr[:,0])+1)):
+        # iterates over the rows of the sequences
+        z = e-1
     for i in range(1, (len(arr[0,:])+1)):
-      x = i-1
-      if arr[z,x] == consensus[x]:
-        bool_array = np.append(bool_array, [True], axis=None)
-      else:
-        bool_array = np.append(bool_array, [False], axis=None)
+        # iterates over the columns of the sequences
+        x = i-1
+        if arr[z,x] == consensus[x]:
+            # verifies if the current value being iterated is equal to the equivalent value inline with the consensus
+            bool_array = np.append(bool_array, [True], axis=None)
+        else:
+            bool_array = np.append(bool_array, [False], axis=None)
     bool_arrL = np.vstack([bool_arrL, bool_array])
     bool_array = np.array([])
-  new_arr = copy.deepcopy(bool_arrL)
-  new_arr = bool_arrL.astype(bool)
-  return new_arr
+    new_arr = copy.deepcopy(bool_arrL)
+    new_arr = bool_arrL.astype(bool)
+    # returns the new boolean array containing the verified alignment to the consensus
+    return new_arr
