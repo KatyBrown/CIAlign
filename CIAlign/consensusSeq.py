@@ -685,7 +685,7 @@ def calcConservationAli(alignment, typ):
 def compareAlignmentConsensus(arr):
   consensus, _ = np.array(findConsensus(arr, ''))
   bool_array = np.array([])
-  bool_arrL = np.empty(dtype=bool, shape=(0, np.shape(consensus)[1]))
+  bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
   for e in range(1, (len(consensus[:,0])+1)):
     z = e-1
     for i in range(1, (len(consensus[0,:])+1)):
