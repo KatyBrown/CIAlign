@@ -161,6 +161,7 @@ def whichFunctions(args):
     if any([args.plot_input,
             args.plot_output,
             args.plot_markup,
+            args.plot_consensus_identity,
             args.visualise,
             args.all_options]):
         which_functions.append("mini_alignments")
@@ -882,6 +883,20 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                          args.plot_height,
                                          markup=True,
                                          markupdict=markupdict,
+                                         force_numbers=fn,
+                                         palette=args.palette)
+    if args.plot_consensus_identity:
+        log.info("Plotting identity to consensus")
+        if not args.silent:
+            print("Plotting identity to consensus")
+        outf = "%s_consensus_identity.%s" % (args.outfile_stem,
+                                             args.plot_format)
+        miniAlignments.drawMiniAlignment(arr, nams, log,
+                                         outf, typ,
+                                         plot_type='boolean',
+                                         dpi=args.plot_dpi,
+                                         width=args.plot_width,
+                                         height=args.plot_height,
                                          force_numbers=fn,
                                          palette=args.palette)
 

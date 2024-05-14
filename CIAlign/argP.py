@@ -512,6 +512,12 @@ def getParser():
                        rows which have been removed by each function marked \
                        up in corresponding colours. Default: %(default)s")
 
+    optional.add("--plot_consensus_identity", dest="plot_consensus_identity",
+                 action="store_true",
+                 help="""Plot a mini alignment showing positions which are \
+                 identical to or differ from the consensus. \
+                 Default: %(default)s""")
+
     optional.add("--plot_dpi", dest="plot_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for mini alignments. Default: %(default)s")
