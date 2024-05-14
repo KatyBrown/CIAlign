@@ -71,7 +71,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         with mock.patch.object(logger, 'debug') as mock_debug:
             miniAlignments.drawMiniAlignment(self.alignment, self.names,
                                              logger, self.dest,
-                                             'nt', 300, None, 5, 3,
+                                             'nt', 'standard', 300, None, 5, 3,
                                              True, markup_dict, False)
 
         mini_alignment = image.imread(self.dest).round(3)
