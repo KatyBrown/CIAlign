@@ -516,6 +516,9 @@ def getParser():
                  action="store_true",
                  help="""Plot a mini alignment showing positions which are \
                  identical to or differ from the consensus. \
+                 Also has the option to plot mini alignment showing \
+                 positions based on their numerical values when \
+                 when compared via a matrix to the consensus. \
                  Default: %(default)s""")
 
     optional.add("--plot_dpi", dest="plot_dpi",
