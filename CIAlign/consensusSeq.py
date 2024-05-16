@@ -16,6 +16,9 @@ except ImportError:
     import utilityFunctions
 import os
 import scipy.stats
+import copy
+import operator
+import pandas as pd
 matplotlib.use('Agg')
 
 
@@ -692,43 +695,203 @@ def calcConservationAli(alignment, typ):
     return (heights, ents)
 
 
-def compareAlignmentConsensus(arr):
+def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
+                              MatrixName="B"):
     '''
-    Compares the alignment of the input array to the consensus of that array,
-    and outputs a boolean array.
+    Compares the alignment of the inputted array to the consensus of that
+    array, and will either output a boolean array, or will use a matrix 
+    (can be specified) to output an array containing the scores of the 
+    sequence compared to the consensus.
 
-    Parameters
-    ----------
-    alignment: np.array
-        The alignment stored as a numpy array
 
-    Returns
-    -------
-    A numpy array stored as new_arr, which is a boolean array
-    comparing the arr to its consensus.
+
+        Parameters
+        ----------
+        arr: np.array
+            the sequence thats is to be aligned
+
+        typ: str
+            nt or aa
+        
+        booleanOrSimilarity: str
+            boolean or similarity (default = 'Boolean')
+
+        MatrixName: str
+            the specified matrix name (default = 'B')
+            
+        Returns
+        -------
+        new_arr: np.array
+            A boolean array containing the values of the 
+                        sequence compared to the consensus
+        new_Sarr: np.array
+            A integer array containing the values of the 
+            sequence compared to the consensus via a matrix
     '''
     consensus, _ = np.array(findConsensus(arr, '',
-                                          consensus_type='majority_nongap'))
-    bool_array = np.array([])
-    bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
-    # declares the numpy arrays
-    for e in range(1, (len(arr[:, 0])+1)):
-        # iterates over the rows of the sequences
-        z = e - 1
-        for i in range(1, (len(arr[0, :])+1)):
-            # iterates over the columns of the sequences
-            x = i - 1
-            if arr[z, x] == consensus[x]:
-                # verifies if the current value being iterated is equal to
-                # the equivalent value inline with the consensus
-                bool_array = np.append(bool_array, [True], axis=None)
-            else:
-                bool_array = np.append(bool_array, [False], axis=None)
-        bool_arrL = np.vstack([bool_arrL,
-                               bool_array])
+                                          consensus_type='majority_nongap')  )
+    ci_dir = os.path.dirname(utilityFunctions.__file__)
+    matrix_dir = "%s/similarity_matrices" % (ci_dir)
+
+    if booleanOrSimilarity == "Boolean":
         bool_array = np.array([])
-    new_arr = copy.deepcopy(bool_arrL)
-    new_arr = bool_arrL.astype(bool)
-    # returns the new boolean array containing the verified alignment
-    # to the consensus
-    return new_arr
+        bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
+        # declares the numpy arrays
+        for e in range(1, (len(arr[:,0])+1)):
+            # iterates over the rows of the sequences
+            z = e-1
+            for i in range(1, (len(arr[0,:])+1)):
+                # iterates over the columns of the sequences
+                x = i-1
+                if arr[z,x] == consensus[x]:
+                    # verifies if the current value being iterated is equal to the
+                    #equivalent value inline with the consensus
+                    bool_array = np.append(bool_array, [True], axis=None)
+                else:
+                    bool_array = np.append(bool_array, [False], axis=None)
+            bool_arrL = np.vstack([bool_arrL, bool_array])
+            bool_array = np.array([])
+
+        new_arr = copy.deepcopy(bool_arrL)
+        new_arr = bool_arrL.astype(bool)
+        # returns the new boolean array containing the verified alignment to
+        #the consensus
+        return new_arr
+    else:
+        # generates the consensus
+        Sarray = np.array([])
+        SarrL = np.empty(dtype=int, shape=(0, len(consensus)))
+        # declares the numpy arrays
+        tab = pd.read_csv("%s/matrices.txt" % ci_dir, sep="\t", index_col=0)
+        if typ == "aa":
+          # verifies if the typ is amino acid or nucleotide
+          if MatrixName != "B":
+            if tab.loc[MatrixName][0] != typ:
+              raise RuntimeError("This matrix is not valid")
+              # verifies if the matrix is valid
+            else:
+              # verifies if the user would like to use the default matrix or
+              #their own
+              mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
+                                comment="#", sep="\s+")
+          elif MatrixName == "B":
+            mat = pd.read_csv("%s/BLOSUM62" % (matrix_dir),
+                              comment="#", sep="\s+")
+        elif typ == "nt":
+            if MatrixName != "B":
+                if tab.loc[MatrixName][0] != typ:
+                    raise RuntimeError("This matrix is not valid")
+                    # verifies if the matrix is valid
+                else:
+                    # verifies if the user would like to use the default
+                    # matrix or their own
+                    mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
+                                      comment="#", sep="\s+")
+            elif MatrixName == "B":
+                mat = pd.read_csv("%s/NUC.4.4" % (matrix_dir), comment="#",
+                                  sep="\s+")
+        for e in range(1, (len(arr[:,0])+1)):
+            # iterates over the rows of the sequences
+            z = e-1
+            for i in range(1, (len(arr[0,:])+1)):
+                #  iterates over the columns of the sequences
+                x = i-1
+                if not arr[z, x] == "-":
+                    if arr[z, x] == "U" and typ == 'nt':
+                        thischar = "T"
+                    else:
+                        thischar = arr[z, x]
+                    if consensus[x] == "U" and typ == 'nt':
+                        conschar = "T"
+                    else:
+                        conschar = consensus[x]
+                    score = mat.loc[thischar, conschar]
+                    Sarray = np.append(Sarray, [score])
+                elif arr[z,x] == "-":
+                      # sets the value of '-' as 0
+                      Sarray = np.append(Sarray, 0)
+            SarrL = np.vstack([SarrL, Sarray])
+            Sarray = np.array([])
+        new_Sarr = copy.deepcopy(SarrL)
+        new_Sarr = SarrL.astype(int)
+        # returns the new similarity array containing the verified alignment
+        # to the consensus
+        return new_Sarr
+
+
+def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
+    '''
+    Plots a bar chart/graph of the percantage of the occurance of bases in the
+    given sequence, also plots a graph of the comparison between the amount
+    of C/G bases present to the amount of A/T bases.
+
+    Parameters
+    -----------
+    arr: np.array
+        The sequence stored as a numpy array
+
+    typ: str
+        nt or aa
+
+    Outputs
+    -----------
+    the bar charts/graphs
+    '''
+    if typ == "nt":
+        Slist = list(utilityFunctions.getNtColours().keys())[0:5]
+        Scols = list(utilityFunctions.getNtColours().values())[0:5]
+    elif typ == "aa":
+        Slist = list(utilityFunctions.getAAColours().keys())[0:21]
+        Scols = list(utilityFunctions.getAAColours().values())[0:21]
+    data = np.array([])
+    baseT = np.array([])
+    baseN = np.array([])
+    data2 = float(0)
+    data3 = float(0)
+    if typ == 'aa':
+        width = width * 3
+    f = plt.figure(figsize=(width, height))
+    plt.subplots_adjust(hspace=0.5)
+    for i in range(1, len(Slist)):
+        q = i - 1
+        if Slist[q] == 'C' or Slist[q] == 'G':
+            data2 = data2 + np.sum(arr == Slist[q])
+        if Slist[q] == 'A' or Slist[q] == 'T' or Slist[q] == 'U':
+            data3 = data3 + np.sum(arr == Slist[q])
+        if typ == 'nt' and Slist[q] == 'T':
+            thischar = "U"
+        else:
+            thischar = Slist[q]
+        data = (np.sum(arr == thischar) / np.size(arr))
+        baseT = np.append(baseT, data)
+        baseN = np.append(baseN, str(thischar))
+    if typ == 'nt':
+        subplot1 = f.add_subplot(2, 1, 1)
+        subplot1.set_xlabel("Nucleotide")
+    else:
+        subplot1 = f.add_subplot(1, 1, 1)
+        subplot1.set_xlabel("Amino Acid")
+    subplot1.set_ylabel("Proportion")
+    subplot1.bar(baseN, baseT, color=Scols, width=0.4)
+    subplot1.spines['right'].set_visible(False)
+    subplot1.spines['top'].set_visible(False)
+    subplot1.set_title("Proportion of Residues in Alignment")
+    
+    if typ == 'nt':
+        subplot2 = f.add_subplot(2, 1, 2)
+        if "U" in arr:
+            label = "A or U"
+            subplot2.set_title("CG and AU Proportion")
+        else:
+            label = "A or T"
+            subplot2.set_title("CG and AT Proportion")
+        subplot2.bar(["C or G", label], [(data2 / (data3 + data2)),
+                                         (data3 / (data3 + data2))],
+                     color="Orange", width=0.4)
+        subplot2.spines['right'].set_visible(False)
+        subplot2.spines['top'].set_visible(False)
+        subplot2.set_ylabel("Percentage")
+        subplot2.set_xlabel("Nucleotides")
+        
+    plt.savefig(outfile, dpi=dpi, bbox_inches='tight')
+    plt.close()

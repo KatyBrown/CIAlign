@@ -518,6 +518,28 @@ def getParser():
                  identical to or differ from the consensus. \
                  Default: %(default)s""")
 
+    optional.add("--plot_consensus_similarity",
+                  dest='plot_consensus_similarity', action='store_true',
+                 help="""Plot mini alignment showing \
+                 positions based on their score when \
+                 when compared via a substitution matrix to the consensus. \
+                 Default: %(default)s""")
+
+    optional.add("--plot_substitution_matrix", dest='plot_substitution_matrix',
+                 type=str, default='B',
+                 help="""Substitution matrix to use for similarity plots. \
+                 Default: %(default)s""")
+                
+    optional.add("--plot_identity_palette", dest='plot_identity_palette',
+                 type=str, default='terrain_r',
+                 help="""Matplotlib palette name for identity mini alignments. \
+                 Default: %(default)s""")
+
+    optional.add("--plot_similarity_palette", dest='plot_similarity_palette',
+                 type=str, default='summer_r',
+                 help="""Matplotlib palette name for similarity mini \
+                 alignments. Default: %(default)s""")
+
     optional.add("--plot_dpi", dest="plot_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for mini alignments. Default: %(default)s")
@@ -685,6 +707,16 @@ def getParser():
     optional.add("--plot_stats_width", dest="plot_stats_width",
                  type=int, default=5, metavar="(int)",
                  help="Width for statistics plots (inches). Default: \
+                       %(default)s")
+
+    optional.add("--plot_stats_height_bar", dest="plot_stats_height_bar",
+                 type=int, default=5, metavar="(int)",
+                 help="Height for statistics bar plots (inches). Default: \
+                       %(default)s")
+
+    optional.add("--plot_stats_width_bar", dest="plot_stats_width_bar",
+                 type=int, default=3, metavar="(int)",
+                 help="Width for statistics bar plots (inches). Default: \
                        %(default)s")
 
     optional.add("--plot_stats_colour", dest="plot_stats_colour",
