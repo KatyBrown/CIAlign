@@ -770,3 +770,22 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean", MatrixNam
         new_Sarr = SarrL.astype(int)
         # returns the new similarity array containing the verified alignment to the consensus
         return new_Sarr
+
+
+def plotArrayValue(arr, typ):
+  if typ == "nt":
+    Slist = list(utilityFunctions.getNtColours().keys())
+    Scols = list(utilityFunctions.getNtColours().values())
+  elif typ == "aa":
+    Slist = list(utilityFunctions.getAAColours().keys())
+    Scols = list(utilityFunctions.getAAColours().values())
+  data = np.array([])
+  baseT = np.array([])
+  baseN = np.array([])
+  for i in range(1, len(Slist)):
+    q = i-1
+    data = (np.sum(arr == Slist[q]) / np.size(arr))
+    baseT = np.append(baseT, data)
+    baseN = np.append(baseN, str(Slist[q]))
+  plt.bar(baseN, baseT, color =Scols, width = 0.4)
+  plt.show()
