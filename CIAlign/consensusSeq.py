@@ -18,6 +18,7 @@ import os
 import scipy.stats
 import copy
 import operator
+import pandas as pd
 matplotlib.use('Agg')
 
 
@@ -694,44 +695,74 @@ def calcConservationAli(alignment, typ):
     return (heights, ents)
 
 
-def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean", MatrixName="B"):
-    consensus, _ = np.array(findConsensus(arr, '', consensus_type='majority_nongap')  )
+def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
+                              MatrixName="B"):
+    '''
+    Compares the alignment of the inputted array to the consensus of that
+    array, and will either output a boolean array, or will use a matrix 
+    (can be specified) to output an array containing the scores of the 
+    sequence compared to the consensus.
+
+
+
+        Parameters
+        ----------
+        arr: np.array
+            the sequence thats is to be aligned
+
+        typ: str
+            nt or aa
+        
+        booleanOrSimilarity: str
+            boolean or similarity (default = 'Boolean')
+
+        MatrixName: str
+            the specified matrix name (default = 'B')
+            
+        Returns
+        -------
+        new_arr: np.array
+            A boolean array containing the values of the 
+                        sequence compared to the consensus
+        new_Sarr: np.array
+            A integer array containing the values of the 
+            sequence compared to the consensus via a matrix
+    '''
+    consensus, _ = np.array(findConsensus(arr, '',
+                                          consensus_type='majority_nongap')  )
+    ci_dir = os.path.dirname(utilityFunctions.__file__)
+    matrix_dir = "%s/similarity_matrices" % (ci_dir)
+
     if booleanOrSimilarity == "Boolean":
-        '''
-        Compares the alignment of the inputted array to the consensus of that array, and outputs a boolean array.
-
-        alignment: arr
-          The alignment stored as a numpy array
-
-        return:
-        a numpy array stored as new_arr, which is a boolean array comparing the arr to the consensus of it.
-        '''
         bool_array = np.array([])
         bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
         # declares the numpy arrays
         for e in range(1, (len(arr[:,0])+1)):
             # iterates over the rows of the sequences
             z = e-1
-        for i in range(1, (len(arr[0,:])+1)):
-            # iterates over the columns of the sequences
-            x = i-1
-            if arr[z,x] == consensus[x]:
-                # verifies if the current value being iterated is equal to the equivalent value inline with the consensus
-                bool_array = np.append(bool_array, [True], axis=None)
-            else:
-                bool_array = np.append(bool_array, [False], axis=None)
-        bool_arrL = np.vstack([bool_arrL, bool_array])
-        bool_array = np.array([])
+            for i in range(1, (len(arr[0,:])+1)):
+                # iterates over the columns of the sequences
+                x = i-1
+                if arr[z,x] == consensus[x]:
+                    # verifies if the current value being iterated is equal to the
+                    #equivalent value inline with the consensus
+                    bool_array = np.append(bool_array, [True], axis=None)
+                else:
+                    bool_array = np.append(bool_array, [False], axis=None)
+            bool_arrL = np.vstack([bool_arrL, bool_array])
+            bool_array = np.array([])
+
         new_arr = copy.deepcopy(bool_arrL)
         new_arr = bool_arrL.astype(bool)
-        # returns the new boolean array containing the verified alignment to the consensus
+        # returns the new boolean array containing the verified alignment to
+        #the consensus
         return new_arr
     else:
         # generates the consensus
         Sarray = np.array([])
         SarrL = np.empty(dtype=int, shape=(0, len(consensus)))
         # declares the numpy arrays
-        tab = pd.read_csv("roman_work_experience/matrices.txt", sep="\t", index_col=0)
+        tab = pd.read_csv("%s/matrices.txt" % ci_dir, sep="\t", index_col=0)
         if typ == "aa":
           # verifies if the typ is amino acid or nucleotide
           if MatrixName != "B":
@@ -739,28 +770,43 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean", MatrixNam
               raise RuntimeError("This matrix is not valid")
               # verifies if the matrix is valid
             else:
-              # verifies if the user would like to use the default matrix or their own
-              mat = pd.read_csv(("%s/similarity_matrices/"+MatrixName) % mydir, comment="#", sep="\s+")
+              # verifies if the user would like to use the default matrix or
+              #their own
+              mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
+                                comment="#", sep="\s+")
           elif MatrixName == "B":
-            mat = pd.read_csv("%s/similarity_matrices/BLOSUM62" % mydir, comment="#", sep="\s+")
+            mat = pd.read_csv("%s/BLOSUM62" % (matrix_dir),
+                              comment="#", sep="\s+")
         elif typ == "nt":
             if MatrixName != "B":
                 if tab.loc[MatrixName][0] != typ:
                     raise RuntimeError("This matrix is not valid")
                     # verifies if the matrix is valid
                 else:
-                    # verifies if the user would like to use the default matrix or their own
-                    mat = pd.read_csv(("%s/similarity_matrices/"+MatrixName) % mydir, comment="#", sep="\s+")
+                    # verifies if the user would like to use the default
+                    # matrix or their own
+                    mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
+                                      comment="#", sep="\s+")
             elif MatrixName == "B":
-                mat = pd.read_csv("%s/similarity_matrices/NUC.4.4" % mydir, comment="#", sep="\s+")
+                mat = pd.read_csv("%s/NUC.4.4" % (matrix_dir), comment="#",
+                                  sep="\s+")
         for e in range(1, (len(arr[:,0])+1)):
             # iterates over the rows of the sequences
             z = e-1
             for i in range(1, (len(arr[0,:])+1)):
                 #  iterates over the columns of the sequences
                 x = i-1
-                if not arr[z,x] == "-":
-                      Sarray = np.append(Sarray,[int(mat.loc[arr[z,x],consensus[x]])])
+                if not arr[z, x] == "-":
+                    if arr[z, x] == "U" and typ == 'nt':
+                        thischar = "T"
+                    else:
+                        thischar = arr[z, x]
+                    if consensus[x] == "U" and typ == 'nt':
+                        conschar = "T"
+                    else:
+                        conschar = consensus[x]
+                    score = mat.loc[thischar, conschar]
+                    Sarray = np.append(Sarray, [score])
                 elif arr[z,x] == "-":
                       # sets the value of '-' as 0
                       Sarray = np.append(Sarray, 0)
@@ -768,7 +814,8 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean", MatrixNam
             Sarray = np.array([])
         new_Sarr = copy.deepcopy(SarrL)
         new_Sarr = SarrL.astype(int)
-        # returns the new similarity array containing the verified alignment to the consensus
+        # returns the new similarity array containing the verified alignment
+        # to the consensus
         return new_Sarr
 
 

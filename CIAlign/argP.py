@@ -516,10 +516,29 @@ def getParser():
                  action="store_true",
                  help="""Plot a mini alignment showing positions which are \
                  identical to or differ from the consensus. \
-                 Also has the option to plot mini alignment showing \
-                 positions based on their numerical values when \
-                 when compared via a matrix to the consensus. \
                  Default: %(default)s""")
+
+    optional.add("--plot_consensus_similarity",
+                  dest='plot_consensus_similarity', action='store_true',
+                 help="""Plot mini alignment showing \
+                 positions based on their score when \
+                 when compared via a substitution matrix to the consensus. \
+                 Default: %(default)s""")
+
+    optional.add("--plot_substitution_matrix", dest='plot_substitution_matrix',
+                 type=str, default='B',
+                 help="""Substitution matrix to use for similarity plots. \
+                 Default: %(default)s""")
+                
+    optional.add("--plot_identity_palette", dest='plot_identity_palette',
+                 type=str, default='terrain_r',
+                 help="""Matplotlib palette name for identity mini alignments. \
+                 Default: %(default)s""")
+
+    optional.add("--plot_similarity_palette", dest='plot_similarity_palette',
+                 type=str, default='summer_r',
+                 help="""Matplotlib palette name for similarity mini \
+                 alignments. Default: %(default)s""")
 
     optional.add("--plot_dpi", dest="plot_dpi",
                  type=int, default=300, metavar="(int)",
