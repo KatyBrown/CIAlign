@@ -774,7 +774,9 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean", MatrixNam
 
 def plotArrayValue(arr, typ):
     '''
-    Plots a bar chart/graph of the percantage of the occurance of bases in the given sequence.
+    Plots a bar chart/graph of the percantage of the occurance of bases in the
+    given sequence, also plots a graph of the comparison between the amount
+    of C/G bases present to the amount of A/T bases.
 
     Parameters
     -----------
@@ -786,7 +788,7 @@ def plotArrayValue(arr, typ):
 
     Outputs
     -----------
-    the bar chart/graph
+    the bar charts/graphs
     '''
     if typ == "nt":
         Slist = list(utilityFunctions.getNtColours().keys())
@@ -797,10 +799,19 @@ def plotArrayValue(arr, typ):
     data = np.array([])
     baseT = np.array([])
     baseN = np.array([])
+    data2 = float(0)
+    data3 = float(0)
     for i in range(1, len(Slist)):
-        q = i-1
+        q = i - 1
+        if Slist[q] == 'C' or Slist[q] == 'G':
+            data2 = data2 + np.sum(arr == Slist[q])
+        if Slist[q] == 'A' or Slist[q] == 'T':
+            data3 = data3 + np.sum(arr == Slist[q])
         data = (np.sum(arr == Slist[q]) / np.size(arr))
         baseT = np.append(baseT, data)
         baseN = np.append(baseN, str(Slist[q]))
-    plt.bar(baseN, baseT, color =Scols, width = 0.4)
+    plt.subplot(2, 2, 1)
+    plt.bar(baseN, baseT, color=Scols, width=0.4)
+    plt.subplot(2, 2, 2)
+    plt.bar(["C or G", "A or T"], [(data2 / (data3 + data2)), (data3 / (data3 + data2))], color="Orange", width=0.4)
     plt.show()
