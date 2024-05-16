@@ -773,19 +773,34 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean", MatrixNam
 
 
 def plotArrayValue(arr, typ):
-  if typ == "nt":
-    Slist = list(utilityFunctions.getNtColours().keys())
-    Scols = list(utilityFunctions.getNtColours().values())
-  elif typ == "aa":
-    Slist = list(utilityFunctions.getAAColours().keys())
-    Scols = list(utilityFunctions.getAAColours().values())
-  data = np.array([])
-  baseT = np.array([])
-  baseN = np.array([])
-  for i in range(1, len(Slist)):
-    q = i-1
-    data = (np.sum(arr == Slist[q]) / np.size(arr))
-    baseT = np.append(baseT, data)
-    baseN = np.append(baseN, str(Slist[q]))
-  plt.bar(baseN, baseT, color =Scols, width = 0.4)
-  plt.show()
+    '''
+    Plots a bar chart/graph of the percantage of the occurance of bases in the given sequence.
+
+    Parameters
+    -----------
+    arr: np.array
+        The sequence stored as a numpy array
+
+    typ: str
+        nt or aa
+
+    Outputs
+    -----------
+    the bar chart/graph
+    '''
+    if typ == "nt":
+        Slist = list(utilityFunctions.getNtColours().keys())
+        Scols = list(utilityFunctions.getNtColours().values())
+    elif typ == "aa":
+        Slist = list(utilityFunctions.getAAColours().keys())
+        Scols = list(utilityFunctions.getAAColours().values())
+    data = np.array([])
+    baseT = np.array([])
+    baseN = np.array([])
+    for i in range(1, len(Slist)):
+        q = i-1
+        data = (np.sum(arr == Slist[q]) / np.size(arr))
+        baseT = np.append(baseT, data)
+        baseN = np.append(baseN, str(Slist[q]))
+    plt.bar(baseN, baseT, color =Scols, width = 0.4)
+    plt.show()
