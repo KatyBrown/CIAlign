@@ -819,7 +819,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
         return new_Sarr
 
 
-def plotArrayValue(arr, typ):
+def plotArrayValue(arr, typ, outfile, dpi=300, width=3, height=5):
     '''
     Plots a bar chart/graph of the percantage of the occurance of bases in the
     given sequence, also plots a graph of the comparison between the amount
@@ -838,27 +838,59 @@ def plotArrayValue(arr, typ):
     the bar charts/graphs
     '''
     if typ == "nt":
-        Slist = list(utilityFunctions.getNtColours().keys())
-        Scols = list(utilityFunctions.getNtColours().values())
+        Slist = list(utilityFunctions.getNtColours().keys())[0:5]
+        Scols = list(utilityFunctions.getNtColours().values())[0:5]
     elif typ == "aa":
-        Slist = list(utilityFunctions.getAAColours().keys())
-        Scols = list(utilityFunctions.getAAColours().values())
+        Slist = list(utilityFunctions.getAAColours().keys())[0:21]
+        Scols = list(utilityFunctions.getAAColours().values())[0:21]
     data = np.array([])
     baseT = np.array([])
     baseN = np.array([])
     data2 = float(0)
     data3 = float(0)
+    if typ == 'aa':
+        width = width * 3
+    f = plt.figure(figsize=(width, height))
+    plt.subplots_adjust(hspace=0.5)
     for i in range(1, len(Slist)):
         q = i - 1
         if Slist[q] == 'C' or Slist[q] == 'G':
             data2 = data2 + np.sum(arr == Slist[q])
-        if Slist[q] == 'A' or Slist[q] == 'T':
+        if Slist[q] == 'A' or Slist[q] == 'T' or Slist[q] == 'U':
             data3 = data3 + np.sum(arr == Slist[q])
-        data = (np.sum(arr == Slist[q]) / np.size(arr))
+        if typ == 'nt':
+            if Slist[q] == 'T':
+                thischar = "U"
+            else:
+                thischar = Slist[q]
+        data = (np.sum(arr == thischar) / np.size(arr))
         baseT = np.append(baseT, data)
-        baseN = np.append(baseN, str(Slist[q]))
-    plt.subplot(2, 2, 1)
-    plt.bar(baseN, baseT, color=Scols, width=0.4)
-    plt.subplot(2, 2, 2)
-    plt.bar(["C or G", "A or T"], [(data2 / (data3 + data2)), (data3 / (data3 + data2))], color="Orange", width=0.4)
-    plt.show()
+        baseN = np.append(baseN, str(thischar))
+    if typ == 'nt':
+        subplot1 = f.add_subplot(2, 1, 1)
+        subplot1.set_xlabel("Nucleotide")
+    else:
+        subplot1 = f.add_subplot(1, 1, 1)
+        subplot1.set_xlabel("Amino Acid")
+    subplot1.set_ylabel("Proportion")
+    subplot1.bar(baseN, baseT, color=Scols, width=0.4)
+    subplot1.spines['right'].set_visible(False)
+    subplot1.spines['top'].set_visible(False)
+    subplot1.set_title("Proportion of Residues in Alignment")
+    
+    if typ == 'nt':
+        subplot2 = f.add_subplot(2, 1, 2)
+        if "U" in arr:
+            label = "A or U"
+            subplot2.set_title("CG and AU Proportion")
+        else:
+            label = "A or T"
+            subplot2.set_title("CG and AT Proportion")
+        subplot2.bar(["C or G", label], [(data2 / (data3 + data2)), (data3 / (data3 + data2))], color="Orange", width=0.4)
+        subplot2.spines['right'].set_visible(False)
+        subplot2.spines['top'].set_visible(False)
+        subplot2.set_ylabel("Percentage")
+        subplot2.set_xlabel("Nucleotides")
+        
+    plt.savefig(outfile, dpi=dpi, bbox_inches='tight')
+    plt.close()
