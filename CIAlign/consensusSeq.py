@@ -697,23 +697,43 @@ def calcConservationAli(alignment, typ):
 
 def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
                               MatrixName="B"):
+    '''
+    Compares the alignment of the inputted array to the consensus of that
+    array, and will either output a boolean array, or will use a matrix 
+    (can be specified) to output an array containing the scores of the 
+    sequence compared to the consensus.
+
+
+
+        Parameters
+        ----------
+        arr: np.array
+            the sequence thats is to be aligned
+
+        typ: str
+            nt or aa
+        
+        booleanOrSimilarity: str
+            boolean or similarity (default = 'Boolean')
+
+        MatrixName: str
+            the specified matrix name (default = 'B')
+            
+        Returns
+        -------
+        new_arr: np.array
+            A boolean array containing the values of the 
+                        sequence compared to the consensus
+        new_Sarr: np.array
+            A integer array containing the values of the 
+            sequence compared to the consensus via a matrix
+    '''
     consensus, _ = np.array(findConsensus(arr, '',
                                           consensus_type='majority_nongap')  )
     ci_dir = os.path.dirname(utilityFunctions.__file__)
     matrix_dir = "%s/similarity_matrices" % (ci_dir)
 
     if booleanOrSimilarity == "Boolean":
-        '''
-        Compares the alignment of the inputted array to the consensus of that
-        array, and outputs a boolean array.
-
-        alignment: arr
-          The alignment stored as a numpy array
-
-        return:
-        a numpy array stored as new_arr, which is a boolean array comparing the
-        arr to the consensus of it.
-        '''
         bool_array = np.array([])
         bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
         # declares the numpy arrays
