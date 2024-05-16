@@ -819,7 +819,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
         return new_Sarr
 
 
-def plotArrayValue(arr, typ, outfile, dpi=300, width=3, height=5):
+def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
     '''
     Plots a bar chart/graph of the percantage of the occurance of bases in the
     given sequence, also plots a graph of the comparison between the amount
@@ -858,11 +858,10 @@ def plotArrayValue(arr, typ, outfile, dpi=300, width=3, height=5):
             data2 = data2 + np.sum(arr == Slist[q])
         if Slist[q] == 'A' or Slist[q] == 'T' or Slist[q] == 'U':
             data3 = data3 + np.sum(arr == Slist[q])
-        if typ == 'nt':
-            if Slist[q] == 'T':
-                thischar = "U"
-            else:
-                thischar = Slist[q]
+        if typ == 'nt' and Slist[q] == 'T':
+            thischar = "U"
+        else:
+            thischar = Slist[q]
         data = (np.sum(arr == thischar) / np.size(arr))
         baseT = np.append(baseT, data)
         baseN = np.append(baseN, str(thischar))
@@ -886,7 +885,9 @@ def plotArrayValue(arr, typ, outfile, dpi=300, width=3, height=5):
         else:
             label = "A or T"
             subplot2.set_title("CG and AT Proportion")
-        subplot2.bar(["C or G", label], [(data2 / (data3 + data2)), (data3 / (data3 + data2))], color="Orange", width=0.4)
+        subplot2.bar(["C or G", label], [(data2 / (data3 + data2)),
+                                         (data3 / (data3 + data2))],
+                     color="Orange", width=0.4)
         subplot2.spines['right'].set_visible(False)
         subplot2.spines['top'].set_visible(False)
         subplot2.set_ylabel("Percentage")

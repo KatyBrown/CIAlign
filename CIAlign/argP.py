@@ -709,6 +709,16 @@ def getParser():
                  help="Width for statistics plots (inches). Default: \
                        %(default)s")
 
+    optional.add("--plot_stats_height_bar", dest="plot_stats_height_bar",
+                 type=int, default=5, metavar="(int)",
+                 help="Height for statistics bar plots (inches). Default: \
+                       %(default)s")
+
+    optional.add("--plot_stats_width_bar", dest="plot_stats_width_bar",
+                 type=int, default=3, metavar="(int)",
+                 help="Width for statistics bar plots (inches). Default: \
+                       %(default)s")
+
     optional.add("--plot_stats_colour", dest="plot_stats_colour",
                  type=str, default='#007bf5', metavar="(string)",
                  help="Colour for statistics plots (hex code or name). \

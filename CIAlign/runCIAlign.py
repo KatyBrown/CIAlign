@@ -1027,6 +1027,16 @@ def runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ):
         stats_tab.to_csv("%s_%s_column_stats.tsv" % (args.outfile_stem,
                                                      inout), sep="\t")
 
+        log.info("Plotting residue frequencies for %s" % inout)
+        if not args.silent:
+            print("Plotting residue frequencies for %s" % inout)
+        outfile = "%s_%s_resfreq.%s" % (args.outfile_stem, inout,
+                                        args.plot_stats_filetype)    
+        consensusSeq.plotResidueFrequencies(c_arr, typ, outfile,
+                                            dpi=args.plot_stats_dpi,
+                                            width=args.plot_stats_width_bar,
+                                            height=args.plot_stats_height_bar)
+
 
 def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):
     '''
