@@ -250,7 +250,10 @@ def drawMarkUpLegend(outfile, palette="CBS"):
 def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
                       dpi=300, title=None, width=5, height=3, markup=False,
                       markupdict=None, ret=False, orig_nams=[],
-                      keep_numbers=False, force_numbers=False, palette="CBS"):
+                      keep_numbers=False, force_numbers=False, palette="CBS",
+                      sub_matrix_name='B', plot_identity_palette='terrain_r',
+                      plot_similarity_palette='summer_r',
+                      plot_substitution_matrix='B'):
     '''
     Draws a "mini alignment" image showing a small representation of the
     whole alignment so that gaps and poorly aligned regions are visible.
@@ -322,8 +325,15 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
     if plot_type == 'standard':
         arr2, cm = arrNumeric(arr, typ, palette)
     elif plot_type == 'boolean':
-        arr2 = consensusSeq.compareAlignmentConsensus(arr)
-        cm = matplotlib.colormaps['jet']
+        arr2 = consensusSeq.compareAlignmentConsensus(
+            arr, typ=typ, booleanOrSimilarity="Boolean")
+        cm = matplotlib.colormaps[plot_identity_palette]
+    elif plot_type == 'similarity':
+        arr2 = consensusSeq.compareAlignmentConsensus(
+            arr, typ=typ, booleanOrSimilarity="similarity",
+            MatrixName=sub_matrix_name)
+        cm = matplotlib.colormaps[plot_similarity_palette]
+    
     # display it on the axis
     a.imshow(arr2, cmap=cm, aspect='auto', interpolation='nearest')
 
