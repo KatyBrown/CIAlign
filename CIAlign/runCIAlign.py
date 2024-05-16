@@ -162,6 +162,7 @@ def whichFunctions(args):
             args.plot_output,
             args.plot_markup,
             args.plot_consensus_identity,
+            args.plot_consensus_similarity,
             args.visualise,
             args.all_options]):
         which_functions.append("mini_alignments")
@@ -892,14 +893,33 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
             print("Plotting identity to consensus")
         outf = "%s_consensus_identity.%s" % (args.outfile_stem,
                                              args.plot_format)
-        miniAlignments.drawMiniAlignment(arr, nams, log,
-                                         outf, typ,
-                                         plot_type='boolean',
-                                         dpi=args.plot_dpi,
-                                         width=args.plot_width,
-                                         height=args.plot_height,
-                                         force_numbers=fn,
-                                         palette=args.palette)
+        miniAlignments.drawMiniAlignment(
+            arr, nams, log,
+            outf, typ,
+            plot_type='boolean',
+            dpi=args.plot_dpi,
+            width=args.plot_width,
+            height=args.plot_height,
+            force_numbers=fn,
+            palette=args.palette,
+            plot_identity_palette=args.plot_identity_palette)
+    if args.plot_consensus_similarity:
+        log.info("Plotting similarity to consensus")
+        if not args.silent:
+            print("Plotting similarity to consensus")
+        outf = "%s_consensus_similarity.%s" % (args.outfile_stem,
+                                             args.plot_format)
+        miniAlignments.drawMiniAlignment(
+            arr, nams, log,
+            outf, typ,
+            plot_type='similarity',
+            dpi=args.plot_dpi,
+            width=args.plot_width,
+            height=args.plot_height,
+            force_numbers=fn,
+            palette=args.palette,
+            plot_similarity_palette=args.plot_similarity_palette,
+            plot_substitution_matrix=args.plot_substitution_matrix)
 
 
 def runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
