@@ -897,13 +897,18 @@ def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
     plt.close()
 def residueChangeCount(arr, typ):
   if typ == "nt":
-    consensus, _ = np.array(findConsensus(arr, '', consensus_type='majority_nongap'))
+    consensus, _ = np.array(findConsensus(arr, '', consensus_type='majority_nongap')  )
     NDiff = np.array([])
     for i in range(1, len(arr[:,0])):
       z = i - 1
       for e in range(1, len(arr[0,:])):
         x = e - 1
-        if arr[z, x] != consensus[x] and consensus[x] != "-" and arr[z, x] != "-":
-          NDiff = np.append(NDiff, str(arr[z, x] + consensus[x]))
+        if arr[z,x] != consensus[x] and consensus[x] != "-" and arr[z,x] != "-":
+          NDiff = np.append(NDiff, str(arr[z,x] + consensus[x]))
     total_arr = sum((NDiff != "BB")[:])
-    plt.bar(["AT", "AC", "AG", "TA", "TC", "TG", "CA", "CT", "CG", "GA", "GC", "GT"], [(sum((NDiff == "AT")[:])/total_arr), (sum((NDiff == "AC")[:])/total_arr), (sum((NDiff == "AG")[:])/total_arr), (sum((NDiff == "TA")[:])/total_arr), (sum((NDiff == "TC")[:])/total_arr), (sum((NDiff == "TG")[:])/total_arr), (sum((NDiff == "CA")[:])/total_arr), (sum((NDiff == "CT")[:])/total_arr), (sum((NDiff == "CG")[:])/total_arr), (sum((NDiff == "GA")[:])/total_arr), (sum((NDiff == "GC")[:])/total_arr), (sum((NDiff == "GT")[:])/total_arr)], color="Orange", width=0.4)
+    xAx = ["AT", "AC", "AG", "TA", "TC", "TG", "CA", "CT", "CG", "GA", "GC", "GT"]
+    yAy = np.array([])
+    for o in range(1,len(xAx)+1):
+        w = o-1
+        yAy = np.append(yAy, (sum((NDiff == str(xAx[w]))[:])/total_arr))
+    plt.bar(xAx, yAy, color="Orange", width=0.4)
