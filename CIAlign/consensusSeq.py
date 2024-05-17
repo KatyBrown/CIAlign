@@ -896,19 +896,36 @@ def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
     plt.savefig(outfile, dpi=dpi, bbox_inches='tight')
     plt.close()
 def residueChangeCount(arr, typ):
-  if typ == "nt":
-    consensus, _ = np.array(findConsensus(arr, '', consensus_type='majority_nongap')  )
-    NDiff = np.array([])
-    for i in range(1, len(arr[:,0])):
-      z = i - 1
-      for e in range(1, len(arr[0,:])):
-        x = e - 1
-        if arr[z,x] != consensus[x] and consensus[x] != "-" and arr[z,x] != "-":
-          NDiff = np.append(NDiff, str(arr[z,x] + consensus[x]))
-    total_arr = sum((NDiff != "BB")[:])
-    xAx = ["AT", "AC", "AG", "TA", "TC", "TG", "CA", "CT", "CG", "GA", "GC", "GT"]
-    yAy = np.array([])
-    for o in range(1,len(xAx)+1):
-        w = o-1
-        yAy = np.append(yAy, (sum((NDiff == str(xAx[w]))[:])/total_arr))
-    plt.bar(xAx, yAy, color="Orange", width=0.4)
+    '''
+    Plots a bar chart/graph of the percantages
+    of the occurances of the differences between
+                the sequence and the consensus.
+
+    Parameters
+    -----------
+    arr: np.array
+        The sequence stored as a numpy array
+
+    typ: str
+        nt only
+
+    Outputs
+    -----------
+    the bar chart/graph
+    '''
+    if typ == "nt":
+        consensus, _ = np.array(findConsensus(arr, '', consensus_type='majority_nongap')  )
+        NDiff = np.array([])
+        for i in range(1, len(arr[:,0])):
+            z = i - 1
+            for e in range(1, len(arr[0,:])):
+                x = e - 1
+                if arr[z,x] != consensus[x] and consensus[x] != "-" and arr[z,x] != "-":
+                    NDiff = np.append(NDiff, str(arr[z,x] + consensus[x]))
+        total_arr = sum((NDiff != "BB")[:])
+        xAx = ["AT", "AC", "AG", "TA", "TC", "TG", "CA", "CT", "CG", "GA", "GC", "GT"]
+        yAy = np.array([])
+        for o in range(1,len(xAx)+1):
+            w = o-1
+            yAy = np.append(yAy, (sum((NDiff == str(xAx[w]))[:])/total_arr))
+        plt.bar(xAx, yAy, color="Orange", width=0.4)
