@@ -733,7 +733,6 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
     ci_dir = os.path.dirname(utilityFunctions.__file__)
     matrix_dir = "%s/similarity_matrices" % (ci_dir)
 
-    print (consensus)
     if booleanOrSimilarity == "boolean":
         bool_array = np.array([])
         bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
@@ -859,8 +858,8 @@ def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
         Slist = list(utilityFunctions.getNtColours().keys())[0:5]
         Scols = list(utilityFunctions.getNtColours().values())[0:5]
     elif typ == "aa":
-        Slist = list(utilityFunctions.getAAColours().keys())[0:21]
-        Scols = list(utilityFunctions.getAAColours().values())[0:21]
+        Slist = list(utilityFunctions.getAAColours().keys())[0:20]
+        Scols = list(utilityFunctions.getAAColours().values())[0:20]
 
     # Set up empty arrays
     baseT = np.array([])
@@ -877,19 +876,18 @@ def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
     plt.subplots_adjust(hspace=0.5)
     
     
-    for i in range(1, len(Slist)):
-        q = i - 1
+    for i in range(0, len(Slist)):
         # Count C and G vs A and T
-        if Slist[q] == 'C' or Slist[q] == 'G':
-            CGcount = CGcount + np.sum(arr == Slist[q])
-        if Slist[q] == 'A' or Slist[q] == 'T' or Slist[q] == 'U':
-            ATcount = ATcount + np.sum(arr == Slist[q])
+        if Slist[i] == 'C' or Slist[i] == 'G':
+            CGcount = CGcount + np.sum(arr == Slist[i])
+        if Slist[i] == 'A' or Slist[i] == 'T' or Slist[i] == 'U':
+            ATcount = ATcount + np.sum(arr == Slist[i])
             
         # Sub "U" for "T" for RNA
-        if typ == 'nt' and Slist[q] == 'T':
+        if typ == 'nt' and Slist[i] == 'T':
             thischar = "U"
         else:
-            thischar = Slist[q]
+            thischar = Slist[i]
             
         # Calculate the proportion of this character overall
         prop = (np.sum(arr == thischar) / np.size(arr))
@@ -993,7 +991,7 @@ def residueChangeCount(arr, typ, outfile, dpi=300, width=3, height=5):
         w = o-1
         yAy = np.append(yAy, (sum((NDiff == str(xAx[w]))[:])/total_arr))
 
-    f = plt.figure(figsize=(width, height))
+    f = plt.figure(figsize=(width*3, height))
     a = f.add_subplot(1, 1, 1)
     a.bar(xAx, yAy, color="orange", width=0.4)
 
