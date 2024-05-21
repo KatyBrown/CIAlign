@@ -535,11 +535,21 @@ def getParser():
                  help="""Matplotlib palette name for identity mini alignments. \
                  Default: %(default)s""")
 
+    optional.add("--plot_identity_gap_col", dest='plot_identity_gap_col',
+                 type=str, default='white',
+                 help="""Colour for gaps in identity mini alignments. \
+                 Default: %(default)s""")
+
     optional.add("--plot_similarity_palette", dest='plot_similarity_palette',
                  type=str, default='bone',
                  help="""Matplotlib palette name for similarity mini \
                  alignments. Default: %(default)s""")
 
+    optional.add("--plot_similarity_gap_col", dest='plot_similarity_gap_col',
+                 type=str, default='white',
+                 help="""Colour for gaps in similarity mini alignments. \
+                 Default: %(default)s""")
+    
     optional.add("--plot_dpi", dest="plot_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for mini alignments. Default: %(default)s")
