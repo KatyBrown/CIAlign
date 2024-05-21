@@ -531,12 +531,12 @@ def getParser():
                  Default: %(default)s""")
 
     optional.add("--plot_identity_palette", dest='plot_identity_palette',
-                 type=str, default='terrain_r',
+                 type=str, default='bone',
                  help="""Matplotlib palette name for identity mini alignments. \
                  Default: %(default)s""")
 
     optional.add("--plot_similarity_palette", dest='plot_similarity_palette',
-                 type=str, default='summer_r',
+                 type=str, default='bone',
                  help="""Matplotlib palette name for similarity mini \
                  alignments. Default: %(default)s""")
 

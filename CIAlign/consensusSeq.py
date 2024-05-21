@@ -277,7 +277,7 @@ def makeLinePlot(stat, dest, ylab, dpi=300, height=3, width=5,
     ymax = max(y)
 
     x_div = 10**(math.floor(np.log10(xmax))) / 5
-    y_div = 10**(math.floor(np.log10(ymax))) / 2
+    y_div = 10**(math.floor(np.log10(ymax)))
 
     # used for polynomial interpolation
     # xmin = x.min()
@@ -695,7 +695,7 @@ def calcConservationAli(alignment, typ):
     return (heights, ents)
 
 
-def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
+def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
                               MatrixName="default"):
     '''
     Compares the alignment of the inputted array to the consensus of that
@@ -714,10 +714,10 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
             nt or aa
         
         booleanOrSimilarity: str
-            boolean or similarity (default = 'Boolean')
+            boolean or similarity (default = 'boolean')
 
         MatrixName: str
-            the specified matrix name (default = 'B')
+            the specified matrix name (default = 'default')
             
         Returns
         -------
@@ -747,13 +747,16 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
                     # verifies if the current value being iterated is equal to
                     # the equivalent value inline with the consensus
                     bool_array = np.append(bool_array, [True], axis=None)
+                elif arr[z, x] == "-" or consensus[x] == "-":
+                    bool_array = np.append(bool_array, [float('nan')],
+                                           axis=None)
                 else:
                     bool_array = np.append(bool_array, [False], axis=None)
             bool_arrL = np.vstack([bool_arrL, bool_array])
             bool_array = np.array([])
 
         new_arr = copy.deepcopy(bool_arrL)
-        new_arr = bool_arrL.astype(bool)
+        new_arr = bool_arrL.astype(float)
         # returns the new boolean array containing the verified alignment to
         #the consensus
         return new_arr
@@ -811,11 +814,11 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
                     Sarray = np.append(Sarray, [score])
                 elif arr[z,x] == "-":
                       # sets the value of '-' as 0
-                      Sarray = np.append(Sarray, 0)
+                      Sarray = np.append(Sarray, float('nan'))
             SarrL = np.vstack([SarrL, Sarray])
             Sarray = np.array([])
         new_Sarr = copy.deepcopy(SarrL)
-        new_Sarr = SarrL.astype(int)
+        new_Sarr = SarrL.astype(float)
         # returns the new similarity array containing the verified alignment
         # to the consensus
         return new_Sarr

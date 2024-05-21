@@ -896,7 +896,7 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
         miniAlignments.drawMiniAlignment(
             arr, nams, log,
             outf, typ,
-            plot_type='boolean',
+            plot_type='identity',
             dpi=args.plot_dpi,
             width=args.plot_width,
             height=args.plot_height,
