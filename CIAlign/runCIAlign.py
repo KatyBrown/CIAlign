@@ -898,12 +898,14 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
             outf, typ,
             plot_type='identity',
             dpi=args.plot_dpi,
+            title=False,
             width=args.plot_width,
             height=args.plot_height,
             force_numbers=fn,
             palette=args.palette,
             plot_identity_palette=args.plot_identity_palette,
             plot_identity_gap_col=args.plot_identity_gap_col)
+
     if args.plot_consensus_similarity:
         log.info("Plotting similarity to consensus")
         if not args.silent:
@@ -915,6 +917,7 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
             outf, typ,
             plot_type='similarity',
             dpi=args.plot_dpi,
+            title=args.plot_title,
             width=args.plot_width,
             height=args.plot_height,
             force_numbers=fn,

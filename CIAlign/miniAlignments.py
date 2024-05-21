@@ -360,6 +360,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
         if plot_type == 'identity':
             arr2 = consensusSeq.compareAlignmentConsensus(
                 arr, typ=typ, booleanOrSimilarity="boolean")
+            arr2 = arr2[::-1]
             cm = matplotlib.colormaps[plot_identity_palette]
             cmap_colors = cm(np.linspace(0.2, 0.8, 256))
             new_cmap = matplotlib.colors.ListedColormap(cmap_colors)
@@ -369,6 +370,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
             arr2 = consensusSeq.compareAlignmentConsensus(
                 arr, typ=typ, booleanOrSimilarity="similarity",
                 MatrixName=sub_matrix_name)
+            arr2 = arr2[::-1]
             cm = matplotlib.colormaps[plot_similarity_palette]
             cmap_colors = cm(np.linspace(0.2, 0.8, 256))
             new_cmap = matplotlib.colors.ListedColormap(cmap_colors)
