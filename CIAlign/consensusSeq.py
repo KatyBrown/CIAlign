@@ -698,35 +698,34 @@ def calcConservationAli(alignment, typ):
 def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
                               MatrixName="default"):
     '''
-    Compares the alignment of the inputted array to the consensus of that
-    array, and will either output a boolean array, or will use a matrix 
-    (can be specified) to output an array containing the scores of the 
-    sequence compared to the consensus.
+    Compares the alignment of the input alignment to the consensus of that
+    array, and will either output a boolean array, or will use a similarity
+    matrix, specified as MatrixName to output an array containing the
+    similarity scores of the alignment compared to the consensus.
 
+    Parameters
+    ----------
+    arr: np.array
+        the aligned sequences
 
+    typ: str
+        nt or aa
+    
+    booleanOrSimilarity: str
+        Create a boolean or similarity matrix (default = 'boolean')
 
-        Parameters
-        ----------
-        arr: np.array
-            the sequence thats is to be aligned
-
-        typ: str
-            nt or aa
+    MatrixName: str
+        substitution matrix name (default = 'default')
         
-        booleanOrSimilarity: str
-            boolean or similarity (default = 'boolean')
+    Returns
+    -------
+    new_arr: np.array
+        A boolean array showing if positions in the alignment are identical
+        to the consensus
 
-        MatrixName: str
-            the specified matrix name (default = 'default')
-            
-        Returns
-        -------
-        new_arr: np.array
-            A boolean array containing the values of the 
-                        sequence compared to the consensus
-        new_Sarr: np.array
-            A integer array containing the values of the 
-            sequence compared to the consensus via a matrix
+    new_Sarr: np.array
+        A integer array containing the similarity scores for the 
+        alignment compared to the consensus calculated via a scoring matrix.
     '''
     consensus, _ = np.array(findConsensus(arr, '',
                                           consensus_type='majority_nongap'))
