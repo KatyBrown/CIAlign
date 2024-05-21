@@ -525,11 +525,11 @@ def getParser():
                  when compared via a substitution matrix to the consensus. \
                  Default: %(default)s""")
 
-    optional.add("--plot_substitution_matrix", dest='plot_substitution_matrix',
-                 type=str, default='B',
+    optional.add("--plot_sub_matrix_name", dest='plot_sub_matrix_name',
+                 type=str, default='default',
                  help="""Substitution matrix to use for similarity plots. \
                  Default: %(default)s""")
-                
+
     optional.add("--plot_identity_palette", dest='plot_identity_palette',
                  type=str, default='terrain_r',
                  help="""Matplotlib palette name for identity mini alignments. \

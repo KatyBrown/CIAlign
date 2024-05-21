@@ -919,7 +919,7 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
             force_numbers=fn,
             palette=args.palette,
             plot_similarity_palette=args.plot_similarity_palette,
-            plot_substitution_matrix=args.plot_substitution_matrix)
+            sub_matrix_name=args.plot_sub_matrix_name)
 
 
 def runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
@@ -1036,6 +1036,17 @@ def runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ):
                                             dpi=args.plot_stats_dpi,
                                             width=args.plot_stats_width_bar,
                                             height=args.plot_stats_height_bar)
+        if typ == 'nt':
+            log.info("Plotting nucleotide change frequencies for %s" % inout)
+            if not args.silent:
+                print("Plotting nucleotide change frequencies for %s" % inout)
+
+            outfile = "%s_%s_changefreq.%s" % (args.outfile_stem, inout,
+                                            args.plot_stats_filetype)              
+            consensusSeq.residueChangeCount(c_arr, typ, outfile,
+                                            dpi=args.plot_stats_dpi,
+                                            width=args.plot_stats_width_bar,
+                                            height=args.plot_stats_height_bar)            
 
 
 def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):

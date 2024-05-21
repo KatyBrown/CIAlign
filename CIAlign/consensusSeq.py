@@ -733,7 +733,8 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
     ci_dir = os.path.dirname(utilityFunctions.__file__)
     matrix_dir = "%s/similarity_matrices" % (ci_dir)
 
-    if booleanOrSimilarity == "Boolean":
+    print (consensus)
+    if booleanOrSimilarity == "boolean":
         bool_array = np.array([])
         bool_arrL = np.empty(dtype=bool, shape=(0, len(consensus)))
         # declares the numpy arrays
@@ -767,20 +768,22 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
           # verifies if the typ is amino acid or nucleotide
           if MatrixName != "default":
             if tab.loc[MatrixName][0] != typ:
-              raise RuntimeError("This matrix is not valid")
+              raise RuntimeError("This substitution matrix is not valid for \
+                                 alignment type %s" % typ)
               # verifies if the matrix is valid
             else:
               # verifies if the user would like to use the default matrix or
               #their own
               mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
                                 comment="#", sep="\s+")
-          elif MatrixName == "B":
+          elif MatrixName == "default":
             mat = pd.read_csv("%s/BLOSUM62" % (matrix_dir),
                               comment="#", sep="\s+")
         elif typ == "nt":
             if MatrixName != "default":
                 if tab.loc[MatrixName][0] != typ:
-                    raise RuntimeError("This matrix is not valid")
+                  raise RuntimeError("This substitution matrix is not \
+                                     valid for alignment type %s" % typ)
                     # verifies if the matrix is valid
                 else:
                     # verifies if the user would like to use the default
@@ -821,9 +824,9 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
 
 def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
     '''
-    Plots a bar chart/graph of the percantage of the occurance of bases in the
-    given sequence, also plots a graph of the comparison between the amount
-    of C/G bases present to the amount of A/T bases.
+    Plots a bar chart of the percentage of each base/aa in the
+    alignment, also plots a graph comparing the
+    proportion of C/G bases to A/T bases.
 
     Parameters
     -----------
@@ -929,7 +932,7 @@ def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
         # Aesthetics for plot
         subplot2.spines['right'].set_visible(False)
         subplot2.spines['top'].set_visible(False)
-        subplot2.set_ylabel("Percentage")
+        subplot2.set_ylabel("Proportion")
         subplot2.set_xlabel("Nucleotides")
     
     # Save as outfile
@@ -939,7 +942,7 @@ def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
 
 def residueChangeCount(arr, typ, outfile, dpi=300, width=3, height=5):
     '''
-    Plots a bar chart/graph of the percentage of each possible change
+    Plots a bar chart of the percentage of each possible change
     between the consensus sequence and sequences in the alignment.
 
     Parameters
@@ -966,22 +969,39 @@ def residueChangeCount(arr, typ, outfile, dpi=300, width=3, height=5):
     -------
     The bar chart in the file "outfile""
     '''
-    if typ == "nt":
-        consensus, _ = np.array(findConsensus(
-            arr, '', consensus_type='majority_nongap'))
-        NDiff = np.array([])
-        for i in range(1, len(arr[:,0])):
-            z = i - 1
-            for e in range(1, len(arr[0,:])):
-                x = e - 1
-                if (arr[z,x] != consensus[x] and
-                    consensus[x] != "-" and
-                    arr[z,x] != "-"):
-                    NDiff = np.append(NDiff, str(arr[z,x] + consensus[x]))
-        total_arr = sum((NDiff != "BB")[:])
-        xAx = ["AT", "AC", "AG", "TA", "TC", "TG", "CA", "CT", "CG", "GA", "GC", "GT"]
-        yAy = np.array([])
-        for o in range(1,len(xAx)+1):
-            w = o-1
-            yAy = np.append(yAy, (sum((NDiff == str(xAx[w]))[:])/total_arr))
-        plt.bar(xAx, yAy, color="Orange", width=0.4)
+
+    # Get the consensus
+    consensus, _ = np.array(findConsensus(
+        arr, '', consensus_type='majority_nongap'))
+    
+    # Track all the differences between the consensus and the array
+    # (excluding gaps)
+    NDiff = np.array([])
+    for i in range(1, len(arr[:,0])):
+        z = i - 1
+        for e in range(1, len(arr[0,:])):
+            x = e - 1
+            if (arr[z,x] != consensus[x] and
+                consensus[x] != "-" and
+                arr[z,x] != "-"):
+                NDiff = np.append(NDiff, str(arr[z,x] + consensus[x]))
+    total_arr = np.size(NDiff)
+    xAx = ["AT", "AC", "AG", "TA", "TC", "TG",
+           "CA", "CT", "CG", "GA", "GC", "GT"]
+    yAy = np.array([])
+    for o in range(1,len(xAx)+1):
+        w = o-1
+        yAy = np.append(yAy, (sum((NDiff == str(xAx[w]))[:])/total_arr))
+
+    f = plt.figure(figsize=(width, height))
+    a = f.add_subplot(1, 1, 1)
+    a.bar(xAx, yAy, color="orange", width=0.4)
+
+    a.spines['right'].set_visible(False)
+    a.spines['top'].set_visible(False)
+    a.set_ylabel("Proportion")
+    a.set_xlabel("Change (Consensus to Alignment)")
+    
+    # Save as outfile
+    plt.savefig(outfile, dpi=dpi, bbox_inches='tight')
+    plt.close()

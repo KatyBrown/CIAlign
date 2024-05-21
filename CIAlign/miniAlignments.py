@@ -251,9 +251,9 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
                       dpi=300, title=None, width=5, height=3, markup=False,
                       markupdict=None, ret=False, orig_nams=[],
                       keep_numbers=False, force_numbers=False, palette="CBS",
-                      sub_matrix_name='B', plot_identity_palette='terrain_r',
+                      plot_identity_palette='terrain_r',
                       plot_similarity_palette='summer_r',
-                      plot_substitution_matrix='B'):
+                      sub_matrix_name='default'):
     '''
     Draws a "mini alignment" image showing a small representation of the
     whole alignment so that gaps and poorly aligned regions are visible.
@@ -326,7 +326,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
         arr2, cm = arrNumeric(arr, typ, palette)
     elif plot_type == 'boolean':
         arr2 = consensusSeq.compareAlignmentConsensus(
-            arr, typ=typ, booleanOrSimilarity="Boolean")
+            arr, typ=typ, booleanOrSimilarity="boolean")
         cm = matplotlib.colormaps[plot_identity_palette]
     elif plot_type == 'similarity':
         arr2 = consensusSeq.compareAlignmentConsensus(
