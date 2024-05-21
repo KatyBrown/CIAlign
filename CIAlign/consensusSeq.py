@@ -696,7 +696,7 @@ def calcConservationAli(alignment, typ):
 
 
 def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
-                              MatrixName="B"):
+                              MatrixName="default"):
     '''
     Compares the alignment of the inputted array to the consensus of that
     array, and will either output a boolean array, or will use a matrix 
@@ -729,7 +729,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
             sequence compared to the consensus via a matrix
     '''
     consensus, _ = np.array(findConsensus(arr, '',
-                                          consensus_type='majority_nongap')  )
+                                          consensus_type='majority_nongap'))
     ci_dir = os.path.dirname(utilityFunctions.__file__)
     matrix_dir = "%s/similarity_matrices" % (ci_dir)
 
@@ -744,8 +744,8 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
                 # iterates over the columns of the sequences
                 x = i-1
                 if arr[z,x] == consensus[x]:
-                    # verifies if the current value being iterated is equal to the
-                    #equivalent value inline with the consensus
+                    # verifies if the current value being iterated is equal to
+                    # the equivalent value inline with the consensus
                     bool_array = np.append(bool_array, [True], axis=None)
                 else:
                     bool_array = np.append(bool_array, [False], axis=None)
@@ -765,7 +765,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
         tab = pd.read_csv("%s/matrices.txt" % ci_dir, sep="\t", index_col=0)
         if typ == "aa":
           # verifies if the typ is amino acid or nucleotide
-          if MatrixName != "B":
+          if MatrixName != "default":
             if tab.loc[MatrixName][0] != typ:
               raise RuntimeError("This matrix is not valid")
               # verifies if the matrix is valid
@@ -778,7 +778,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
             mat = pd.read_csv("%s/BLOSUM62" % (matrix_dir),
                               comment="#", sep="\s+")
         elif typ == "nt":
-            if MatrixName != "B":
+            if MatrixName != "default":
                 if tab.loc[MatrixName][0] != typ:
                     raise RuntimeError("This matrix is not valid")
                     # verifies if the matrix is valid
@@ -787,7 +787,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="Boolean",
                     # matrix or their own
                     mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
                                       comment="#", sep="\s+")
-            elif MatrixName == "B":
+            elif MatrixName == "default":
                 mat = pd.read_csv("%s/NUC.4.4" % (matrix_dir), comment="#",
                                   sep="\s+")
         for e in range(1, (len(arr[:,0])+1)):
@@ -832,95 +832,151 @@ def plotResidueFrequencies(arr, typ, outfile, dpi=300, width=3, height=5):
 
     typ: str
         nt or aa
+    
+    outfile: str
+        Path to the file to store the graph image
+    
+    dpi: int
+        Dots per inch for output file
+    
+    width: int
+        Output image width in inches. For amino acids this will be x3
+        (to allow same default for both nt and aa).
+    
+    height: int
+        Output image height in inches.
 
     Outputs
-    -----------
-    the bar charts/graphs
+    -------
+    The bar chart in the file "outfile""
+    
     '''
+    # Get the residues and colours
     if typ == "nt":
         Slist = list(utilityFunctions.getNtColours().keys())[0:5]
         Scols = list(utilityFunctions.getNtColours().values())[0:5]
     elif typ == "aa":
         Slist = list(utilityFunctions.getAAColours().keys())[0:21]
         Scols = list(utilityFunctions.getAAColours().values())[0:21]
-    data = np.array([])
+
+    # Set up empty arrays
     baseT = np.array([])
-    baseN = np.array([])
-    data2 = float(0)
-    data3 = float(0)
+    CGcount = float(0)
+    ATcount = float(0)
+
+    # This allows the plots to be on a similar scale with the same default
+    # width even though there are more amino acids
     if typ == 'aa':
         width = width * 3
+
+    # Create the blank figure, add space between plots
     f = plt.figure(figsize=(width, height))
     plt.subplots_adjust(hspace=0.5)
+    
+    
     for i in range(1, len(Slist)):
         q = i - 1
+        # Count C and G vs A and T
         if Slist[q] == 'C' or Slist[q] == 'G':
-            data2 = data2 + np.sum(arr == Slist[q])
+            CGcount = CGcount + np.sum(arr == Slist[q])
         if Slist[q] == 'A' or Slist[q] == 'T' or Slist[q] == 'U':
-            data3 = data3 + np.sum(arr == Slist[q])
+            ATcount = ATcount + np.sum(arr == Slist[q])
+            
+        # Sub "U" for "T" for RNA
         if typ == 'nt' and Slist[q] == 'T':
             thischar = "U"
         else:
             thischar = Slist[q]
-        data = (np.sum(arr == thischar) / np.size(arr))
-        baseT = np.append(baseT, data)
-        baseN = np.append(baseN, str(thischar))
+            
+        # Calculate the proportion of this character overall
+        prop = (np.sum(arr == thischar) / np.size(arr))
+        baseT = np.append(baseT, prop)
+    
+    # For nt, plot counts and CG frequency
+    # For aa, just plot counts
     if typ == 'nt':
         subplot1 = f.add_subplot(2, 1, 1)
         subplot1.set_xlabel("Nucleotide")
     else:
         subplot1 = f.add_subplot(1, 1, 1)
         subplot1.set_xlabel("Amino Acid")
+
+    # Plot the bar chart
+    subplot1.bar(Slist, baseT, color=Scols, width=0.4)
+
+    # Aesthetics for plot
     subplot1.set_ylabel("Proportion")
-    subplot1.bar(baseN, baseT, color=Scols, width=0.4)
     subplot1.spines['right'].set_visible(False)
     subplot1.spines['top'].set_visible(False)
     subplot1.set_title("Proportion of Residues in Alignment")
     
+    # Add the AT vs CG plot for amino acids
     if typ == 'nt':
         subplot2 = f.add_subplot(2, 1, 2)
+        # Differentiate U and T
         if "U" in arr:
             label = "A or U"
             subplot2.set_title("CG and AU Proportion")
         else:
             label = "A or T"
             subplot2.set_title("CG and AT Proportion")
-        subplot2.bar(["C or G", label], [(data2 / (data3 + data2)),
-                                         (data3 / (data3 + data2))],
+
+        # Plot the bar chart
+        subplot2.bar(["C or G", label], [(CGcount / (ATcount + CGcount)),
+                                         (ATcount / (ATcount + CGcount))],
                      color="Orange", width=0.4)
+        
+        # Aesthetics for plot
         subplot2.spines['right'].set_visible(False)
         subplot2.spines['top'].set_visible(False)
         subplot2.set_ylabel("Percentage")
         subplot2.set_xlabel("Nucleotides")
-        
+    
+    # Save as outfile
     plt.savefig(outfile, dpi=dpi, bbox_inches='tight')
     plt.close()
-def residueChangeCount(arr, typ):
+
+
+def residueChangeCount(arr, typ, outfile, dpi=300, width=3, height=5):
     '''
-    Plots a bar chart/graph of the percantages
-    of the occurances of the differences between
-                the sequence and the consensus.
+    Plots a bar chart/graph of the percentage of each possible change
+    between the consensus sequence and sequences in the alignment.
 
     Parameters
     -----------
     arr: np.array
-        The sequence stored as a numpy array
+        The alignment stored as a numpy array
 
     typ: str
-        nt only
+        Type - aa or nt. This graph is plotted for nt only
+
+    outfile: str
+        Path to the file to store the graph image
+    
+    dpi: int
+        Dots per inch for output file
+    
+    width: int
+        Output image width in inches
+    
+    height: int
+        Output image height in inches
 
     Outputs
-    -----------
-    the bar chart/graph
+    -------
+    The bar chart in the file "outfile""
     '''
     if typ == "nt":
-        consensus, _ = np.array(findConsensus(arr, '', consensus_type='majority_nongap')  )
+        consensus, _ = np.array(findConsensus(
+            arr, '', consensus_type='majority_nongap'))
         NDiff = np.array([])
         for i in range(1, len(arr[:,0])):
             z = i - 1
             for e in range(1, len(arr[0,:])):
                 x = e - 1
-                if arr[z,x] != consensus[x] and consensus[x] != "-" and arr[z,x] != "-":
+                if (arr[z,x] != consensus[x] and
+                    consensus[x] != "-" and
+                    arr[z,x] != "-"):
                     NDiff = np.append(NDiff, str(arr[z,x] + consensus[x]))
         total_arr = sum((NDiff != "BB")[:])
         xAx = ["AT", "AC", "AG", "TA", "TC", "TG", "CA", "CT", "CG", "GA", "GC", "GT"]
