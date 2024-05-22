@@ -519,7 +519,7 @@ def getParser():
                  Default: %(default)s""")
 
     optional.add("--plot_consensus_similarity",
-                  dest='plot_consensus_similarity', action='store_true',
+                 dest='plot_consensus_similarity', action='store_true',
                  help="""Plot mini alignment showing \
                  positions based on their score when \
                  when compared via a substitution matrix to the consensus. \
@@ -532,7 +532,8 @@ def getParser():
 
     optional.add("--plot_identity_palette", dest='plot_identity_palette',
                  type=str, default='bone',
-                 help="""Matplotlib palette name for identity mini alignments. \
+                 help="""Matplotlib palette name for identity mini \
+                 alignments. \
                  Default: %(default)s""")
 
     optional.add("--plot_identity_gap_col", dest='plot_identity_gap_col',
@@ -549,7 +550,7 @@ def getParser():
                  type=str, default='white',
                  help="""Colour for gaps in similarity mini alignments. \
                  Default: %(default)s""")
-    
+
     optional.add("--plot_dpi", dest="plot_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for mini alignments. Default: %(default)s")

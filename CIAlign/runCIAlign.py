@@ -911,7 +911,7 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
         if not args.silent:
             print("Plotting similarity to consensus")
         outf = "%s_consensus_similarity.%s" % (args.outfile_stem,
-                                             args.plot_format)
+                                               args.plot_format)
         miniAlignments.drawMiniAlignment(
             arr, nams, log,
             outf, typ,
@@ -1036,7 +1036,7 @@ def runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ):
         if not args.silent:
             print("Plotting residue frequencies for %s" % inout)
         outfile = "%s_%s_resfreq.%s" % (args.outfile_stem, inout,
-                                        args.plot_stats_filetype)    
+                                        args.plot_stats_filetype)
         consensusSeq.plotResidueFrequencies(c_arr, typ, outfile,
                                             dpi=args.plot_stats_dpi,
                                             width=args.plot_stats_width_bar,
@@ -1047,11 +1047,11 @@ def runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ):
                 print("Plotting nucleotide change frequencies for %s" % inout)
 
             outfile = "%s_%s_changefreq.%s" % (args.outfile_stem, inout,
-                                            args.plot_stats_filetype)              
+                                               args.plot_stats_filetype)
             consensusSeq.residueChangeCount(c_arr, typ, outfile,
                                             dpi=args.plot_stats_dpi,
                                             width=args.plot_stats_width_bar,
-                                            height=args.plot_stats_height_bar)            
+                                            height=args.plot_stats_height_bar)
 
 
 def runSeqLogo(args, log, orig_arr, orig_nams, arr, nams, typ, removed):

@@ -259,14 +259,14 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
     '''
     Draws a "mini alignment" image showing a small representation of the
     whole alignment so that gaps and poorly aligned regions are visible.
-    
+
     By default or if plot_type == 'standard' a colour is assigned to each
     nucleotide or amino acid based on the palette parameter.
-    
+
     If plot_type == 'identity' a colour is assigned to identical to the
     consensus, different from the consensus and gap, based on the
     plot_identity_palette and plot_identity_gap_col parameters.
-    
+
     If plot_type == 'similarity' a colour is assigned based on similarity
     score compared to the consensus, using the substitution matrix
     specified as sub_matrix_name, colours are based on the
@@ -365,7 +365,7 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
             cmap_colors = cm(np.linspace(0.2, 0.8, 256))
             new_cmap = matplotlib.colors.ListedColormap(cmap_colors)
             cm = new_cmap.with_extremes(bad=plot_identity_gap_col)
-    
+
         elif plot_type == 'similarity':
             arr2 = consensusSeq.compareAlignmentConsensus(
                 arr, typ=typ, booleanOrSimilarity="similarity",
