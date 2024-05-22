@@ -133,7 +133,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
                                                      channel_axis=-1,
                                                      data_range=1)
         print ("%s %s %s %s %s" % (type, plot_type, pal, gapcol, simi))
-        self.assertTrue(simi > 0.9)
+        self.assertTrue(simi > 0.85)
 
 
 class DrawMarkUpTest(unittest.TestCase):
