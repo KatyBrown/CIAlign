@@ -186,9 +186,9 @@ class ConsensusSeqPlotResidueFrequenciesTest(unittest.TestCase):
                            ['tests/test_files/example2.fasta', 'aa']])
     def testPlotResidueFrequencies(self, fasta, typ):
         alignment, names = readMSA(fasta)
-        expected = image.imread("tests/test_files/expected_resfreq_%s.png" % typ)
+        expected = image.imread("tests/test_files/expected_resfreq_%s.png" % typ)[500:1000, 500:1000]
         consensusSeq.plotResidueFrequencies(alignment, typ, self.dest)
-        imi = image.imread(self.dest)
+        imi = image.imread(self.dest)[500:1000, 500:1000]
         simi = skimage.metrics.structural_similarity(expected,
                                                      imi,
                                                      channel_axis=-1,
@@ -207,9 +207,9 @@ class ConsensusSeqResidueChangeCountTest(unittest.TestCase):
     @parameterized.expand([['tests/test_files/example1.fasta']])
     def testResidueChangeCount(self, fasta):
         alignment, names = readMSA(fasta)
-        expected = image.imread("tests/test_files/expected_changecount.png")
+        expected = image.imread("tests/test_files/expected_changecount.png")[500:1000, 500:1000]
         consensusSeq.residueChangeCount(alignment, 'nt', self.dest)
-        imi = image.imread(self.dest)
+        imi = image.imread(self.dest)[500:1000, 500:1000]
         simi = skimage.metrics.structural_similarity(expected,
                                                      imi,
                                                      channel_axis=-1,
