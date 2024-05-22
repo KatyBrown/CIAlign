@@ -12,11 +12,14 @@ import logging
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+from matplotlib import image
 
 import CIAlign
 import CIAlign.consensusSeq as consensusSeq
 import CIAlign.utilityFunctions as utilityFunctions
 from tests.helperFunctions import readMSA
+import shutil
+import skimage.metrics
 
 class ConsensusSeqTests(unittest.TestCase):
 
@@ -170,6 +173,49 @@ class ConsensusSeqCoveragePlotTest(unittest.TestCase):
     def testMakeLinePlot(self):
         consensusSeq.makeLinePlot([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.03, 0.03, 0.03, 0.03, 0.03], self.dest, "x")
         self.assertTrue(os.path.isfile(self.dest))
+
+class ConsensusSeqPlotResidueFrequenciesTest(unittest.TestCase):
+
+    def setUp(self):
+        self.dest = 'resfreq_test.png'
+
+    def tearDown(self):
+        os.remove(self.dest)
+
+    @parameterized.expand([['tests/test_files/example1.fasta', 'nt'],
+                           ['tests/test_files/example2.fasta', 'aa']])
+    def testPlotResidueFrequencies(self, fasta, typ):
+        alignment, names = readMSA(fasta)
+        expected = image.imread("tests/test_files/expected_resfreq_%s.png" % typ)
+        consensusSeq.plotResidueFrequencies(alignment, typ, self.dest)
+        imi = image.imread(self.dest)
+        simi = skimage.metrics.structural_similarity(expected,
+                                                     imi,
+                                                     channel_axis=-1,
+                                                     data_range=1)
+        self.assertTrue(simi > 0.85)
+
+
+class ConsensusSeqResidueChangeCountTest(unittest.TestCase):
+
+    def setUp(self):
+        self.dest = 'changecount_test.png'
+
+    def tearDown(self):
+        os.remove(self.dest)
+
+    @parameterized.expand([['tests/test_files/example1.fasta']])
+    def testResidueChangeCount(self, fasta):
+        alignment, names = readMSA(fasta)
+        expected = image.imread("tests/test_files/expected_changecount.png")
+        consensusSeq.residueChangeCount(alignment, 'nt', self.dest)
+        imi = image.imread(self.dest)
+        simi = skimage.metrics.structural_similarity(expected,
+                                                     imi,
+                                                     channel_axis=-1,
+                                                     data_range=1)
+        self.assertTrue(simi > 0.85)
+
 
 class ConsensusSeqSequenceLogoTest(unittest.TestCase):
 
