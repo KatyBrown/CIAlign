@@ -776,10 +776,10 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
               # verifies if the user would like to use the default matrix or
               #their own
               mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
-                                comment="#", sep="\s+")
+                                comment="#", sep=r"\s+")
           elif MatrixName == "default":
             mat = pd.read_csv("%s/BLOSUM62" % (matrix_dir),
-                              comment="#", sep="\s+")
+                              comment="#", sep=r"\s+")
         elif typ == "nt":
             if MatrixName != "default":
                 if tab.loc[MatrixName][0] != typ:
@@ -790,10 +790,10 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
                     # verifies if the user would like to use the default
                     # matrix or their own
                     mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
-                                      comment="#", sep="\s+")
+                                      comment="#", sep=r"\s+")
             elif MatrixName == "default":
                 mat = pd.read_csv("%s/NUC.4.4" % (matrix_dir), comment="#",
-                                  sep="\s+")
+                                  sep=r"\s+")
         for e in range(1, (len(arr[:,0])+1)):
             # iterates over the rows of the sequences
             z = e-1
