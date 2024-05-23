@@ -771,11 +771,11 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
                     raise RuntimeError("This substitution matrix is not \
                                        valid for \
                                        alignment type %s" % typ)
-            else:
-                # verifies if the user would like to use the default matrix or
-                # their own
-                mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
-                                  comment="#", sep=r"\s+")
+                else:
+                    # verifies if the user would like to use the default matrix or
+                    # their own
+                    mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
+                                      comment="#", sep=r"\s+")
         elif MatrixName == "default":
             mat = pd.read_csv("%s/BLOSUM62" % (matrix_dir),
                               comment="#", sep=r"\s+")
