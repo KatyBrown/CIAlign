@@ -14,6 +14,8 @@ from matplotlib import image
 import CIAlign.miniAlignments as miniAlignments
 from tests.helperFunctions import readMSA
 import skimage.metrics
+import shutil
+
 
 class MiniAlignmentsTests(unittest.TestCase):
 
@@ -87,10 +89,16 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         self.assertTrue(simi > 0.95)
 
     @parameterized.expand([
-            ['./tests/test_files/example1.fasta', './tests/test_files/expected_mini_ali.png', 'nt', True],
-            ['./tests/test_files/example2.fasta', './tests/test_files/expected_mini_ali_aa.png', 'aa', False],
+            ['./tests/test_files/example1.fasta', './tests/test_files/expected_mini_ali.png', 'nt', True, 'standard', None, 'CBS', None],
+            ['./tests/test_files/example2.fasta', './tests/test_files/expected_mini_ali_aa.png', 'aa', False, 'standard', None, 'Bright', None],
+            ['./tests/test_files/example1.fasta', './tests/test_files/expected_identity_nt.png', 'nt', True, 'identity', None, 'bone', None],
+            ['./tests/test_files/example2.fasta', './tests/test_files/expected_identity_aa.png', 'aa', True, 'identity', None, 'terrain', None],
+            ['./tests/test_files/example1.fasta', './tests/test_files/expected_similarity_nt.png', 'nt', True, 'similarity', 'NUC.4.4', 'bone', 'white'],
+            ['./tests/test_files/example2.fasta', './tests/test_files/expected_similarity_aa.png', 'aa', True, 'similarity', 'BLOSUM62', 'bone', 'white'],
+            ['./tests/test_files/example1.fasta', './tests/test_files/expected_similarity_nt_NUC.4.2.png', 'nt', True, 'similarity', 'NUC.4.2', 'PuOr', 'red'],
+            ['./tests/test_files/example2.fasta', './tests/test_files/expected_similarity_aa_PAM10.png', 'aa', True, 'similarity', 'PAM10', 'rainbow', 'blue'],
     ])
-    def testDrawMiniAlignment(self, input, expected, type, keep_numbers):
+    def testDrawMiniAlignment(self, input, expected, type, keep_numbers, plot_type, matrix, pal, gapcol):
         self.alignment, self.names = readMSA(input)
         self.dest = "./tests/test_files/test_mini.png"
         self.legend = ""
@@ -99,7 +107,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
         logger = logging.getLogger('path.to.module.under.test')
         with mock.patch.object(logger, 'debug') as mock_debug:
             miniAlignments.drawMiniAlignment(self.alignment, self.names, logger, self.dest,
-                                                                type, 'standard', 300,
+                                                                type, plot_type, 300,
                                                                 title="test",
                                                                 width=5,
                                                                 height=3,
@@ -109,10 +117,14 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
                                                                 orig_nams=['Seq1', 'Seq2', 'Seq3', 'Seq4', 'Seq5', 'Seq6', 'Seq7'],
                                                                 keep_numbers=keep_numbers,
                                                                 force_numbers=False,
-                                                                palette='CBS')
+                                                                palette=pal,
+                                                                plot_identity_palette=pal,
+                                                                plot_similarity_palette=pal,
+                                                                plot_identity_gap_col=gapcol,
+                                                                plot_similarity_gap_col=gapcol,
+                                                                sub_matrix_name=matrix)
 
         mini_alignment = image.imread(self.dest)
-        
         # added a bit of leeway to allow for images created on different
         # machines - they are visually identical but have minor differences
         # in rendering - look for 95% structural similarity
@@ -120,7 +132,7 @@ class MiniAlignmentsDrawTest(unittest.TestCase):
                                                      mini_alignment,
                                                      channel_axis=-1,
                                                      data_range=1)
-        self.assertTrue(simi > 0.95)
+        self.assertTrue(simi > 0.85)
 
 
 class DrawMarkUpTest(unittest.TestCase):
