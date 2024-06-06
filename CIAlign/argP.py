@@ -519,26 +519,11 @@ def getParser():
                  Default: %(default)s""")
 
     optional.add("--plot_consensus_similarity",
-                  dest='plot_consensus_similarity', action='store_true',
+                 dest='plot_consensus_similarity', action='store_true',
                  help="""Plot mini alignment showing \
                  positions based on their score when \
                  when compared via a substitution matrix to the consensus. \
                  Default: %(default)s""")
-
-    optional.add("--plot_substitution_matrix", dest='plot_substitution_matrix',
-                 type=str, default='B',
-                 help="""Substitution matrix to use for similarity plots. \
-                 Default: %(default)s""")
-                
-    optional.add("--plot_identity_palette", dest='plot_identity_palette',
-                 type=str, default='terrain_r',
-                 help="""Matplotlib palette name for identity mini alignments. \
-                 Default: %(default)s""")
-
-    optional.add("--plot_similarity_palette", dest='plot_similarity_palette',
-                 type=str, default='summer_r',
-                 help="""Matplotlib palette name for similarity mini \
-                 alignments. Default: %(default)s""")
 
     optional.add("--plot_dpi", dest="plot_dpi",
                  type=int, default=300, metavar="(int)",
@@ -572,6 +557,31 @@ def getParser():
                  Will cause labels to overlap on large plots. \
                  Default: %(default)s")
 
+    optional.add("--plot_sub_matrix_name", dest='plot_sub_matrix_name',
+                 type=str, default='default',
+                 help="""Substitution matrix to use for similarity plots. \
+                 Default: %(default)s""")
+
+    optional.add("--plot_identity_palette", dest='plot_identity_palette',
+                 type=str, default='bone',
+                 help="""Matplotlib palette name for identity mini \
+                 alignments. \
+                 Default: %(default)s""")
+
+    optional.add("--plot_identity_gap_col", dest='plot_identity_gap_col',
+                 type=str, default='white',
+                 help="""Colour for gaps in identity mini alignments. \
+                 Default: %(default)s""")
+
+    optional.add("--plot_similarity_palette", dest='plot_similarity_palette',
+                 type=str, default='bone',
+                 help="""Matplotlib palette name for similarity mini \
+                 alignments. Default: %(default)s""")
+
+    optional.add("--plot_similarity_gap_col", dest='plot_similarity_gap_col',
+                 type=str, default='white',
+                 help="""Colour for gaps in similarity mini alignments. \
+                 Default: %(default)s""")
     # Colours
     optional.add("--palette", dest="palette", type=str,
                  default="CBS", metavar="(str",

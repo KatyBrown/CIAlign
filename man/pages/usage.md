@@ -195,25 +195,54 @@ Each of these functions produces some kind of visualisation of an MSA.
 
 #### Mini Alignments
 These functions produce "mini alignments" - images showing a small representation of your whole alignment, so that gaps and poorly aligned regions are clearly visible.
+
+
+##### Mini alignment example
+
+In standard mini alignments, each nucleotide or amino acid is shown in a different colour, based on the [palettes](#palettes) shown below.
+
 ![Mini alignment example](../images/mini_small.png)
+
+
+##### Identity plot example
+
+In identity plots, each nucleotide or amino acid in the cleaned alignment is compared to a consensus (generated with the [majority_nongap](#consensus-sequences) method), with matches, mismatches and gaps shown in different colours. The colours for matches and mismatches are the extremes from the [matplotlib palettes](https://matplotlib.org/stable/users/explain/colors/colormaps.html) and can be changed with the `plot_identity_palette` parameter, the gap colour is fixed and set using the `plot_identity_gap_col` parameter.
+
+![Identity plot example](../images/identity.png)
+
+##### Similarity plot example
+
+In similarity plots, each nucleotide or amino acid in the cleaned alignment is compared to a consensus (generated with the [majority_nongap](#consensus-sequences) method) and a similarity score is calculated using a substitution matrix. The BLAST substitution matrices available [here](https://ftp.ncbi.nih.gov/blast/matrices/) are used. All available matrices are listed [here](https://github.com/KatyBrown/CIAlign/blob/master/CIAlign/matrices.txt). This score is used to determine the colour to show in the plot. The colours are from the [matplotlib palettes](https://matplotlib.org/stable/users/explain/colors/colormaps.html) and can be changed with the `plot_similarity_palette` parameter, the gap colour is fixed and set using the `plot_similarity_gap_col` parameter.
+
+![Similarity plot example](../images/similarity.png)
 
 Output files:
 
 * **`OUTFILE_STEM_input.png (or svg, tiff, jpg)`** - visualisation of the input alignment
 * **`OUTFILE_STEM_output.png (or svg, tiff, jpg)`** -  visualisation of the cleaned output alignment
 * **`OUTFILE_STEM_markup.png (or svg, tiff, jpg)`** - visualisation of the input alignment with deleted rows and columns marked
+* **`OUTFILE_STEM_consensus_identity.png (or svg, tiff, jpg)`** - visualisation of the differences between the cleaned alignment and a consensus (generated with the [majority_nongap](#consensus-sequences) method)
+* **`OUTFILE_STEM_consensus_similarity.png (or svg, tiff, jpg)`** - visualisation of the similarity between the cleaned alignment and a consensus (generated with the [majority_nongap](#consensus-sequences) method)
+
 
 | Parameter | Description | Default |
 | ------------------------------------------------------ |------------------------------------------------------------------------------------------------------------- | ------------ |
 | **`--plot_input`** | Plot a mini alignment - an image representing the input alignment | False |
 | **`--plot_output`** | Plot a mini alignment - an image representing the output alignment | False |
 | **`--plot_markup`** | Draws the input alignment but with the columns and rows which have been removed by each function marked up in corresponding colours | False |
+|**`--plot_consensus_identity`**| Plot a mini alignment showing positions which are identical to or differ from the consensus. | False |
+|**`--plot_consensus_similarity`**| Plot a mini alignment showing positions based on their score when when compared via a substitution matrix to the consensus. | False |
 | *`--plot_dpi`* | DPI for mini alignments | 300 |
 | *`--plot_format`* | Image format for mini alignments - can be png, svg, tiff or jpg | png |
 | *`--plot_width`* | Mini alignment width in inches | 5 |
 | *`--plot_height`* | Mini alignment height in inches | 3 |
 | *`--plot_keep_numbers`* | Label rows in mini alignments based on input alignment, rather than renumbering | False |
 | *`--plot_force_numbers`* | Force all rows in mini alignments to be numbered rather than labelling e.g. every 10th row for larger plots Will cause labels to overlap in larger plots | False |
+| *`--plot_sub_matrix_name`* | Substitution matrix to use for similarity plots |  BLOSUM62 for amino acid, NUC.4.4 for nucleotide  |
+| *`--plot_identity_palette`* | Matplotlib palette name for identity mini alignments. | bone |
+| *`--plot_identity_gap_col`* | Colour for gap positions in identity mini alignments | white |
+| *`--plot_similarity_palette`* | Matplotlib palette name for similarity mini alignments | bone |
+| *`--plot_similarity_gap_col`* | Colour for gaps in similarity mini alignments | white |
 
 
 #### Sequence logos
@@ -251,10 +280,16 @@ Output_files:
 NB: to see available fonts on your system, run CIAlign --list_fonts_only and view CIAlign_fonts.png
 
 #### Statistics Plots
-For each position in the alignment, these functions plot:
+For each position in the alignment (input or output), these functions plot:
 * Coverage (the number of non-gap residues)
 * Information content
 * Shannon entropy
+
+The following plots are also generated for the whole alignment (input or output). 
+* Nucleotide or amino acid frequencies, for nucleotides the A/T(U) vs C/G content is also shown. For these plots, colours are based on the CBS [palette](#palettes).
+* For nucleotide alignments, the frequency of each nucleotide "change" relative to a consensus generated with the [majority_nongap](#consensus-sequences) method.
+
+
 
 **Coverage**
 
@@ -268,6 +303,19 @@ For each position in the alignment, these functions plot:
 
 ![](../images/se_small.png)
 
+**Nucleotide Frequency**
+
+![](../images/resfreq_nt.png)
+
+**Amino Acid Frequency**
+
+![](../images/resfreq.png)
+
+**Nucleotide Change**
+
+![](../images/changefreq.png)
+
+
 
 Output files:
 
@@ -277,6 +325,11 @@ Output files:
 * **`OUTFILE_STEM_output_information_content.png (or svg, tiff, jpg) `** - image showing the output alignment information content
 * **`OUTFILE_STEM_input_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the input alignment Shannon entropy
 * **`OUTFILE_STEM_output_shannon_entropy.png (or svg, tiff, jpg) `** - image showing the output alignment Shannon entropy
+* **`OUTFILE_STEM_input_resfreq.png (or svg, tiff, jpg) `** - image showing the input alignment residue frequencies
+* **`OUTFILE_STEM_output_resfreq.png (or svg, tiff, jpg) `** - image showing the output alignment residue frequencies
+* **`OUTFILE_STEM_input_changefreq.png (or svg, tiff, jpg) `** - image showing the input alignment changes relative to the consensus (nt only)
+* **`OUTFILE_STEM_output_changefreq.png (or svg, tiff, jpg) `** - image showing the output alignment changes relative to the consensus (nt only)
+
 
 | Parameter | Description | Default |
 | ---------------------------------------------------- |------------------------------------------------------------------------------------------------------------- | ------------ |

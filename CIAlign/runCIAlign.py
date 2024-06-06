@@ -896,30 +896,35 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
         miniAlignments.drawMiniAlignment(
             arr, nams, log,
             outf, typ,
-            plot_type='boolean',
+            plot_type='identity',
             dpi=args.plot_dpi,
+            title=False,
             width=args.plot_width,
             height=args.plot_height,
             force_numbers=fn,
             palette=args.palette,
-            plot_identity_palette=args.plot_identity_palette)
+            plot_identity_palette=args.plot_identity_palette,
+            plot_identity_gap_col=args.plot_identity_gap_col)
+
     if args.plot_consensus_similarity:
         log.info("Plotting similarity to consensus")
         if not args.silent:
             print("Plotting similarity to consensus")
         outf = "%s_consensus_similarity.%s" % (args.outfile_stem,
-                                             args.plot_format)
+                                               args.plot_format)
         miniAlignments.drawMiniAlignment(
             arr, nams, log,
             outf, typ,
             plot_type='similarity',
             dpi=args.plot_dpi,
+            title=False,
             width=args.plot_width,
             height=args.plot_height,
             force_numbers=fn,
             palette=args.palette,
             plot_similarity_palette=args.plot_similarity_palette,
-            plot_substitution_matrix=args.plot_substitution_matrix)
+            plot_similarity_gap_col=args.plot_similarity_gap_col,
+            sub_matrix_name=args.plot_sub_matrix_name)
 
 
 def runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):
@@ -1031,8 +1036,19 @@ def runStatsPlots(args, log, orig_arr, orig_nams, arr, nams, typ):
         if not args.silent:
             print("Plotting residue frequencies for %s" % inout)
         outfile = "%s_%s_resfreq.%s" % (args.outfile_stem, inout,
-                                        args.plot_stats_filetype)    
+                                        args.plot_stats_filetype)
         consensusSeq.plotResidueFrequencies(c_arr, typ, outfile,
+                                            dpi=args.plot_stats_dpi,
+                                            width=args.plot_stats_width_bar,
+                                            height=args.plot_stats_height_bar)
+        if typ == 'nt':
+            log.info("Plotting nucleotide change frequencies for %s" % inout)
+            if not args.silent:
+                print("Plotting nucleotide change frequencies for %s" % inout)
+
+            outfile = "%s_%s_changefreq.%s" % (args.outfile_stem, inout,
+                                               args.plot_stats_filetype)
+            consensusSeq.residueChangeCount(c_arr, typ, outfile,
                                             dpi=args.plot_stats_dpi,
                                             width=args.plot_stats_width_bar,
                                             height=args.plot_stats_height_bar)

@@ -251,12 +251,26 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
                       dpi=300, title=None, width=5, height=3, markup=False,
                       markupdict=None, ret=False, orig_nams=[],
                       keep_numbers=False, force_numbers=False, palette="CBS",
-                      sub_matrix_name='B', plot_identity_palette='terrain_r',
-                      plot_similarity_palette='summer_r',
-                      plot_substitution_matrix='B'):
+                      plot_identity_palette='bone',
+                      plot_identity_gap_col='white',
+                      plot_similarity_palette='bone',
+                      plot_similarity_gap_col='white',
+                      sub_matrix_name='default'):
     '''
     Draws a "mini alignment" image showing a small representation of the
     whole alignment so that gaps and poorly aligned regions are visible.
+
+    By default or if plot_type == 'standard' a colour is assigned to each
+    nucleotide or amino acid based on the palette parameter.
+
+    If plot_type == 'identity' a colour is assigned to identical to the
+    consensus, different from the consensus and gap, based on the
+    plot_identity_palette and plot_identity_gap_col parameters.
+
+    If plot_type == 'similarity' a colour is assigned based on similarity
+    score compared to the consensus, using the substitution matrix
+    specified as sub_matrix_name, colours are based on the
+    plot_similarity_palette and plot_similarity_gap_col parameters.
 
     Parameters
     ----------
@@ -270,6 +284,10 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
         Path to the output file
     typ: str
         Either 'aa' - amino acid - or 'nt' - nucleotide
+    plot_type: str
+        'standard' assign colours by residue, 'identity' colour by identical
+        to consensus or not identical (or gap), 'similarity' colour by
+        similarity score compared to consensus (or gap).
     dpi: int
         DPI for the output image
     title: str
@@ -294,6 +312,20 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
         than renumbering.
     palette: str
         Colour palette, CBS or Bright
+    plot_identity_palette: str
+        matplotlib colour palette name to use for identity plots, listed
+        here https://matplotlib.org/stable/users/explain/colors/colormaps.html
+    plot_identity_gap_col: str
+        Colour to use for gaps in identity plots.
+    plot_similarity_palette: str
+        matplotlib colour palette name to use for similarity plots, listed
+        here https://matplotlib.org/stable/users/explain/colors/colormaps.html
+    plot_similarity_gap_col: str
+        Colour to use for gaps in similarity plots.
+    sub_matrix_name: str
+        Substitution matrix to use to assign similarity scores. Listed in
+        CIAlign/matrices.txt.
+
     Returns
     -------
     None
@@ -324,16 +356,25 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
     # generate the numeric version of the array
     if plot_type == 'standard':
         arr2, cm = arrNumeric(arr, typ, palette)
-    elif plot_type == 'boolean':
-        arr2 = consensusSeq.compareAlignmentConsensus(
-            arr, typ=typ, booleanOrSimilarity="Boolean")
-        cm = matplotlib.colormaps[plot_identity_palette]
-    elif plot_type == 'similarity':
-        arr2 = consensusSeq.compareAlignmentConsensus(
-            arr, typ=typ, booleanOrSimilarity="similarity",
-            MatrixName=sub_matrix_name)
-        cm = matplotlib.colormaps[plot_similarity_palette]
-    
+    else:
+        if plot_type == 'identity':
+            arr2 = consensusSeq.compareAlignmentConsensus(
+                arr, typ=typ, booleanOrSimilarity="boolean")
+            arr2 = arr2[::-1]
+            cm = matplotlib.colormaps[plot_identity_palette]
+            cmap_colors = cm(np.linspace(0.2, 0.8, 256))
+            new_cmap = matplotlib.colors.ListedColormap(cmap_colors)
+            cm = new_cmap.with_extremes(bad=plot_identity_gap_col)
+
+        elif plot_type == 'similarity':
+            arr2 = consensusSeq.compareAlignmentConsensus(
+                arr, typ=typ, booleanOrSimilarity="similarity",
+                MatrixName=sub_matrix_name)
+            arr2 = arr2[::-1]
+            cm = matplotlib.colormaps[plot_similarity_palette]
+            cmap_colors = cm(np.linspace(0.2, 0.8, 256))
+            new_cmap = matplotlib.colors.ListedColormap(cmap_colors)
+            cm = new_cmap.with_extremes(bad=plot_similarity_gap_col)
     # display it on the axis
     a.imshow(arr2, cmap=cm, aspect='auto', interpolation='nearest')
 
