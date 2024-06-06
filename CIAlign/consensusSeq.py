@@ -776,9 +776,9 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
                     # their own
                     mat = pd.read_csv("%s/%s" % (matrix_dir, MatrixName),
                                       comment="#", sep=r"\s+")
-        elif MatrixName == "default":
-            mat = pd.read_csv("%s/BLOSUM62" % (matrix_dir),
-                              comment="#", sep=r"\s+")
+            elif MatrixName == "default":
+                mat = pd.read_csv("%s/BLOSUM62" % (matrix_dir),
+                                  comment="#", sep=r"\s+")
         elif typ == "nt":
             if MatrixName != "default":
                 if tab.loc[MatrixName][0] != typ:
