@@ -814,11 +814,15 @@ def getParser():
                        Assumes that that the sequences will also be identical \
                        and keeps only the first /last (default first) \
                        instance of each duplicated \
-                       name")
+                       name. \
+                       Default: %(default)s")
+
     optional.add("--duporder", dest='duporder', type=str,
-                 default='first',
+                 default='first', metavar="(string)",
                  help="Set to first to keep only the first instance of \
-                       each duplicated name or last to keep only the last")
+                       each duplicated name or last to keep only the last. \
+                       Default: %(default)s")
+
     # Section
     optional.add("--get_section", dest="get_section",
                  action="store_true", default=False,
@@ -829,13 +833,13 @@ def getParser():
                        Default: %(default)s")
 
     optional.add("--section_start", dest="section_start",
-                 type=int, default=None, metavar="(int",
+                 type=int, default=None, metavar="(int)",
                  help="Start position (column) for a section of the alignment \
                  to be isolated. 0-based - the first column is column 0. \
                  Default: %(default)s")
 
     optional.add("--section_end", dest="section_end",
-                 type=int, default=None, metavar="(int",
+                 type=int, default=None, metavar="(int)",
                  help="End position (column) for a section of the alignment \
                  to be isolated. 0-based - the first column is column 0. \
                  Default: %(default)s")
