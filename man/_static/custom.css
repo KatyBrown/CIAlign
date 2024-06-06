@@ -1,0 +1,6 @@
+/* _static/custom.css */
+table.docutils {
+    width: auto;
+    overflow-x: auto;
+    display: block;
+}
