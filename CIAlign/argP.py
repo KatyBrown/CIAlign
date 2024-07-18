@@ -549,7 +549,13 @@ def getParser():
                        is switched on) the rows will be labelled \
                        based on the input alignment, rather \
                        than renumbered. Default: %(default)s")
-
+    optional.add("--plot_keep_names", dest="plot_keep_names",
+                 action="store_true",
+                 help="If specified, rows in mini alignments will \
+                 be named as in the original file, \
+                 rather than numbered. Note that in many cases \
+                 this is impractical in terms of making the image \
+                 a reasonable height. Default: %(default)s")
     optional.add("--plot_force_numbers", dest="plot_force_numbers",
                  action="store_true",
                  help="Force all rows to be numbered on the mini alignments \
