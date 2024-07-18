@@ -24,7 +24,7 @@ setuptools.setup(
      url="https://github.com/KatyBrown/CIAlign",
      packages=setuptools.find_packages(),
      package_dir={'cialign':'cialign'},
-     package_data={'cialign': ['CIAlign/*.txt']},
+     package_data={'cialign': ['CIAlign/*.txt', 'CIAlign/similarity_matrices/*']},
      include_package_data=True,
      install_requires=['matplotlib', 'numpy>=1.21.0', 'ConfigArgParse', 'pillow'],
      scripts=['CIAlign/CIAlign'],

@@ -3,3 +3,4 @@ include *.in
 include LICENSE
 recursive-include CIAlign *.txt
 recursive-include CIAlign *.py
+recursive-include CIAlign/similarity_matrices *
