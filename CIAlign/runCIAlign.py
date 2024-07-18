@@ -829,6 +829,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
         Either 'aa' - amino acid - or 'nt' - nucleotide
     '''
     fn = args.plot_force_numbers
+    kn = args.plot_keep_numbers
+
     # Mini alignment of CIAlign input
     if args.plot_input or args.all_options or args.visualise:
         log.info("Plotting mini alignment for input")
@@ -839,6 +841,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                          outf, typ,
                                          dpi=args.plot_dpi,
                                          title=False,
+                                         keep_numbers=kn,
+                                         keep_nams=args.plot_keep_names,
                                          width=args.plot_width,
                                          height=args.plot_height,
                                          force_numbers=fn,
@@ -850,26 +854,17 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
         if not args.silent:
             print("Plotting mini alignment for output")
         outf = "%s_output.%s" % (args.outfile_stem, args.plot_format)
-        if not args.plot_keep_numbers:
-            miniAlignments.drawMiniAlignment(arr, nams, log,
-                                             outf, typ,
-                                             dpi=args.plot_dpi,
-                                             title=False,
-                                             width=args.plot_width,
-                                             height=args.plot_height,
-                                             force_numbers=fn,
-                                             palette=args.palette)
-        else:
-            miniAlignments.drawMiniAlignment(arr, nams, log,
-                                             outf, typ,
-                                             dpi=args.plot_dpi,
-                                             title=False,
-                                             width=args.plot_width,
-                                             height=args.plot_height,
-                                             orig_nams=orig_nams,
-                                             keep_numbers=True,
-                                             force_numbers=fn,
-                                             palette=args.palette)
+        miniAlignments.drawMiniAlignment(arr, nams, log,
+                                         outf, typ,
+                                         dpi=args.plot_dpi,
+                                         title=False,
+                                         keep_numbers=kn,
+                                         keep_nams=args.plot_keep_names,
+                                         width=args.plot_width,
+                                         height=args.plot_height,
+                                         force_numbers=fn,
+                                         palette=args.palette)
+
     # Markup plot
     # todo: what if only interpret functions are called?
     if args.plot_markup or args.all_options or args.visualise:
@@ -881,6 +876,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                          outf, typ,
                                          dpi=args.plot_dpi,
                                          title=False,
+                                         keep_numbers=kn,
+                                         keep_nams=args.plot_keep_names,
                                          width=args.plot_width,
                                          height=args.plot_height,
                                          markup=True,
@@ -899,6 +896,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
             plot_type='identity',
             dpi=args.plot_dpi,
             title=False,
+            keep_numbers=kn,
+            keep_nams=args.plot_keep_names,
             width=args.plot_width,
             height=args.plot_height,
             force_numbers=fn,
@@ -918,6 +917,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
             plot_type='similarity',
             dpi=args.plot_dpi,
             title=False,
+            keep_numbers=kn,
+            keep_nams=args.plot_keep_names,
             width=args.plot_width,
             height=args.plot_height,
             force_numbers=fn,

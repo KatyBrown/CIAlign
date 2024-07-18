@@ -250,7 +250,8 @@ def drawMarkUpLegend(outfile, palette="CBS"):
 def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
                       dpi=300, title=None, width=5, height=3, markup=False,
                       markupdict=None, ret=False, orig_nams=[],
-                      keep_numbers=False, force_numbers=False, palette="CBS",
+                      keep_numbers=False, keep_nams=False,
+                      force_numbers=False, palette="CBS",
                       plot_identity_palette='bone',
                       plot_identity_gap_col='white',
                       plot_similarity_palette='bone',
@@ -310,6 +311,8 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
     keep_numbers: bool
         Number the sequences (rows) based on the original CIAlign input rather
         than renumbering.
+    keep_names: bool
+        Show sequence names rather than numbers.   
     palette: str
         Colour palette, CBS or Bright
     plot_identity_palette: str
@@ -396,22 +399,30 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
         f.suptitle(title, fontsize=fontsize*1.5, y=0.92)
     for t in a.get_xticklabels():
         t.set_fontsize(fontsize)
-    a.set_yticks(np.arange(ali_height-1, -1, -tickint))
-    x = 1
-    if tickint == 1:
-        if keep_numbers:
-            labs = []
-            for nam in orig_nams:
-                if nam in nams:
-                    labs.append(x)
-                x += 1
-            a.set_yticklabels(labs,
-                              fontsize=fontsize*0.75)
-        else:
-            a.set_yticklabels(np.arange(1, ali_height+1, tickint),
-                              fontsize=fontsize*0.75)
+    
+    if keep_nams:
+        a.set_yticks(np.arange(ali_height-1, -1, -1))
+        a.set_yticklabels(nams, fontsize=fontsize)
     else:
-        a.set_yticklabels(np.arange(0, ali_height, tickint), fontsize=fontsize)
+        a.set_yticks(np.arange(ali_height-1, -1, -tickint))
+        x = 1
+        if tickint == 1:
+            if keep_numbers:
+                labs = []
+                for nam in orig_nams:
+                    if nam in nams:
+                        labs.append(x)
+                    x += 1
+                a.set_yticklabels(labs,
+                                  fontsize=fontsize*0.75)
+            elif not keep_nams:
+                a.set_yticklabels(np.arange(1, ali_height+1, tickint),
+                                  fontsize=fontsize*0.75)
+    
+        else:
+            if not keep_nams:
+                a.set_yticklabels(np.arange(0, ali_height, tickint),
+                                  fontsize=fontsize)
 
     if markup:
         a = drawMarkUp(a, markupdict, nams, ali_width, ali_height, palette)

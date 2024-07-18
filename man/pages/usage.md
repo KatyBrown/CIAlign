@@ -237,6 +237,7 @@ Output files:
 | *`--plot_width`* | Mini alignment width in inches | 5 |
 | *`--plot_height`* | Mini alignment height in inches | 3 |
 | *`--plot_keep_numbers`* | Label rows in mini alignments based on input alignment, rather than renumbering | False |
+| *`--plot_keep_names`* | Label rows in mini alignments with names from the original alignment, rather than numbers. This can be impractical for large alignments as the labels will overlap | False |
 | *`--plot_force_numbers`* | Force all rows in mini alignments to be numbered rather than labelling e.g. every 10th row for larger plots Will cause labels to overlap in larger plots | False |
 | *`--plot_sub_matrix_name`* | Substitution matrix to use for similarity plots |  BLOSUM62 for amino acid, NUC.4.4 for nucleotide  |
 | *`--plot_identity_palette`* | Matplotlib palette name for identity mini alignments. | bone |
