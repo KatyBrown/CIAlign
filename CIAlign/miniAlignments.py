@@ -256,7 +256,9 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
                       plot_identity_gap_col='white',
                       plot_similarity_palette='bone',
                       plot_similarity_gap_col='white',
-                      sub_matrix_name='default'):
+                      sub_matrix_name='default',
+                      plot_reference='none',
+                      usesp=False):
     '''
     Draws a "mini alignment" image showing a small representation of the
     whole alignment so that gaps and poorly aligned regions are visible.
@@ -328,6 +330,9 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
     sub_matrix_name: str
         Substitution matrix to use to assign similarity scores. Listed in
         CIAlign/matrices.txt.
+    plot_reference: str
+        If this is not "none", for plot_identity and plot_similarity, compare
+        to this named sequence rather than a consensus.
 
     Returns
     -------
@@ -350,11 +355,13 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
     # use thinner lines for bigger alignments
     lineweight_h = 10 / ali_height
     lineweight_v = 10 / ali_width
-
-    f = plt.figure(figsize=(width, height), dpi=dpi)
-    a = f.add_subplot(1, 1, 1)
-    a.set_xlim(-0.5, ali_width)
-    a.set_ylim(-0.5, ali_height-0.5)
+    if not usesp:
+        f = plt.figure(figsize=(width, height), dpi=dpi)
+        a = f.add_subplot(1, 1, 1)
+        a.set_xlim(-0.5, ali_width)
+        a.set_ylim(-0.5, ali_height-0.5)
+    else:
+        f, a = usesp
 
     # generate the numeric version of the array
     if plot_type == 'standard':
@@ -362,7 +369,8 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
     else:
         if plot_type == 'identity':
             arr2 = consensusSeq.compareAlignmentConsensus(
-                arr, typ=typ, booleanOrSimilarity="boolean")
+                arr, nams, typ=typ, booleanOrSimilarity="boolean",
+                reference=plot_reference)
             arr2 = arr2[::-1]
             cm = matplotlib.colormaps[plot_identity_palette]
             cmap_colors = cm(np.linspace(0.2, 0.8, 256))
@@ -371,8 +379,8 @@ def drawMiniAlignment(arr, nams, log, outfile, typ, plot_type='standard',
 
         elif plot_type == 'similarity':
             arr2 = consensusSeq.compareAlignmentConsensus(
-                arr, typ=typ, booleanOrSimilarity="similarity",
-                MatrixName=sub_matrix_name)
+                arr, nams, typ=typ, booleanOrSimilarity="similarity",
+                MatrixName=sub_matrix_name, reference=plot_reference)
             arr2 = arr2[::-1]
             cm = matplotlib.colormaps[plot_similarity_palette]
             cmap_colors = cm(np.linspace(0.2, 0.8, 256))

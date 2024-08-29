@@ -694,7 +694,8 @@ def calcConservationAli(alignment, typ):
     return (heights, ents)
 
 
-def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
+def compareAlignmentConsensus(arr, nams, typ, reference="none",
+                              booleanOrSimilarity="boolean",
                               MatrixName="default"):
     '''
     Compares the alignment of the input alignment to the consensus of that
@@ -726,8 +727,15 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
         A integer array containing the similarity scores for the
         alignment compared to the consensus calculated via a scoring matrix.
     '''
-    consensus, _ = np.array(findConsensus(arr, '',
-                                          consensus_type='majority_nongap'))
+
+    if reference == "none":
+        consensus, _ = np.array(findConsensus(arr, '',
+                                              consensus_type='majority_nongap'))
+    else:
+        assert reference in nams, "Reference sequence name must be exactly as \
+            in the original alignment"
+        posi = np.where(np.array(nams) == reference)[0][0]
+        consensus = "".join(arr[posi, :])
     ci_dir = os.path.dirname(utilityFunctions.__file__)
     matrix_dir = "%s/similarity_matrices" % (ci_dir)
 
@@ -741,7 +749,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
             for i in range(1, (len(arr[0, :])+1)):
                 # iterates over the columns of the sequences
                 x = i-1
-                if arr[z, x] == consensus[x]:
+                if arr[z, x] == consensus[x] and arr[z, x] != "-":
                     # verifies if the current value being iterated is equal to
                     # the equivalent value inline with the consensus
                     bool_array = np.append(bool_array, [True], axis=None)
@@ -798,7 +806,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
             for i in range(1, (len(arr[0, :])+1)):
                 #  iterates over the columns of the sequences
                 x = i-1
-                if not arr[z, x] == "-":
+                if not arr[z, x] == "-" and not consensus[x] == "-":
                     if arr[z, x] == "U" and typ == 'nt':
                         thischar = "T"
                     else:
@@ -809,7 +817,7 @@ def compareAlignmentConsensus(arr, typ, booleanOrSimilarity="boolean",
                         conschar = consensus[x]
                     score = mat.loc[thischar, conschar]
                     Sarray = np.append(Sarray, [score])
-                elif arr[z, x] == "-":
+                elif arr[z, x] == "-" or consensus[x]  == "-":
                     # sets the value of '-' as 0
                     Sarray = np.append(Sarray, float('nan'))
             SarrL = np.vstack([SarrL, Sarray])

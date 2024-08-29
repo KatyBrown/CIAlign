@@ -884,7 +884,7 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
                                          markupdict=markupdict,
                                          force_numbers=fn,
                                          palette=args.palette)
-    if args.plot_consensus_identity:
+    if args.plot_consensus_identity or args.all_options or args.visualise:
         log.info("Plotting identity to consensus")
         if not args.silent:
             print("Plotting identity to consensus")
@@ -903,9 +903,10 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
             force_numbers=fn,
             palette=args.palette,
             plot_identity_palette=args.plot_identity_palette,
-            plot_identity_gap_col=args.plot_identity_gap_col)
+            plot_identity_gap_col=args.plot_identity_gap_col,
+            plot_reference=args.plot_reference)
 
-    if args.plot_consensus_similarity:
+    if args.plot_consensus_similarity or args.all_options or args.visualise:
         log.info("Plotting similarity to consensus")
         if not args.silent:
             print("Plotting similarity to consensus")
@@ -925,7 +926,8 @@ def runMiniAlignments(args, log, orig_arr, orig_nams, arr, nams,
             palette=args.palette,
             plot_similarity_palette=args.plot_similarity_palette,
             plot_similarity_gap_col=args.plot_similarity_gap_col,
-            sub_matrix_name=args.plot_sub_matrix_name)
+            sub_matrix_name=args.plot_sub_matrix_name,
+            plot_reference=args.plot_reference)
 
 
 def runConsensus(args, log, orig_arr, orig_nams, arr, nams, removed_seqs):

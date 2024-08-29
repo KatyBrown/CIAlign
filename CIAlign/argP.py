@@ -525,6 +525,13 @@ def getParser():
                  when compared via a substitution matrix to the consensus. \
                  Default: %(default)s""")
 
+    optional.add("--plot_reference",
+                 dest="plot_reference",
+                 type=str, default='none', metavar="(string)",
+                 help="For plot_consensus_similarity and \
+                 plot_consensus_identity, compare to this named sequence \
+                 rather than a consensus")
+                 
     optional.add("--plot_dpi", dest="plot_dpi",
                  type=int, default=300, metavar="(int)",
                  help="DPI for mini alignments. Default: %(default)s")
