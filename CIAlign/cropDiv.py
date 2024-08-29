@@ -2,6 +2,7 @@
 
 import copy
 import numpy as np
+import math
 
 
 def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
@@ -46,13 +47,15 @@ def cropDivergentPos(arr, min_prop_ident, min_prop_nongap, buffer,
         this_arr = copy.copy(arr[:, ::-1])
 
     # Find the number of rows represented by the min_prop proportion
-    min_count_nongap = int(np.shape(this_arr)[0] * min_prop_nongap)
+    min_count_nongap = int(math.ceil(np.shape(this_arr)[0] * min_prop_nongap))
+    print (min_prop_nongap)
+    print (np.shape(this_arr))
     passfail = []
     # Iterate through the columns in the array, keep track of column index
     for i, col in enumerate(this_arr.T):
         # Isolate the non-gap rows in this column
         col_nongap = col[col != "-"]
-
+        print (min_count_nongap)
         # Check if there are enough non-gap residues
         pass_nongap = len(col_nongap) >= min_count_nongap
 
