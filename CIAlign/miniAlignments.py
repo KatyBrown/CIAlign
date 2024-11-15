@@ -124,6 +124,8 @@ def drawMarkUp(a, markupdict, nams, ali_width, ali_height,
     if "crop_ends" in markupdict:
         colour = colD['crop_ends']
         for nam, boundary in markupdict['crop_ends'].items():
+            if isinstance(nams, np.ndarray):
+                nams = nams.tolist()
             y = len(nams) - nams.index(nam) - 1
             # left end of the sequence
             if boundary[0].shape[0] > 0:
