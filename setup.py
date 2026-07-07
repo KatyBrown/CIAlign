@@ -26,7 +26,7 @@ setuptools.setup(
      package_dir={'cialign':'cialign'},
      package_data={'cialign': ['CIAlign/*.txt', 'CIAlign/similarity_matrices/*']},
      include_package_data=True,
-     install_requires=['matplotlib', 'numpy>=1.21.0', 'ConfigArgParse', 'pillow'],
+     install_requires=['matplotlib', 'numpy', 'ConfigArgParse', 'pillow', 'pandas'],
      scripts=['CIAlign/CIAlign'],
      classifiers=[
          "Programming Language :: Python :: 3",
