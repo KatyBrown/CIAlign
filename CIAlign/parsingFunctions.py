@@ -291,8 +291,8 @@ def removeTooShort(arr, nams, rmfile, log, keeps, min_length):
         sums = sum(arrT != "-")
         # Find which sequence names the user specified not to process
         # with this function
-        keeps_rs = np.in1d(nams, keeps['remove_short'])
-        keeps_ar = np.in1d(nams, keeps['all_rowwise'])
+        keeps_rs = np.isin(nams, keeps['remove_short'])
+        keeps_ar = np.isin(nams, keeps['all_rowwise'])
         keeps_here = keeps_rs | keeps_ar
         # Artificially raise the number of non-gap residues in
         # the sequences listed in the "keeps" list so that they are

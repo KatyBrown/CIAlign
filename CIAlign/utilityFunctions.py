@@ -652,7 +652,7 @@ def removeColumns(rmAbsolute, relativePositions,
     rmpos = np.array(list(rmAbsolute))
 
     keeppos = np.arange(0, np.shape(arr)[1])
-    keeppos = np.invert(np.in1d(keeppos, rmpos))
+    keeppos = np.invert(np.isin(keeppos, rmpos))
     if len(rmpos) != 0 and write:
         rmpos_str = [str(x) for x in sorted(rm_relative)]
         log.info("Removing sites %s" % (", ".join(rmpos_str)))
